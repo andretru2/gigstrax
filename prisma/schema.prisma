@@ -6,16 +6,44 @@ generator client {
     previewFeatures = ["jsonProtocol"]
 }
 
+
 datasource db {
-    provider = "sqlite"
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
 }
 
 model Gig {
     id        String   @id @default(cuid())
-    filemakerid    String
-    clientid String
-    
+    filemakerId    String
+    clientId String
+    aG_SerialNumber Int
+    aG_StaffKey_Driver String
+    aG_StaffKey_MrsSanta String
+    aG_StaffKey_Santa String
+    bG_ContactEmail String
+    bG_ContactName String
+    bG_ContactPhoneCell String
+    bG_ContactPhoneLand String
+    bG_Date String
+    bG_InvoiceNumber String
+    bG_isSoftHold__s Boolean
+    bG_NotesGig String
+    bG_NotesVenue String
+    bG_Paid Boolean
+    bG_Price Int
+    bG_TimeEnd DateTime
+    bG_TimeStart DateTime
+    bG_Travel String
+    bG_VenueAddressCity String
+    bG_VenueAddressName String
+    bG_VenueAddressState String
+    bG_VenueAddressStreet String
+    bG_VenueAddressStreet2 String
+    bG_VenueAddressZip String
+    bG_VenueType String
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
