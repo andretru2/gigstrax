@@ -1,19 +1,15 @@
-import { sql } from "@vercel/postgres";
+import { prisma } from "@/server/db";
 
-export default async function Cart({
-  params,
-}: {
-  params: { user: string };
-}): Promise<JSX.Element> {
-  const { rows } = await sql`SELECT * from CARTS where user_id=${params.user}`;
+export default async function prismaExample() {
+  const res = await prisma.user.create({
+    data: {
+      name: "Elliott",
+      email: "at@example-user.com",
+    },
+  });
+  console.log(res);
 
-  return (
-    <div>
-      {rows.map((row) => (
-        <div key={row.id}>
-          {row.id} - {row.quantity}
-        </div>
-      ))}
-    </div>
-  );
+  const users = await prisma.user.findMany();
+
+  return <div>{JSON.stringify(users)}</div>;
 }
