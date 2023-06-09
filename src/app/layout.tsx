@@ -3,7 +3,7 @@ import "@/styles/globals.css";
 // import { ClerkProvider } from "@clerk/nextjs/app-beta";
 
 export const metadata = {
-  title: "Create T3 Moderns",
+  title: "Create T3 Modernssss",
   description: "Theo got bored again",
 };
 
