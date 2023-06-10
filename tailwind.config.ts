@@ -1,4 +1,7 @@
-const { fontFamily } = require("tailwindcss/defaultTheme");
+/* eslint-disable @typescript-eslint/no-var-requires */
+
+import { fontFamily } from "tailwindcss/defaultTheme";
+// const plugin = require('tailwindcss/plugin')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -78,5 +81,10 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require("@tailwindcss/typography"),
+    require("@tailwindcss/container-queries"),
+    require("@tailwindcss/forms"),
+  ],
 };
