@@ -107,10 +107,10 @@ model Source {
   gigsMrsSanta Gig[] @relation("sourceOfMrsSanta")
   gigsSanta    Gig[] @relation("sourceOfSanta")
 
-  createdAt DateTime
-  createdBy String
-  updatedAt DateTime
-  updatedBy String
+  createdAt DateTime?
+  createdBy String?
+  updatedAt DateTime?
+  updatedBy String?
 }
 
 enum TravelType {

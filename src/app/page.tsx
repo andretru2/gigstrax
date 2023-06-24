@@ -1,7 +1,7 @@
 import { prisma } from "@/server/db";
 
 export default async function prismaExample() {
-  if (false) {
+  if (true) {
     const res = await prisma.gig.create({
       data: {
         clientId: "A4370F67-BCF6-457A-BDCB-F91E4CC4FA44",
@@ -39,7 +39,7 @@ export default async function prismaExample() {
     });
   }
 
-  if (true) {
+  if (false) {
     const res = await prisma.source.create({
       data: {
         id: "EDA3FF75-2A87-4A81-BEFD-A20F18D4DAF4",
@@ -47,28 +47,25 @@ export default async function prismaExample() {
         addressState: "NJ",
         addressStreet: "2595 John F Kennedy Bld (E-46)",
         addressZip: "07306",
-        bS_Costume: "",
-        bS_DOB: "03/30/1933",
-        bS_Driver: "",
-        bS_Email: "harkins.joe@gmail.com",
-        bS_Entity: "",
-        bS_Gender: "M",
-        bS_GigMastersAccount: "GM #138885 joe@realbeardsantajoe.com",
-        bS_GoogleCalendarID:
-          "s1ut4hq3qr3is27pm6jbn4je9c@group.calendar.google.com",
-        bS_NameFirst: "Joe",
-        bS_NameLast: "Harkins",
-        bS_Notes: "prospect 2021",
-        bS_Phone: "201-238-3343",
-        bS_Resource: "",
-        bS_Role: "RBS Joe",
-        bS_SSN: "110-24-2230",
-        bS_Santa: "",
-        bS_Status: "Active",
-        bS_User_Password: "",
-        bS_Username: "",
-        bS_Video: "",
-        bS_Website: "RealBeardSantaJoe.com",
+        costume: "",
+        dob: new Date("03/30/1933"),
+        email: "harkins.joe@gmail.com",
+        entity: "",
+        gender: "M",
+        gigMastersAccount: "GM #138885 joe@realbeardsantajoe.com",
+        calendarId: "s1ut4hq3qr3is27pm6jbn4je9c@group.calendar.google.com",
+        nameFirst: "Joe",
+        nameLast: "Harkins",
+        notes: "prospect 2021",
+        phone: "201-238-3343",
+        resource: "",
+        role: "RBS Joe",
+        ssn: "110-24-2230",
+
+        status: "Active",
+
+        videoUrl: "",
+        website: "RealBeardSantaJoe.com",
       },
     });
   }
@@ -98,11 +95,13 @@ export default async function prismaExample() {
 
   const gigs = await prisma.gig.findMany();
   const clients = await prisma.client.findMany();
+  const sources = await prisma.source.findMany();
 
   return (
     <div>
       {JSON.stringify(gigs)}
       {JSON.stringify(clients)}
+      {JSON.stringify(sources)}
     </div>
   );
 }
