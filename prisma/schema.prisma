@@ -18,12 +18,11 @@ model User {
 }
 
 model Gig {
-  // id         String  @id @default(cuid())
-  id         String  @unique
+  id         String  @id @unique @default(cuid())
+  // id         String  @unique
   client     Client  @relation(fields: [clientId], references: [id])
   clientId   String
-  // serial   Int    @default(autoincrement())
-  serial     Int?
+  serial     Int?    @default(autoincrement())
   calendarId String?
 
   driver     Source? @relation("sourceOfDriver", fields: [driverId], references: [id])
@@ -37,14 +36,14 @@ model Gig {
   contactName         String?
   contactPhoneCell    String?
   contactPhoneLand    String?
-  date                DateTime
+  date                DateTime @db.Date()
   invoiceNumber       String?
   notesGig            String?
   notesVenue          String?
-  amountPaid          Decimal? @db.Decimal(10, 2)
-  price               Decimal  @db.Decimal(10, 2)
-  timeEnd             DateTime
-  timeStart           DateTime
+  amountPaid          Decimal? @db.Money
+  price               Decimal  @db.Money
+  timeEnd             DateTime @db.Time()
+  timeStart           DateTime @db.Time()
   travelType          String?
   venueAddressCity    String
   venueAddressName    String
@@ -55,17 +54,29 @@ model Gig {
   venueType           String
   isSoftHold          Boolean?
 
-  createdAt DateTime
-  createdBy String
-  updatedAt DateTime
-  updatedBy String
+  createdAt DateTime? @default(now())
+  createdBy String?
+  updatedAt DateTime? @updatedAt
+  updatedBy String?
 }
 
 model Client {
-  id        String @unique
-  nameFirst String
-  nameLast  String
-  gigs      Gig[]
+  id            String      @unique @default(cuid())
+  name          String
+  addressCity   String?
+  addressState  String?
+  addressStreet String?
+  addressZip    String?
+  clientType    ClientType?
+  email         String?
+  contact       String?
+  notes         String?
+  phoneCell     String?
+  phoneLandline String?
+  source        String?
+  status        String?
+
+  gigs Gig[]
 }
 
 model Source {
@@ -85,4 +96,16 @@ model Source {
 enum TravelType {
   Self
   PublicTransport
+}
+
+enum ClientType {
+  Corporation
+  Event_Party_Planner @map("Event/Party Planner")
+  Booker
+  Government
+  Legal
+  Photographer
+  Casting
+  Private
+  other
 }

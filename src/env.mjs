@@ -12,6 +12,7 @@ export const env = createEnv({
     POSTGRES_URL: z.string().url(),
     POSTGRES_PRISMA_URL: z.string().url(),
     POSTGRES_URL_NON_POOLING: z.string().url(),
+    POSTGRES_URL_NON_POOLING_SHADOW: z.string().url(),
     POSTGRES_USER: z.string(),
     POSTGRES_HOST: z.string(),
     POSTGRES_PASSWORD: z.string(),
@@ -37,6 +38,8 @@ export const env = createEnv({
     POSTGRES_URL: process.env.POSTGRES_URL,
     POSTGRES_PRISMA_URL: process.env.POSTGRES_PRISMA_URL,
     POSTGRES_URL_NON_POOLING: process.env.POSTGRES_URL_NON_POOLING,
+    POSTGRES_URL_NON_POOLING_SHADOW:
+      process.env.POSTGRES_URL_NON_POOLING_SHADOW,
     POSTGRES_USER: process.env.POSTGRES_USER,
     POSTGRES_HOST: process.env.POSTGRES_HOST,
     POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
