@@ -9,7 +9,7 @@ export default async function prismaExample() {
   // });
   // console.log(res);
 
-  const users = await prisma.user.findMany();
+  const users = await prisma.gig.findMany();
 
   return <div>{JSON.stringify(users)}</div>;
 }
