@@ -1,7 +1,7 @@
 import { prisma } from "@/server/db";
 
 export default async function prismaExample() {
-  if (true) {
+  if (false) {
     const res = await prisma.gig.create({
       data: {
         clientId: "A4370F67-BCF6-457A-BDCB-F91E4CC4FA44",
