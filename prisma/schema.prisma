@@ -62,7 +62,7 @@ model Gig {
 
 model Client {
   id            String      @unique @default(cuid())
-  name          String
+  client        String
   addressCity   String?
   addressState  String?
   addressStreet String?
@@ -80,12 +80,32 @@ model Client {
 }
 
 model Source {
-  id           String @id @default(cuid())
-  nameFirst    String
-  nameLast     String
-  gigsDriver   Gig[]  @relation("sourceOfDriver")
-  gigsMrsSanta Gig[]  @relation("sourceOfMrsSanta")
-  gigsSanta    Gig[]  @relation("sourceOfSanta")
+  id                String        @id @default(cuid())
+  nameFirst         String
+  nameLast          String?
+  addressCity       String?
+  addressState      String?
+  addressStreet     String?
+  addressZip        String?
+  costume           String?
+  dob               DateTime?     @db.Date()
+  email             String?
+  entity            String?
+  gender            Gender?
+  gigMastersAccount String?
+  calendarId        String?
+  notes             String?
+  phone             String?
+  resource          String?
+  role              String?
+  ssn               String?
+  status            SourceStatus?
+  videoUrl          String?
+  website           String?
+
+  gigsDriver   Gig[] @relation("sourceOfDriver")
+  gigsMrsSanta Gig[] @relation("sourceOfMrsSanta")
+  gigsSanta    Gig[] @relation("sourceOfSanta")
 
   createdAt DateTime
   createdBy String
@@ -108,4 +128,19 @@ enum ClientType {
   Casting
   Private
   other
+}
+
+enum Gender {
+  M
+  F
+}
+
+enum SourceStatus {
+  Active
+  Driver
+  Inactive
+  Independent
+  Reference
+  Supplier
+  UNavailable
 }
