@@ -1,4 +1,6 @@
 import { prisma } from "@/server/db";
+import Sources from "../lib/sources.json";
+import { parse } from "date-fns";
 
 export default async function prismaExample() {
   if (false) {
@@ -91,6 +93,29 @@ export default async function prismaExample() {
     });
   }
 
+  if (false) {
+    await prisma.source.deleteMany();
+
+    // const formattedSources = Sources.map((source) => ({
+    //   ...source,
+    //   dob: parse(source.dob, "MM/dd/yyyy", new Date()).toISOString(),
+    // }));
+
+    const formattedSources = Sources.map((source) => ({
+      ...source,
+      dob: source.dob ? new Date(source.dob) : null,
+      createdAt: source.createdAt ? new Date(source.createdAt) : null,
+      updatedAt: source.updatedAt ? new Date(source.updatedAt) : null,
+    }));
+
+    // console.log(formattedSources);
+
+    const res = await prisma.source.createMany({
+      data: formattedSources,
+    });
+  }
+
+  // console.log(Sources);
   // console.log(res);
 
   const gigs = await prisma.gig.findMany();
