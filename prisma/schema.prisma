@@ -36,14 +36,14 @@ model Gig {
   contactName         String?
   contactPhoneCell    String?
   contactPhoneLand    String?
-  date                DateTime @db.Date()
+  gigDate             DateTime   @db.Date()
   invoiceNumber       String?
   notesGig            String?
   notesVenue          String?
-  amountPaid          Decimal? @db.Money
-  price               Decimal  @db.Money
-  timeEnd             DateTime @db.Time()
-  timeStart           DateTime @db.Time()
+  amountPaid          Decimal?   @db.Money
+  price               Decimal?   @db.Money
+  timeEnd             DateTime?  @db.Time()
+  timeStart           DateTime?  @db.Time()
   travelType          String?
   venueAddressCity    String
   venueAddressName    String
@@ -51,7 +51,7 @@ model Gig {
   venueAddressStreet  String
   venueAddressStreet2 String?
   venueAddressZip     String?
-  venueType           String
+  venueType           VenueType?
   isSoftHold          Boolean?
 
   createdAt DateTime? @default(now())
@@ -75,6 +75,11 @@ model Client {
   phoneLandline String?
   source        String?
   status        String?
+
+  createdAt DateTime? @default(now())
+  createdBy String?
+  updatedAt DateTime? @updatedAt
+  updatedBy String?
 
   gigs Gig[]
 }
@@ -119,15 +124,18 @@ enum TravelType {
 }
 
 enum ClientType {
-  Corporation
-  Event_Party_Planner @map("Event/Party Planner")
+  Agency
   Booker
-  Government
-  Legal
-  Photographer
   Casting
+  Corporation
+  Country_Club
+  Event_Party_Planner
+  Fundraiser
+  Government
+  NGO
+  Other
+  Photographer
   Private
-  other
 }
 
 enum Gender {
@@ -143,4 +151,22 @@ enum SourceStatus {
   Reference
   Supplier
   UNavailable
+}
+
+enum VenueType {
+  Bar
+  Event_Space
+  Home
+  Office
+  Other
+  Outdoors
+  PhotoStudio
+  Preschool
+  PrivateClub
+  Public
+  PublicSpace
+  Restaurant
+  Retail
+  Theatre
+  TV_Studio
 }
