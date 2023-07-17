@@ -1,61 +1,122 @@
 "use client"
 
-import { Cross2Icon } from "@radix-ui/react-icons"
-import { Table } from "@tanstack/react-table"
+import * as React from "react"
+import Link from "next/link"
+import type {
+  DataTableFilterableColumn,
+  DataTableSearchableColumn,
+} from "@/types"
+// import { Cross2Icon, TrashIcon } from "@radix-ui/react-icons"
+import type { Table } from "@tanstack/react-table"
+// import { PlusCircle } from "lucide-react"
+import { Icons } from "../icons"
 
-import { Button } from "@/registry/new-york/ui/button"
-import { Input } from "@/registry/new-york/ui/input"
-import { DataTableViewOptions } from "@/app/examples/tasks/components/data-table-view-options"
-
-import { priorities, statuses } from "../data/data"
-import { DataTableFacetedFilter } from "./data-table-faceted-filter"
+import { cn } from "@/lib/utils"
+import { Button, buttonVariants } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { DataTableFacetedFilter } from "@/components/data-table/data-table-faceted-filter"
+import { DataTableViewOptions } from "@/components/data-table/data-table-view-options"
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>
+  filterableColumns?: DataTableFilterableColumn<TData>[]
+  searchableColumns?: DataTableSearchableColumn<TData>[]
+  deleteRowsAction?: React.MouseEventHandler<HTMLButtonElement>
+  newRowLink?: string
 }
 
 export function DataTableToolbar<TData>({
   table,
+  filterableColumns = [],
+  searchableColumns = [],
+  deleteRowsAction,
+  newRowLink,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex w-full items-center justify-between space-x-2 overflow-auto p-1">
       <div className="flex flex-1 items-center space-x-2">
-        <Input
-          placeholder="Filter tasks..."
-          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("title")?.setFilterValue(event.target.value)
-          }
-          className="h-8 w-[150px] lg:w-[250px]"
-        />
-        {table.getColumn("status") && (
-          <DataTableFacetedFilter
-            column={table.getColumn("status")}
-            title="Status"
-            options={statuses}
-          />
-        )}
-        {table.getColumn("priority") && (
-          <DataTableFacetedFilter
-            column={table.getColumn("priority")}
-            title="Priority"
-            options={priorities}
-          />
-        )}
+        {searchableColumns.length > 0 &&
+          searchableColumns.map(
+            (column) =>
+              table.getColumn(column.id ? String(column.id) : "") && (
+                <Input
+                  key={String(column.id)}
+                  placeholder={`Filter ${column.title}...`}
+                  value={
+                    (table
+                      .getColumn(String(column.id))
+                      ?.getFilterValue() as string) ?? ""
+                  }
+                  onChange={(event) =>
+                    table
+                      .getColumn(String(column.id))
+                      ?.setFilterValue(event.target.value)
+                  }
+                  className="h-8 w-[150px] lg:w-[250px]"
+                />
+              )
+          )}
+        {filterableColumns.length > 0 &&
+          filterableColumns.map(
+            (column) =>
+              table.getColumn(column.id ? String(column.id) : "") && (
+                <DataTableFacetedFilter
+                  key={String(column.id)}
+                  column={table.getColumn(column.id ? String(column.id) : "")}
+                  title={column.title}
+                  options={column.options}
+                />
+              )
+          )}
         {isFiltered && (
           <Button
+            aria-label="Reset filters"
             variant="ghost"
-            onClick={() => table.resetColumnFilters()}
             className="h-8 px-2 lg:px-3"
+            onClick={() => table.resetColumnFilters()}
           >
             Reset
-            <Cross2Icon className="ml-2 h-4 w-4" />
+            <Icons.close className="ml-2 h-4 w-4" />
           </Button>
         )}
       </div>
-      <DataTableViewOptions table={table} />
+      <div className="flex items-center space-x-2">
+        {deleteRowsAction && table.getSelectedRowModel().rows.length > 0 ? (
+          <Button
+            aria-label="Delete selected rows"
+            variant="outline"
+            size="sm"
+            className="h-8"
+            onClick={(event) => {
+              table.toggleAllPageRowsSelected(false)
+              deleteRowsAction(event)
+            }}
+          >
+            <Icons.trash className="mr-2 h-4 w-4" aria-hidden="true" />
+            Delete
+          </Button>
+        ) : (
+          newRowLink && (
+            <Link aria-label="Create new row" href={newRowLink}>
+              <div
+                className={cn(
+                  buttonVariants({
+                    variant: "outline",
+                    size: "sm",
+                    className: "h-8",
+                  })
+                )}
+              >
+                <Icons.add className="mr-2 h-4 w-4" aria-hidden="true" />
+                New
+              </div>
+            </Link>
+          )
+        )}
+        <DataTableViewOptions table={table} />
+      </div>
     </div>
   )
 }

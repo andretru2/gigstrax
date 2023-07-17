@@ -1,8 +1,8 @@
 import { prisma } from "@/server/db";
 // import Sources from "../lib/sources.json";
 // import Clients from "../lib/clients.json";
-import Gigs from "../lib/gigs.json";
-import { parse } from "date-fns";
+// import Gigs from "../lib/gigs.json";
+// import { parse } from "date-fns";
 
 export default async function prismaExample() {
   if (false) {

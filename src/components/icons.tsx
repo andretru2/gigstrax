@@ -16,6 +16,7 @@ import {
   HelpCircle,
   Image,
   Info,
+  MoreHorizontal,
   Laptop,
   LayoutGrid,
   Loader2,
@@ -24,6 +25,7 @@ import {
   MoreVertical,
   Plus,
   Settings,
+  SlidersHorizontal,
   ArrowLeftRight,
   LogIn,
   LogOut,
@@ -98,4 +100,6 @@ export const Icons = {
   thumbsUp: ThumbsUp,
   thumbsDown: ThumbsDown,
   eyeOff: EyeOff,
+  slidersHorizontal: SlidersHorizontal,
+  moreHorizontal: MoreHorizontal
 };

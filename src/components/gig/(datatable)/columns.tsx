@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 
 import type { Gig } from "@prisma/client"
 
-import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
+import { DataTableColumnHeader } from "@/components/data-table/shadcn/data-table-column-header"
 import { DataTableRowActions } from "./data-table-row-actions"
 import { formatDate, calculateTimeDifference } from "@/lib/utils"
 
