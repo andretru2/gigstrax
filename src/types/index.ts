@@ -1,9 +1,9 @@
 import { type z } from "zod";
 
-import type {
-  cartItemSchema,
-  checkoutItemSchema,
-} from "@/lib/validations/cart";
+// import type {
+//   cartItemSchema,
+//   checkoutItemSchema,
+// } from "@/lib/validations/cart";
 import { type Icons } from "@/components/icons";
 
 export interface NavItem {
@@ -22,6 +22,16 @@ export interface NavItemWithChildren extends NavItem {
 
 export interface NavItemWithOptionalChildren extends NavItem {
   items?: NavItemWithChildren[];
+}
+
+export interface DataTableSearchableColumn<TData> {
+  id: keyof TData;
+  title: string;
+}
+
+export interface DataTableFilterableColumn<TData>
+  extends DataTableSearchableColumn<TData> {
+  options: Option[];
 }
 
 export type MainNavItem = NavItemWithOptionalChildren;
@@ -43,31 +53,4 @@ export type StoredFile = {
   id: string;
   name: string;
   url: string;
-};
-
-export type CartItem = z.infer<typeof cartItemSchema>;
-
-export type CheckoutItem = z.infer<typeof checkoutItemSchema>;
-
-export interface CartLineItem
-  extends Pick<
-    Product,
-    | "id"
-    | "name"
-    | "images"
-    | "category"
-    | "subcategory"
-    | "price"
-    | "inventory"
-    | "storeId"
-  > {
-  quantity?: number;
-  storeName: string | null;
-}
-
-export type SubscriptionPlan = {
-  name: string;
-  description: string;
-  stripePriceId: string;
-  monthlyPrice?: number | null;
 };
