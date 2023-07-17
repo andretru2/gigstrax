@@ -3,6 +3,8 @@ import {
   ArrowRight,
   ArrowLeft,ArrowUp,
   ArrowDown,
+  ArrowLeftToLine,
+  ArrowRightToLine,
   Check,
   CheckCircle2,
   ChevronLeft,
@@ -32,8 +34,10 @@ import {
   User,
   Undo2,
   X,
+  EyeOff,
   type Icon as LucideIcon,
   Link2,
+  ArrowUpDown,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
@@ -45,6 +49,8 @@ export const Icons = {
   chevronLeft: ChevronLeft,
   chevronRight: ChevronRight,
   arrowLeftRight: ArrowLeftRight,
+  arrowLeftToLine: ArrowLeftToLine,
+  arrowRightToLine: ArrowRightToLine,
   trash: Trash,
   post: FileText,
   page: File,
@@ -59,6 +65,7 @@ export const Icons = {
   arrowLeft: ArrowLeft,
   arrowUp: ArrowUp,
   arrowDown: ArrowDown,
+  arrowUpDown: ArrowUpDown,
   help: HelpCircle,
   home: LayoutGrid,
   poMatch: Link2,
@@ -90,4 +97,5 @@ export const Icons = {
   checkCircle: CheckCircle2,
   thumbsUp: ThumbsUp,
   thumbsDown: ThumbsDown,
+  eyeOff: EyeOff,
 };

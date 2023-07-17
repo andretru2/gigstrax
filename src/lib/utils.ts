@@ -18,7 +18,7 @@ export function formatPrice(
     notation,
   }).format(Number(price));
 }
-export function formatDate(input: string | number): string {
+export function formatDate(input: string | number | Date): string {
   const date = new Date(input);
   return date.toLocaleDateString("en-US", {
     month: "numeric",
@@ -42,4 +42,17 @@ export function catchError(err: unknown) {
   } else {
     return toast("Something went wrong, please try again later.");
   }
+}
+
+export function calculateTimeDifference(
+  timeStart: Date,
+  timeEnd: Date
+): number {
+  const startTime = new Date(timeStart);
+  const endTime = new Date(timeEnd);
+  const timeDiffInMilliseconds = Math.abs(
+    startTime.getTime() - endTime.getTime()
+  );
+  const timeDiffInHours = timeDiffInMilliseconds / (1000 * 60 * 60);
+  return timeDiffInHours;
 }

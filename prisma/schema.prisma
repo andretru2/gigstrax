@@ -18,20 +18,18 @@ model User {
 }
 
 model Gig {
-  id         String  @id @unique @default(cuid())
+  id                  String     @id @unique @default(cuid())
   // id         String  @unique
-  client     Client  @relation(fields: [clientId], references: [id])
-  clientId   String
-  serial     Int?    @default(autoincrement())
-  calendarId String?
-
-  driver     Source? @relation("sourceOfDriver", fields: [driverId], references: [id])
-  driverId   String?
-  mrsSanta   Source? @relation("sourceOfMrsSanta", fields: [mrsSantaId], references: [id])
-  mrsSantaId String?
-  santa      Source? @relation("sourceOfSanta", fields: [santaId], references: [id])
-  santaId    String?
-
+  client              Client     @relation(fields: [clientId], references: [id])
+  clientId            String
+  serial              Int?       @default(autoincrement())
+  calendarId          String?
+  driver              Source?    @relation("sourceOfDriver", fields: [driverId], references: [id])
+  driverId            String?
+  mrsSanta            Source?    @relation("sourceOfMrsSanta", fields: [mrsSantaId], references: [id])
+  mrsSantaId          String?
+  santa               Source?    @relation("sourceOfSanta", fields: [santaId], references: [id])
+  santaId             String?
   contactEmail        String?
   contactName         String?
   contactPhoneCell    String?
@@ -53,11 +51,10 @@ model Gig {
   venueAddressZip     String?
   venueType           VenueType?
   isSoftHold          Boolean?
-
-  createdAt DateTime? @default(now())
-  createdBy String?
-  updatedAt DateTime? @updatedAt
-  updatedBy String?
+  createdAt           DateTime?  @default(now())
+  createdBy           String?
+  updatedAt           DateTime?  @updatedAt
+  updatedBy           String?
 }
 
 model Client {
@@ -75,13 +72,11 @@ model Client {
   phoneLandline String?
   source        String?
   status        String?
-
-  createdAt DateTime? @default(now())
-  createdBy String?
-  updatedAt DateTime? @updatedAt
-  updatedBy String?
-
-  gigs Gig[]
+  createdAt     DateTime?   @default(now())
+  createdBy     String?
+  updatedAt     DateTime?   @updatedAt
+  updatedBy     String?
+  gigs          Gig[]
 }
 
 model Source {
@@ -107,15 +102,13 @@ model Source {
   status            SourceStatus?
   videoUrl          String?
   website           String?
-
-  gigsDriver   Gig[] @relation("sourceOfDriver")
-  gigsMrsSanta Gig[] @relation("sourceOfMrsSanta")
-  gigsSanta    Gig[] @relation("sourceOfSanta")
-
-  createdAt DateTime?
-  createdBy String?
-  updatedAt DateTime?
-  updatedBy String?
+  gigsDriver        Gig[]         @relation("sourceOfDriver")
+  gigsMrsSanta      Gig[]         @relation("sourceOfMrsSanta")
+  gigsSanta         Gig[]         @relation("sourceOfSanta")
+  createdAt         DateTime?
+  createdBy         String?
+  updatedAt         DateTime?
+  updatedBy         String?
 }
 
 enum TravelType {

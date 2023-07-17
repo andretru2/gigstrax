@@ -1,9 +1,9 @@
 "use client"
 
 import { DotsHorizontalIcon } from "@radix-ui/react-icons"
-import { Row } from "@tanstack/react-table"
+import { type Row } from "@tanstack/react-table"
 
-import { Button } from "@/registry/new-york/ui/button"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +16,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/registry/new-york/ui/dropdown-menu"
+} from "@/components/dropdown-menu"
 
 import { labels } from "../data/data"
 import { taskSchema } from "../data/schema"
