@@ -1,34 +1,36 @@
-import type { SidebarNavItem } from "@/types";
+import type { NavItem } from "@/types";
+// import { Icons } from "@/components/icons";
 
 export type DashboardConfig = {
-  sidebarNav: SidebarNavItem[];
+  sidebarNav: NavItem[];
 };
 
 export const dashboardConfig: DashboardConfig = {
   sidebarNav: [
     {
-      title: "Account",
-      href: "/dashboard/account",
-      icon: "user",
-      items: [],
+      title: "Home",
+      href: "/dashboard/",
+      icon: "home",
     },
     {
-      title: "Stores",
-      href: "/dashboard/stores",
-      icon: "store",
-      items: [],
+      title: "Gigs",
+      href: "/dashboard/gigs",
+      icon: "luggage",
     },
     {
-      title: "Billing",
-      href: "/dashboard/billing",
+      title: "Clients",
+      href: "/dashboard/clients",
+      icon: "client",
+    },
+    {
+      title: "Sources",
+      href: "/dashboard/sources",
       icon: "billing",
-      items: [],
     },
     {
       title: "Purchases",
       href: "/dashboard/purchases",
       icon: "dollarSign",
-      items: [],
     },
   ],
 };

@@ -274,10 +274,11 @@ export default async function prismaExample() {
   // console.log(clients.length);
 
   return (
-    <div>
-      {JSON.stringify(gigs)}
+    <h1 className="text-4xl text-red-500">
+      Welcome back, Andres
+      {/* {JSON.stringify(gigs)} */}
       {/* {JSON.stringify(clients)} */}
       {/* {JSON.stringify(sources)} */}
-    </div>
+    </h1>
   );
 }

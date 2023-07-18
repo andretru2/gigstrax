@@ -6,9 +6,9 @@ import { fontFamily } from "tailwindcss/defaultTheme";
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    ".src/app/**/*.{ts,tsx}",
-    ".src/components/**/*.{ts,tsx}",
-    ".src/components/ui/**/*.{ts,tsx}",
+    "src/app/**/*.{ts,tsx}",
+    "src/components/**/*.{ts,tsx}",
+    "src/components/ui/**/*.{ts,tsx}",
     "./content/**/*.{md,mdx}",
   ],
   darkMode: ["class"],

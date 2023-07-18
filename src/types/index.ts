@@ -5,6 +5,7 @@ import { type z } from "zod";
 //   checkoutItemSchema,
 // } from "@/lib/validations/cart";
 import { type Icons } from "@/components/icons";
+// import type { Icon } from "@/components/icons";
 
 export interface NavItem {
   title: string;
@@ -15,6 +16,22 @@ export interface NavItem {
   label?: string;
   description?: string;
 }
+
+// export type SidebarNavItem = {
+//   title: string;
+//   disabled?: boolean;
+//   external?: boolean;
+//   icon?: keyof typeof Icons;
+// } & (
+//   | {
+//       href: string;
+//       items?: never;
+//     }
+//   | {
+//       href?: string;
+//       items: NavLink[];
+//     }
+// );
 
 export interface NavItemWithChildren extends NavItem {
   items: NavItemWithChildren[];
@@ -36,7 +53,7 @@ export interface DataTableFilterableColumn<TData>
 
 export type MainNavItem = NavItemWithOptionalChildren;
 
-export type SidebarNavItem = NavItemWithChildren;
+export type NavItemNavItem = NavItemWithChildren;
 
 export type UserRole = "user" | "admin" | "superadmin";
 

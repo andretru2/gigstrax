@@ -10,12 +10,14 @@ import {
   ChevronLeft,
   ChevronRight,
   Command,
+  DollarSign,
   CreditCard,
   File,
   FileText,
   HelpCircle,
   Image,
   Info,
+  Luggage,
   MoreHorizontal,
   Laptop,
   LayoutGrid,
@@ -34,6 +36,7 @@ import {
   ThumbsUp,
   ThumbsDown,
   User,
+  UserSquare2,
   Undo2,
   X,
   EyeOff,
@@ -45,7 +48,7 @@ import {
 export type Icon = LucideIcon;
 
 export const Icons = {
-  logo: Command,
+  logox: Command,
   close: X,
   spinner: Loader2,
   chevronLeft: ChevronLeft,
@@ -72,11 +75,14 @@ export const Icons = {
   home: LayoutGrid,
   poMatch: Link2,
   report: PieChart,
+  client: UserSquare2,
   laptop: Laptop,
   logIn: LogIn,
   info: Info,
+  luggage: Luggage,
   undo: Undo2,
   logOut: LogOut,
+  dollarSign: DollarSign,
   gitHub: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"
@@ -94,6 +100,26 @@ export const Icons = {
       ></path>
     </svg>
   ),
+
+  logo: (props: LucideProps) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      strokeWidth="1.5"
+      stroke="currentColor"
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <circle cx="7" cy="15" r="2" />
+      <circle cx="17" cy="15" r="2" />
+      <path d="M3 9a2 1 0 0 0 2 1h14a2 1 0 0 0 2 -1" />
+    </svg>
+  ),
+
+
   twitter: Twitter,
   check: Check,
   checkCircle: CheckCircle2,
