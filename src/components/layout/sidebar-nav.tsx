@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 // import { type NavItem } from "types";
-import type { NavItem } from "../types";
+import type { NavItem } from "../../types";
 import { cn } from "@/lib/utils";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { Icons } from "@/components/icons";
 // import Logo from "@/components/logo";
 // import useIdle from "@/hooks/use-idle";
@@ -40,8 +40,8 @@ export default function SidebarNav({ items }: Props) {
       open={isOpen}
       onOpenChange={setIsOpen}
       className={cn(
-        isOpen ? "w-[220px]" : "w-[72px]",
-        " relative   from-red-500 to-red-600 bg-gradient-to-tr transition-all duration-200 rounded-r-2xl "
+        isOpen ? "w-[220px]" : "w-[96px]",
+        " relative   from-red-500 to-red-600 bg-gradient-to-tr transition-all duration-200  "
       )}
     >
       <aside className=" flex flex-col gap-12 ">
