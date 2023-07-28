@@ -67,7 +67,7 @@ export const Icons = {
   post: FileText,
   page: File,
   media: Image,
-  settings: Settings,
+  settings: Settings2,
   billing: CreditCard,
   ellipsis: MoreVertical,
   add: Plus,

@@ -1,5 +1,4 @@
 import "@/styles/globals.css";
-// import { Oswald as FontSans, Lato as FontHeading } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { fontSans, fontHeading } from "@/lib/fonts";
 import type { ReactNode } from "react";
@@ -7,8 +6,6 @@ import { siteConfig } from "@/config/site";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { ClerkProvider } from "@clerk/nextjs";
-
-// import { ClerkProvider } from "@clerk/nextjs/app-beta";
 
 interface RootLayoutProps {
   children?: ReactNode;
@@ -33,7 +30,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           fontHeading.variable
         )}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <ClerkProvider>{children}</ClerkProvider>
           <Toaster />
         </ThemeProvider>

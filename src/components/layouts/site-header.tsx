@@ -9,6 +9,7 @@ import { Icons } from "@/components/icons";
 // import { MainNav } from "@/components/main-nav"
 // import { MobileNav } from "@/components/mobile-nav"
 import { ModeToggle } from "@/components/mode-toggle";
+import { MainNav } from "@/components/layouts/main-nav";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -37,24 +38,16 @@ export function SiteHeader({ user }: SiteHeaderProps) {
     user?.emailAddresses?.find((e) => e.id === user.primaryEmailAddressId)
       ?.emailAddress ?? "";
   return (
-    <header className="supports-backdrop-blur:bg-background/60 sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur">
-      <div className="container flex h-14 items-center gap-3">
-        {/* <MainNav /> */}
-        {/* <MobileNav /> */}
+    <header className="supports-backdrop-blur:bg-background/60 to- sticky top-0 z-40 w-full  rounded-b-3xl bg-gradient-to-tl from-primary to-[#FF331A] backdrop-blur">
+      <div className="container flex h-16 w-full items-center gap-3 overflow-visible ">
+        <MainNav items={siteConfig.mainNav} />
+        {/* <MobileNav />  */}
 
-        <Icons.logo className="h-8 w-8 " />
-
-        <h1>
-          Real Beard{" "}
-          <span className="bg-gradient-to-r from-green-400 to-red-500 bg-clip-text text-transparent">
-            Santas
-          </span>
-        </h1>
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <div className="w-full flex-1 md:w-auto md:flex-none">
             <CommandMenu />
           </div>
-          <nav className="flex items-center">
+          <nav className="flex items-center text-background">
             {/* <Link
               href={siteConfig.links.github}
               // target="_blank"

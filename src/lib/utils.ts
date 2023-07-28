@@ -56,3 +56,10 @@ export function calculateTimeDifference(
   const timeDiffInHours = timeDiffInMilliseconds / (1000 * 60 * 60);
   return timeDiffInHours;
 }
+export function slugify(str: string) {
+  return str
+    .toLowerCase()
+    .replace(/ /g, "-")
+    .replace(/[^\w-]+/g, "")
+    .replace(/--+/g, "-");
+}
