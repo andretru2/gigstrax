@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { siteConfig } from "@/config/site";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
+import { ClerkProvider } from "@clerk/nextjs";
 
 // import { ClerkProvider } from "@clerk/nextjs/app-beta";
 
@@ -33,7 +34,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         )}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
+          <ClerkProvider>{children}</ClerkProvider>
           <Toaster />
         </ThemeProvider>
       </body>

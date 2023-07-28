@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-// import { currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs";
 
 import { dashboardConfig } from "@/config/dashboard";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -32,15 +32,17 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  // const user = await currentUser();
+export default async function DashboardLayout({
+  children,
+}: DashboardLayoutProps) {
+  const user = await currentUser();
 
-  // if (!user) {
-  //   redirect("/signin");
-  // }
+  if (!user) {
+    redirect("/signin");
+  }
   return (
     <div className="flex min-h-screen flex-col">
-      <SiteHeader />
+      <SiteHeader user={user} />
       <div className="grid h-screen  w-screen  flex-1   md:flex ">
         <SidebarNav items={dashboardConfig.sidebarNav} />
         <ScrollArea className="w-full">
