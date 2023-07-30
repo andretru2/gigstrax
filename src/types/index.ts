@@ -81,3 +81,5 @@ export interface DataTableFilterableColumn<TData>
   extends DataTableSearchableColumn<TData> {
   options: Option[];
 }
+
+export type StatusTabs = "Upcoming" | "RecentlyCreated" | "All" | "CreateNew";

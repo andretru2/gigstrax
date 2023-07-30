@@ -69,10 +69,10 @@ export const siteConfig: SiteConfig = {
       href: "/dashboard/sources",
       icon: "billing",
     },
-    {
-      title: "Purchases",
-      href: "/dashboard/purchases",
-      icon: "dollarSign",
-    },
+    // {
+    //   title: "Invoices",
+    //   href: "/dashboard/invoices",
+    //   icon: "dollarSign",
+    // },
   ],
 };

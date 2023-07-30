@@ -26,15 +26,12 @@ export function MainNav({ items }: MainNavProps) {
     <div className="hidden gap-6  text-background lg:flex">
       <Link
         aria-label="Home"
-        href="/"
-        className="hidden items-center space-x-2 lg:flex"
+        href="/dashboard/"
+        className="hidden items-center space-x-2 bg-gradient-to-r from-background/90 to-background bg-clip-text font-bold text-transparent lg:flex"
       >
-        <Icons.logo className="h-8 w-8 " />
-        <h1 className="font-bold ">
-          Real Beard{" "}
-          <span className="bg-gradient-to-r from-green-400 to-background bg-clip-text text-transparent">
-            Santas
-          </span>
+        <Icons.logo className="h-8 w-8  " />
+        <h1 className=" ">
+          Real Beard <span className="">Santas</span>
         </h1>
       </Link>
       <NavigationMenu>
@@ -82,7 +79,7 @@ export function MainNav({ items }: MainNavProps) {
             .map((item) =>
               item?.items ? (
                 <NavigationMenuItem key={item.title}>
-                  <NavigationMenuTrigger className="h-auto capitalize">
+                  <NavigationMenuTrigger className="flex h-auto flex-row gap-2 capitalize">
                     {item.title}
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>

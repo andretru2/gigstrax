@@ -41,16 +41,14 @@ export default async function DashboardLayout({
     redirect("/signin");
   }
   return (
-    <div className="flex min-h-screen flex-col gap-12">
+    <div className="flex min-h-screen flex-col gap-8 ">
       <SiteHeader user={user} />
-      <div className="container flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10 ">
-        {/* <SidebarNav items={dashboardConfig.sidebarNav} /> */}
-        <ScrollArea className="w-full">
-          <main className="flex w-full flex-col overflow-hidden ">
-            {children}
-          </main>
-        </ScrollArea>
-      </div>
+      {/* <SidebarNav items={dashboardConfig.sidebarNav} /> */}
+      <ScrollArea className="container">
+        <main className="flex w-full flex-col gap-10 overflow-hidden">
+          {children}
+        </main>
+      </ScrollArea>
     </div>
   );
 }

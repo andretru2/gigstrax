@@ -3,6 +3,9 @@ import { prisma } from "@/server/db";
 // import Clients from "../lib/clients.json";
 // import Gigs from "../lib/gigs.json";
 // import { parse } from "date-fns";
+import Header from "@/components/header";
+import { Separator } from "@/components/ui/separator";
+import { redirect } from "next/navigation";
 
 export default async function prismaExample() {
   if (false) {
@@ -273,12 +276,15 @@ export default async function prismaExample() {
   // const sources = await prisma.source.findMany();
   // console.log(clients.length);
 
-  return (
-    <h1 className="w-full text-4xl">
-      Welcome back, Andres
-      {/* {JSON.stringify(gigs)} */}
-      {/* {JSON.stringify(clients)} */}
-      {/* {JSON.stringify(sources)} */}
-    </h1>
-  );
+  return redirect("/dashboard/gigs");
+
+  // <>
+  //   <Header heading="Welcome back, Andres!" separator={true} />
+
+  //   <h1 className="w-full text-4xl">
+  //     {/* {JSON.stringify(gigs)} */}
+  //     {/* {JSON.stringify(clients)} */}
+  //     {/* {JSON.stringify(sources)} */}
+  //   </h1>
+  // </>
 }

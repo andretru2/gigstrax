@@ -47,7 +47,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
           <div className="w-full flex-1 md:w-auto md:flex-none">
             <CommandMenu />
           </div>
-          <nav className="flex items-center text-background">
+          <nav className="flex items-center gap-2 text-background">
             {/* <Link
               href={siteConfig.links.github}
               // target="_blank"
