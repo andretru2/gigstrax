@@ -1,4 +1,9 @@
-import { PrismaClient } from "@prisma/client";
+import {
+  PrismaClient,
+  type Gig,
+  type Client,
+  type Source,
+} from "@prisma/client";
 import { env } from "@/env.mjs";
 
 const globalForPrisma = globalThis as unknown as {
@@ -13,3 +18,7 @@ export const prisma =
   });
 
 if (env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
+export type GigProps = Gig;
+export type ClientProps = Client;
+export type SourceProps = Source;

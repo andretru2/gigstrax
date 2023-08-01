@@ -82,4 +82,4 @@ export interface DataTableFilterableColumn<TData>
   options: Option[];
 }
 
-export type StatusTabs = "Upcoming" | "RecentlyCreated" | "All" | "CreateNew";
+export type GigTab = "upcoming" | "recentlyCreated" | "all" | "createNew";

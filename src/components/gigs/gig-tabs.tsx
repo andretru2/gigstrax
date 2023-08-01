@@ -16,19 +16,19 @@ export default function GigTabs(props: Props) {
   const tabs = [
     {
       title: "Upcoming",
-      href: "/dashboard/gigs?status=Upcoming",
+      href: "/dashboard/gigs?tab=upcoming",
     },
     {
       title: "Recently Created",
-      href: "/dashboard/gigs?status=RecentylCreated",
+      href: "/dashboard/gigs?tab=recentlyCreated",
     },
     {
       title: "Past",
-      href: "/dashboard/gigs?status=Past",
+      href: "/dashboard/gigs?tab=past",
     },
     {
       title: "New Gig",
-      href: "/dashboard/gigs?status=CreateNew",
+      href: "/dashboard/gigs?tab=createNew",
     },
   ];
 
@@ -44,7 +44,9 @@ export default function GigTabs(props: Props) {
             key={tab.title}
             value={tab.href}
             className={cn(
-              pathname === tab.href && "bg-background text-foreground shadow-sm"
+              // pathname === tab.href && "bg-background text-foreground shadow-sm"
+              pathname?.includes(tab.href) &&
+                "bg-background text-foreground shadow-sm"
             )}
             onClick={() => router.push(tab.href)}
           >
