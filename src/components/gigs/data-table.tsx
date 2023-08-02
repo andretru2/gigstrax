@@ -12,7 +12,9 @@ import {
   catchError,
   formatDate,
   formatPrice,
+  formatAddress,
   calculateTimeDifference,
+  toTitleCase,
 } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,6 +31,7 @@ import { DataTable } from "@/components/data-table/data-table";
 // import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import { DataTableColumnHeader } from "@/components/data-table/shadcn/data-table-column-header";
 import { Icons } from "../icons";
+import { type GigProps } from "@/server/db";
 // import { deleteProductAction } from "@/app/_actions/product"
 
 interface Props {
@@ -41,111 +44,227 @@ export default function Datatable({ data, pageCount }: Props) {
   const [selectedRowIds, setSelectedRowIds] = React.useState<number[]>([]);
 
   // Memoize the columns so they don't re-render on every render
-  const columns: ColumnDef<Gig>[] = [
-    // {
-    //   id: "select",
-    //   header: ({ table }) => (
-    //     <Checkbox
-    //       checked={table.getIsAllPageRowsSelected()}
-    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-    //       aria-label="Select all"
-    //       className="translate-y-[2px]"
-    //     />
-    //   ),
-    //   cell: ({ row }) => (
-    //     <Checkbox
-    //       checked={row.getIsSelected()}
-    //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-    //       aria-label="Select row"
-    //       className="translate-y-[2px]"
-    //     />
-    //   ),
-    //   enableSorting: false,
-    //   enableHiding: false,
-    // },
-    // {
-    //   accessorKey: "id",
-    //   header: ({ column }) => (
-    //     <DataTableColumnHeader column={column} title="id" />
-    //   ),
-    //   cell: ({ row }) => <span className="w-[80px]">{row.getValue("id")}</span>,
-    //   enableSorting: false,
-    //   enableHiding: true,
-    // },
+  const columns = React.useMemo<ColumnDef<GigProps, unknown>[]>(
+    () => [
+      // {
+      //   id: "select",
+      //   header: ({ table }) => (
+      //     <Checkbox
+      //       checked={table.getIsAllPageRowsSelected()}
+      //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+      //       aria-label="Select all"
+      //       className="translate-y-[2px]"
+      //     />
+      //   ),
+      //   cell: ({ row }) => (
+      //     <Checkbox
+      //       checked={row.getIsSelected()}
+      //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+      //       aria-label="Select row"
+      //       className="translate-y-[2px]"
+      //     />
+      //   ),
+      //   enableSorting: false,
+      //   enableHiding: false,
+      // },
+      // {
+      //   accessorKey: "id",
+      //   header: ({ column }) => (
+      //     <DataTableColumnHeader column={column} title="id" />
+      //   ),
+      //   cell: ({ row }) => <span className="w-[80px]">{row.getValue("id")}</span>,
+      //   enableSorting: false,
+      //   enableHiding: true,
+      // },
 
-    {
-      accessorKey: "gigDate",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Date" />
-      ),
-      cell: ({ row }) => {
-        return <span>{formatDate(row.original.gigDate)}</span>;
+      {
+        accessorKey: "gigDate",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Date" />
+        ),
+        cell: ({ row }) => {
+          return <span>{formatDate(row.original.gigDate, "friendly")}</span>;
+        },
       },
-    },
-    {
-      accessorKey: "timeStart",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Start" />
-      ),
-      cell: ({ row }) => {
-        return (
-          <span>{row.original.timeStart?.toLocaleTimeString("en-US")}</span>
-        );
+      {
+        accessorKey: "timeStart",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Start" />
+        ),
+        cell: ({ row }) => {
+          return (
+            <span>
+              {row.original.timeStart
+                ? row.original.timeStart.toLocaleTimeString("en-US", {
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })
+                : ""}
+            </span>
+          );
+        },
       },
-    },
-    {
-      accessorKey: "timeEnd",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="End" />
-      ),
-      cell: ({ row }) => {
-        return <span>{row.original.timeEnd?.toLocaleTimeString("en-US")}</span>;
+      {
+        accessorKey: "timeEnd",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="End" />
+        ),
+        cell: ({ row }) => {
+          return (
+            <span>
+              {row.original.timeEnd
+                ? row.original.timeEnd.toLocaleTimeString("en-US", {
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })
+                : ""}
+            </span>
+          );
+        },
       },
-    },
-    {
-      accessorKey: "duration",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Duration" />
-      ),
-      cell: ({ row }) => {
-        return (
-          <span>
-            {row.original.timeStart && row.original.timeEnd
-              ? calculateTimeDifference(
-                  row.original.timeStart,
-                  row.original.timeEnd
-                )
-              : 0}
-          </span>
-        );
+      {
+        accessorKey: "duration",
+        header: ({ column }) => (
+          <DataTableColumnHeader
+            column={column}
+            title="Duration"
+            className="text-center"
+          />
+        ),
+        cell: ({ row }) => {
+          return (
+            <span className="w-2 text-center">
+              {row.original.timeStart && row.original.timeEnd
+                ? calculateTimeDifference(
+                    row.original.timeStart,
+                    row.original.timeEnd
+                  )
+                : 0}
+            </span>
+          );
+        },
       },
-    },
-    {
-      accessorKey: "santa.nameFirst",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Santa" />
-      ),
-      cell: ({ row }) => {
-        return (
-          <span>
-            {row.original.santa.nameFirst} {row.original.santa.nameLast}
-          </span>
-        );
+      {
+        accessorKey: "santa.role",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Santa" />
+        ),
+        cell: ({ row }) => {
+          return <span>{row.original?.santa?.role}</span>;
+        },
       },
-    },
-    {
-      accessorKey: "price",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Price" />
-      ),
-      cell: ({ cell }) => formatPrice(cell.getValue() as number),
-    },
+      {
+        accessorKey: "mrsSanta.nameFirst",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Mrs. Santa" />
+        ),
+        cell: ({ row }) => {
+          return <span>{row.original?.mrsSanta?.nameFirst}</span>;
+        },
+      },
+      {
+        accessorKey: "client.client",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Client" />
+        ),
+        cell: ({ row }) => {
+          return (
+            <span>
+              {row.original?.client?.client &&
+                toTitleCase(row.original?.client?.client)}
+            </span>
+          );
+        },
+      },
 
-    // {
-    //   id: "actions",
-    //   cell: ({ row }) => <DataTableRowActions row={row} />,
-    // },
-  ];
+      {
+        accessorKey: "venueAddressName",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Venue" />
+        ),
+        cell: ({ row }) => {
+          return (
+            <span>
+              {formatAddress({
+                name: row.original.venueAddressName,
+                addressLine1: row.original.venueAddressStreet,
+                addressLine2: row.original.venueAddressStreet2 ?? "",
+                addressCity: row.original.venueAddressCity,
+                addressState: row.original.venueAddressState,
+                addressZip: row.original.venueAddressZip,
+              })}
+            </span>
+          );
+        },
+      },
+      {
+        id: "actions",
+        cell: ({ row }) => (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                aria-label="Open menu"
+                variant="ghost"
+                className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+              >
+                <Icons.moreHorizontal className="h-4 w-4" aria-hidden="true" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[160px]">
+              <DropdownMenuItem asChild>
+                <Link href={`/dashboard/gigs/${row.original.id}`}>Edit</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/product/${row.original.id}`}>View</Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => {
+                  // startTransition(() => {
+                  //   row.toggleSelected(false)
+                  //   toast.promise(
+                  //     deleteProductAction({
+                  //       id: row.original.id,
+                  //       storeId,
+                  //     }),
+                  //     {
+                  //       loading: "Deleting...",
+                  //       success: () => "Product deleted successfully.",
+                  //       error: (err: unknown) => catchError(err),
+                  //     }
+                  //   )
+                  // })
+                }}
+                disabled={isPending}
+              >
+                Delete
+                <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ),
+      },
+    ],
+    [isPending]
+  );
+
+  // },
+  // {
+  //   accessorKey: "price",
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="Price" />
+  //   ),
+  //   cell: ({ cell }) => (
+  //     <span className="text-right">
+  //       {!cell.getValue() ? 0 : formatPrice(cell.getValue() as number)}
+  //     </span>
+  //   ),
+  // },
+
+  // {
+  //   id: "actions",
+  //   cell: ({ row }) => <DataTableRowActions row={row} />,
+  // },
 
   // function deleteSelectedRows() {
   //   toast.promise(

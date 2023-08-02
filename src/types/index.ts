@@ -83,3 +83,12 @@ export interface DataTableFilterableColumn<TData>
 }
 
 export type GigTab = "upcoming" | "recentlyCreated" | "all" | "createNew";
+
+export interface Address {
+  addressLine1: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
+  name?: string;
+}

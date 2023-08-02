@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import * as z from "zod";
 import { toast } from "@/hooks/use-toast";
+import { type Address } from "../types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -18,17 +19,27 @@ export function formatPrice(
     notation,
   }).format(Number(price));
 }
-export function formatDate(input: string | number | Date): string {
+export function formatDate(
+  input: string | number | Date,
+  format?: "friendly" | "formal"
+) {
   const date = new Date(input);
-  return date.toLocaleDateString("en-US", {
-    month: "numeric",
-    // month: "2-digit",
-    // month: "short",
-    // day: "2-digit",
-    day: "numeric",
-    // year: "numeric",
-    year: "2-digit",
-  });
+
+  if (format === "friendly") {
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "2-digit",
+    });
+  }
+
+  if (format === "formal" || !format) {
+    return date.toLocaleDateString("en-US", {
+      month: "2-digit",
+      day: "2-digit",
+      year: "numeric",
+    });
+  }
 }
 
 export function catchError(err: unknown) {
@@ -62,4 +73,28 @@ export function slugify(str: string) {
     .replace(/ /g, "-")
     .replace(/[^\w-]+/g, "")
     .replace(/--+/g, "-");
+}
+
+export function formatAddress({
+  addressLine1,
+  addressLine2,
+  city,
+  state,
+  zip,
+  name,
+}: Address) {
+  const lines = [addressLine1];
+  if (addressLine2) {
+    lines.push(addressLine2);
+  }
+  const cityState = [city, state].filter(Boolean).join(", ");
+  const address = [name, ...lines, cityState, zip].filter(Boolean).join("\n");
+  return address;
+}
+
+export function toTitleCase(str: string) {
+  return str.replace(
+    /\w\S*/g,
+    (txt) => txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase()
+  );
 }
