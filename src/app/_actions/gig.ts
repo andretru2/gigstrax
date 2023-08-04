@@ -10,6 +10,7 @@ export async function getUpcoming(): Promise<GigProps[]> {
   const today = new Date(2022, 12, 31);
   return await prisma.gig.findMany({
     select: {
+      id: true,
       gigDate: true,
       timeStart: true,
       timeEnd: true,
@@ -52,6 +53,7 @@ export async function getRecentlyCreated() {
   fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 128);
   return await prisma.gig.findMany({
     select: {
+      id: true,
       gigDate: true,
       timeStart: true,
       timeEnd: true,
@@ -96,6 +98,7 @@ export async function getPast() {
   console.log("today", today);
   return await prisma.gig.findMany({
     select: {
+      id: true,
       gigDate: true,
       timeStart: true,
       timeEnd: true,

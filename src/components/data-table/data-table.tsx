@@ -39,6 +39,7 @@ interface DataTableProps<TData, TValue> {
   filterableColumns?: DataTableFilterableColumn<TData>[];
   searchableColumns?: DataTableSearchableColumn<TData>[];
   newRowLink?: string;
+  onRowClick?: () => void;
   deleteRowsAction?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
@@ -50,6 +51,7 @@ export function DataTable<TData, TValue>({
   searchableColumns = [],
   deleteRowsAction,
   newRowLink,
+  onRowClick,
 }: DataTableProps<TData, TValue>) {
   const router = useRouter();
   const pathname = usePathname();

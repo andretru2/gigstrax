@@ -214,9 +214,7 @@ export default function Datatable({ data, pageCount }: Props) {
               <DropdownMenuItem asChild>
                 <Link href={`/dashboard/gigs/${row.original.id}`}>Edit</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={`/product/${row.original.id}`}>View</Link>
-              </DropdownMenuItem>
+
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => {
@@ -294,6 +292,9 @@ export default function Datatable({ data, pageCount }: Props) {
     <DataTable
       columns={columns}
       data={data}
+      onRowClick={(row) => {
+        console.log(row);
+      }}
       pageCount={pageCount}
       // filterableColumns={[
       //   {
