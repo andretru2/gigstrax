@@ -15,6 +15,7 @@ import {
   formatAddress,
   calculateTimeDifference,
   toTitleCase,
+  formatTime,
 } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -83,7 +84,11 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader column={column} title="Date" />
         ),
         cell: ({ row }) => {
-          return <span>{formatDate(row.original.gigDate, "friendly")}</span>;
+          return (
+            <span className="w-96">
+              {formatDate(row.original.gigDate, "friendly")}
+            </span>
+          );
         },
       },
       {
@@ -94,12 +99,7 @@ export default function Datatable({ data, pageCount }: Props) {
         cell: ({ row }) => {
           return (
             <span>
-              {row.original.timeStart
-                ? row.original.timeStart.toLocaleTimeString("en-US", {
-                    hour: "numeric",
-                    minute: "2-digit",
-                  })
-                : ""}
+              {row.original.timeStart ? formatTime(row.original.timeStart) : ""}
             </span>
           );
         },
@@ -189,9 +189,9 @@ export default function Datatable({ data, pageCount }: Props) {
                 name: row.original.venueAddressName,
                 addressLine1: row.original.venueAddressStreet,
                 addressLine2: row.original.venueAddressStreet2 ?? "",
-                addressCity: row.original.venueAddressCity,
-                addressState: row.original.venueAddressState,
-                addressZip: row.original.venueAddressZip,
+                city: row.original.venueAddressCity,
+                state: row.original.venueAddressState,
+                zip: row.original.venueAddressZip ?? "",
               })}
             </span>
           );

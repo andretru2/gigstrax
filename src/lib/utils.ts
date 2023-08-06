@@ -27,6 +27,8 @@ export function formatDate(
 
   if (format === "friendly") {
     return date.toLocaleDateString("en-US", {
+      // dateStyle: "full",
+      weekday: "short",
       month: "short",
       day: "numeric",
       year: "2-digit",
@@ -87,8 +89,9 @@ export function formatAddress({
   if (addressLine2) {
     lines.push(addressLine2);
   }
+  const nameLines = [name, ...lines].filter(Boolean).join(", ");
   const cityState = [city, state].filter(Boolean).join(", ");
-  const address = [name, ...lines, cityState, zip].filter(Boolean).join("\n");
+  const address = [nameLines, cityState, zip].filter(Boolean).join("\n");
   return address;
 }
 
@@ -98,3 +101,84 @@ export function toTitleCase(str: string) {
     (txt) => txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase()
   );
 }
+
+export function isValidDate(date: any): date is Date {
+  if (!(date instanceof Date)) {
+    return false;
+  }
+
+  if (isNaN(date.getTime())) {
+    return false;
+  }
+
+  return true;
+}
+
+export function isValidTime(time: string) {
+  // Regex to match HH:MM format
+  const regex = /^([01]\d|2[0-3]):?([0-5]\d)$/;
+
+  if (!regex.test(time)) {
+    return false;
+  }
+
+  const [hours, minutes] = time.split(":");
+
+  if (
+    hours &&
+    parseInt(hours) >= 0 &&
+    parseInt(hours) <= 23 &&
+    minutes &&
+    parseInt(minutes) >= 0 &&
+    parseInt(minutes) <= 59
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+export function isValidPrice(price: string): boolean {
+  // Optional decimal part
+  const regex = /^\d+(?:\.\d+)?$/;
+
+  if (!regex.test(price)) {
+    return false;
+  }
+
+  const numPrice = Number(price);
+
+  if (Number.isNaN(numPrice)) {
+    return false;
+  }
+
+  if (numPrice < 0) {
+    return false;
+  }
+
+  return true;
+}
+
+export function formatTime(time: Date) {
+  return time.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+export function duration(startTime: Date, endTime: Date): number {
+  const startMs = startTime.getTime();
+  const endMs = endTime.getTime();
+
+  const diffMs = endMs - startMs;
+
+  const diffHrs = diffMs / (1000 * 60 * 60);
+
+  return diffHrs;
+}
+
+// const [hours, minutes] = time.split(":");
+// const date = new Date();
+// date.setHours(Number(hours));
+// date.setMinutes(Number(minutes));
+// return date;

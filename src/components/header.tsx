@@ -8,7 +8,7 @@ interface DashboardHeaderProps {
   separator?: boolean;
 }
 
-export default function DashboardHeader({
+export default function Header({
   heading,
   text,
   children,

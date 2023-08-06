@@ -2,9 +2,7 @@
 
 import { prisma, type GigProps } from "@/server/db";
 
-import type * as z from "zod";
-
-// type GigProps = typeof prisma["gig"]
+// import * as z from "zod";
 
 export async function getUpcoming(): Promise<GigProps[]> {
   const today = new Date(2022, 12, 31);
@@ -138,5 +136,9 @@ export async function getPast() {
 }
 
 export async function create(input: GigProps) {
-  const res = await prisma.gig.create({ data: input });
+  return await prisma.gig.create({ data: input });
+}
+
+export async function update(input: GigProps) {
+  return await prisma.gig.update({ data: input, where: { id: input.id } });
 }
