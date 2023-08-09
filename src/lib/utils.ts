@@ -167,6 +167,11 @@ export function formatTime(time: Date) {
 }
 
 export function duration(startTime: Date, endTime: Date): number {
+  startTime.setSeconds(0);
+  endTime.setSeconds(0);
+  startTime.setMilliseconds(0);
+  endTime.setMilliseconds(0);
+
   const startMs = startTime.getTime();
   const endMs = endTime.getTime();
 
@@ -175,6 +180,34 @@ export function duration(startTime: Date, endTime: Date): number {
   const diffHrs = diffMs / (1000 * 60 * 60);
 
   return diffHrs;
+}
+
+export function formatTimeToUTC(timeString: string): string {
+  const localTime = new Date(timeString);
+  const utcTime = new Date(
+    Date.UTC(
+      localTime.getFullYear(),
+      localTime.getMonth(),
+      localTime.getDate(),
+      localTime.getHours(),
+      localTime.getMinutes()
+    )
+  );
+  return utcTime.toISOString().substr(11, 5);
+}
+
+// Get UTC date based on selected time
+export function getUTCDate(selectedTime: string): Date {
+  const currentDate = new Date();
+  const [hours, minutes] = selectedTime.split(":");
+  currentDate.setUTCHours(parseInt(hours, 10), parseInt(minutes, 10));
+  return currentDate;
+}
+
+// Convert UTC date to local time
+export function convertUTCtoLocalTime(utcDate: Date): Date {
+  const localTime = new Date(utcDate);
+  return localTime;
 }
 
 // const [hours, minutes] = time.split(":");

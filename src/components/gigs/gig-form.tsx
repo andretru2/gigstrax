@@ -5,8 +5,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { gigSchema } from "@/lib/validations/gig";
 import { type GigProps } from "@/server/db";
-import { catchError } from "@/lib/utils";
-import { useTransition } from "react";
+import {
+  catchError,
+  cn,
+  formatDate,
+  formatTime,
+  convertUTCtoLocalTime,
+  getUTCDate,
+  formatTimeToUTC,
+  duration,
+} from "@/lib/utils";
+import { useTransition, type FocusEvent } from "react";
+
+import { update } from "@/app/_actions/gig";
 
 import type * as z from "zod";
 
@@ -33,219 +44,178 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Icons } from "@/components/icons";
+import { Popover, PopoverTrigger } from "../ui/popover";
+import { PopoverContent } from "@radix-ui/react-popover";
+import { Calendar } from "../ui/calendar";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
-export default function GigForm(props: GigProps) {
+export default function GigForm(props: Partial<GigProps>) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+
+  // const { gigDate } = props;
+
+  const durationHours =
+    props?.timeStart && props?.timeEnd
+      ? duration(props.timeStart, props.timeEnd)
+      : null;
 
   const form = useForm<z.infer<typeof gigSchema>>({
     resolver: zodResolver(gigSchema),
     mode: "onBlur",
   });
 
+  async function handleTimeChange(time: Date) {
+    const dateTime = props.gigDate && new Date(props.gigDate.getTime());
+    time &&
+      dateTime &&
+      dateTime.setHours(time.getHours(), time.getMinutes(), time.getSeconds());
+
+    // dateTime && ;
+    console.log("time", time, dateTime, dateTime.toUTCString());
+    const data = await update({
+      id: props.id,
+      timeStart: time,
+    });
+
+    console.log("handle change", data);
+  }
+
   return (
     <Form {...form}>
       <form
-        className="grid w-full max-w-2xl gap-5"
+        className="w-full    "
         // onSubmit={(...args) => void form.handleSubmit(onSubmit)(...args)}
       >
-        <FormItem>
-          <FormLabel>Name</FormLabel>
-          <FormControl>
-            <Input
-              aria-invalid={!!form.formState.errors.name}
-              placeholder="Type product name here."
-              {...form.register("name")}
-              defaultValue={product.name}
+        <Card className="border-2">
+          <CardHeader className="px-0">
+            <CardTitle>Gig Details</CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-8 gap-4 px-0">
+            <FormField
+              control={form.control}
+              name="gigDate"
+              defaultValue={props.gigDate}
+              render={({ field }) => (
+                <FormItem className="col-span-2 flex flex-col">
+                  <FormLabel>Gig Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "bg-white pl-3 text-left font-normal hover:bg-none",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            formatDate(field.value, "friendly")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <Icons.calendar className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-auto p-0 hover:bg-none"
+                      align="start"
+                    >
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                          date > new Date() || date < new Date("1900-01-01")
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </FormControl>
-          <UncontrolledFormMessage
-            message={form.formState.errors.name?.message}
-          />
-        </FormItem>
-        <FormItem>
-          <FormLabel>Description</FormLabel>
-          <FormControl>
-            <Textarea
-              placeholder="Type product description here."
-              {...form.register("description")}
-              defaultValue={product.description ?? ""}
+            <FormField
+              control={form.control}
+              name="timeStart"
+              defaultValue={props.timeStart?.toTimeString().slice(0, 5)}
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Start Time</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="time"
+                      // aria-invalid={!!form.formState.errors.timeStart}
+                      {...field}
+                      className="bg-white"
+                      // defaultValue={props.timeStart?.toTimeString().slice(0, 5)}
+                      placeholder="Enter the gig start time"
+                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
+                        const selectedTime = e.target.value; // User-selected time
+                        const utcDate = getUTCDate(selectedTime); // Convert to UTC
+                        const localTime = convertUTCtoLocalTime(utcDate); // Convert to local time
+                        console.log(
+                          utcDate,
+                          localTime,
+                          localTime.toISOString()
+                        );
+                        const updatedProps: Partial<GigProps> = {
+                          id: props.id,
+                          timeStart: localTime.toISOString(), // Convert local time to ISO string format
+                        };
+
+                        update(updatedProps);
+                      }}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
             />
-          </FormControl>
-          <UncontrolledFormMessage
-            message={form.formState.errors.description?.message}
-          />
-        </FormItem>
-        <div className="flex flex-col items-start gap-6 sm:flex-row">
-          <FormField
-            control={form.control}
-            name="category"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>Category</FormLabel>
-                <FormControl>
-                  <Select
-                    value={field.value}
-                    onValueChange={(value: typeof field.value) =>
-                      field.onChange(value)
-                    }
-                    defaultValue={product.category}
-                  >
-                    <SelectTrigger className="capitalize">
-                      <SelectValue placeholder={field.value} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {Object.values(products.category.enumValues).map(
-                          (option) => (
-                            <SelectItem
-                              key={option}
-                              value={option}
-                              className="capitalize"
-                            >
-                              {option}
-                            </SelectItem>
-                          )
-                        )}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="subcategory"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>Subcategory</FormLabel>
-                <FormControl>
-                  <Select
-                    value={field.value?.toString()}
-                    onValueChange={field.onChange}
-                  >
-                    <SelectTrigger className="capitalize">
-                      <SelectValue placeholder={field.value} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {subcategories.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <div className="flex flex-col items-start gap-6 sm:flex-row">
-          <FormItem className="w-full">
-            <FormLabel>Price</FormLabel>
-            <FormControl>
-              <Input
-                type="number"
-                inputMode="numeric"
-                placeholder="Type product price here."
-                {...form.register("price")}
-                defaultValue={product.price}
-              />
-            </FormControl>
-            <UncontrolledFormMessage
-              message={form.formState.errors.price?.message}
+            <FormField
+              control={form.control}
+              name="timeEnd"
+              defaultValue={props.timeEnd?.toTimeString().slice(0, 5)}
+              // defaultValue={props.timeEnd?.convertUTCtoLocalTime().slice(0, 5)}
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Start Time</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="time"
+                      // aria-invalid={!!form.formState.errors.timeStart}
+                      {...field}
+                      className="bg-white"
+                      // defaultValue={props.timeStart?.toTimeString().slice(0, 5)}
+                      placeholder="Enter the gig start time"
+                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
+                        const selectedTime = e.target.value; // User-selected time
+                        const utcDate = getUTCDate(selectedTime); // Convert to UTC
+                        const localTime = convertUTCtoLocalTime(utcDate); // Convert to local time
+                        console.log(
+                          utcDate,
+                          localTime,
+                          localTime.toISOString()
+                        );
+                        const updatedProps: Partial<GigProps> = {
+                          id: props.id,
+                          timeStart: localTime.toISOString(), // Convert local time to ISO string format
+                        };
+
+                        update(updatedProps);
+                      }}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
             />
-          </FormItem>
-          <FormItem className="w-full">
-            <FormLabel>Inventory</FormLabel>
-            <FormControl>
-              <Input
-                type="number"
-                inputMode="numeric"
-                placeholder="Type product inventory here."
-                {...form.register("inventory", {
-                  valueAsNumber: true,
-                })}
-                defaultValue={product.inventory}
-              />
-            </FormControl>
-            <UncontrolledFormMessage
-              message={form.formState.errors.inventory?.message}
-            />
-          </FormItem>
-        </div>
-        <FormItem className="flex w-full flex-col gap-1.5">
-          <FormLabel>Images</FormLabel>
-          {!isUploading && previews?.length ? (
-            <div className="flex items-center gap-2">
-              {previews.map((file) => (
-                <Zoom key={file.name}>
-                  <Image
-                    src={file.preview}
-                    alt={file.name}
-                    className="h-20 w-20 shrink-0 rounded-md object-cover object-center"
-                    width={80}
-                    height={80}
-                  />
-                </Zoom>
-              ))}
-            </div>
-          ) : null}
-          <FormControl>
-            <FileDialog
-              setValue={form.setValue}
-              name="images"
-              maxFiles={3}
-              maxSize={1024 * 1024 * 4}
-              files={files}
-              setFiles={setFiles}
-              isUploading={isUploading}
-              disabled={isPending}
-            />
-          </FormControl>
-          <UncontrolledFormMessage
-            message={form.formState.errors.images?.message}
-          />
-        </FormItem>
-        <div className="flex space-x-2">
-          <Button disabled={isPending}>
-            {isPending && (
-              <Icons.spinner
-                className="mr-2 h-4 w-4 animate-spin"
-                aria-hidden="true"
-              />
-            )}
-            Update Product
-            <span className="sr-only">Update product</span>
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={() => {
-              startTransition(async () => {
-                await deleteProductAction({
-                  storeId: product.storeId,
-                  id: product.id,
-                });
-                router.push(`/dashboard/stores/${product.storeId}/products`);
-              });
-            }}
-            disabled={isPending}
-          >
-            {isPending && (
-              <Icons.spinner
-                className="mr-2 h-4 w-4 animate-spin"
-                aria-hidden="true"
-              />
-            )}
-            Delete Product
-            <span className="sr-only">Delete product</span>
-          </Button>
-        </div>
+            {/* <div>
+              <Input disabled={true}>{durationHours}</Input>
+            </div> */}
+          </CardContent>
+        </Card>
       </form>
     </Form>
   );

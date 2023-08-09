@@ -1,5 +1,5 @@
 import { type Metadata } from "next";
-import { prisma, type GigProps } from "@/server/db";
+// import { prisma, type GigProps } from "@/server/db";
 import { env } from "@/env.mjs";
 import {
   Card,
@@ -12,6 +12,8 @@ import GigForm from "@/components/gigs/gig-form";
 import { formatDate, formatTime, duration, formatAddress } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
+import { getGig } from "@/app/_actions/gig";
+import { Separator } from "@/components/ui/separator";
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -27,30 +29,9 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const gigId = params.gigId;
-  const data = (await prisma.gig.findFirst({
-    select: {
-      id: true,
-      gigDate: true,
-      timeStart: true,
-      timeEnd: true,
-      venueAddressCity: true,
-      venueAddressName: true,
-      venueAddressState: true,
-      venueAddressStreet: true,
-      venueAddressStreet2: true,
-      venueAddressZip: true,
-      client: {
-        select: {
-          client: true,
-        },
-      },
-    },
-    where: {
-      id: gigId,
-    },
-  })) satisfies GigProps;
+  const data = gigId && (await getGig(gigId));
 
-  // const { gigDate, timeStart, timeEnd } = data;
+  if (!data) return <h1>Please select a gig. </h1>;
 
   const formattedDate = data?.gigDate && formatDate(data?.gigDate, "friendly");
   const startTime = data?.timeStart && formatTime(data?.timeStart);
@@ -73,10 +54,10 @@ export default async function Page({ params }: Props) {
       : null;
 
   return (
-    <Card className="border-2">
+    <Card className="border-0 [&>*]:px-0 ">
       <CardHeader className="space-y-1">
-        <div className="flex items-center justify-between space-x-2">
-          <CardTitle className=" flex flex-col gap-2 text-xl">
+        <div className="flex items-start justify-between space-x-2 ">
+          <CardTitle className=" flex flex-col gap-2 text-xl font-medium">
             <>
               <div className="flex flex-row items-center gap-2">
                 <Icons.calendar className="h-4 w-4 text-primary/60" />
@@ -100,16 +81,39 @@ export default async function Page({ params }: Props) {
             </>
           </CardTitle>
           <div className="flex flex-row gap-2">
-            <Button>Copy</Button>
-            <Button>PDF</Button>
-            <Button>Invoice</Button>
+            <Button
+              variant="secondary"
+              className="flex flex-row items-center gap-1"
+            >
+              <Icons.copy className="h-4 w-4" />
+              Copy
+            </Button>
+
+            <Button
+              variant="secondary"
+              className="flex flex-row items-center gap-1"
+            >
+              <Icons.report className="h-4 w-4" />
+              PDF
+            </Button>
+            <Button
+              variant="secondary"
+              className="flex flex-row items-center gap-1"
+            >
+              <Icons.billing className="h-4 w-4" />
+              Invoice
+            </Button>
           </div>
         </div>
-        <CardDescription className=" flex flex-col gap-2 text-2xl font-bold text-foreground">
-          {/* <span>{client}</span> <span>{addressFull}</span> */}
+        <CardDescription className=" mt-12">
+          {/* <div className="border-4"> </div> */}
+          {/* <Separator /> */}
         </CardDescription>
       </CardHeader>
-      {/* <CardContent>{data && <GigForm {...data} />}</CardContent> */}
+      <CardContent className="">
+        <Separator className="mb-8 " />
+        <GigForm {...data} />
+      </CardContent>
     </Card>
   );
 }
