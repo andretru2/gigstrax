@@ -1,3 +1,3 @@
 export default function Page() {
-  return <h1>DocumentId</h1>;
+  return <h1>Documents</h1>;
 }

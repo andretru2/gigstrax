@@ -2,8 +2,12 @@ import { type GigProps } from "@/server/db";
 import * as z from "zod";
 import { isValidDate, isValidTime, isValidPrice } from "../utils";
 
-const timeSchema = z.string().refine(isValidTime);
-const priceSchema = z.string().refine(isValidPrice);
+const timeSchema = z.string().refine(isValidTime, {
+  message: "Must be a valid date",
+});
+const priceSchema = z.string().refine(isValidPrice, {
+  message: "Price must be a number",
+});
 
 export const gigSchema = z
   .object({

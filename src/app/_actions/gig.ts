@@ -21,6 +21,9 @@ export async function getGig(id: string) {
           role: true,
         },
       },
+      price: true,
+      amountPaid: true,
+      santaId: true,
 
       venueAddressCity: true,
       venueAddressName: true,
@@ -189,16 +192,22 @@ export async function update(props: Partial<GigProps>) {
     props.timeEnd.setMilliseconds(0);
   }
 
-  const data = await prisma.gig.update({
+  const gig = await prisma.gig.findFirst({
+    where: { id: props.id },
+  });
+
+  if (!gig) {
+    throw new Error("Product not found.");
+  }
+
+  await prisma.gig.update({
     data: props,
     where: { id: props.id },
   });
 
-  console.log("actions", data);
+  // console.log("actions", data);
 
-  if (props.id) {
-    revalidatePath(`/dashboard/gigs/${props.id}`);
-  }
+  revalidatePath(`/dashboard/gigs/${gig.id}`);
 
-  return data;
+  // return data;
 }

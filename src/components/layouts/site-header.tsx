@@ -66,7 +66,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
               </div>
             </Link> */}
             <Link
-              href={siteConfig.links.twitter}
+              href="/dashboard/settings"
               // target="_blank"
               // rel="noreferrer"
             >

@@ -5,6 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { gigSchema } from "@/lib/validations/gig";
 import { type GigProps } from "@/server/db";
+import { PrismaClient, Prisma } from "@prisma/client";
+
 import {
   catchError,
   cn,
@@ -14,6 +16,7 @@ import {
   getUTCDate,
   formatTimeToUTC,
   duration,
+  formatPrice,
 } from "@/lib/utils";
 import { useTransition, type FocusEvent } from "react";
 
@@ -48,6 +51,7 @@ import { Popover, PopoverTrigger } from "../ui/popover";
 import { PopoverContent } from "@radix-ui/react-popover";
 import { Calendar } from "../ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Label } from "../ui/label";
 
 export default function GigForm(props: Partial<GigProps>) {
   const router = useRouter();
@@ -59,6 +63,9 @@ export default function GigForm(props: Partial<GigProps>) {
     props?.timeStart && props?.timeEnd
       ? duration(props.timeStart, props.timeEnd)
       : null;
+
+  const balance =
+    props?.price && props?.amountPaid ? props.price - props.amountPaid : null;
 
   const form = useForm<z.infer<typeof gigSchema>>({
     resolver: zodResolver(gigSchema),
@@ -204,16 +211,110 @@ export default function GigForm(props: Partial<GigProps>) {
                           timeStart: localTime.toISOString(), // Convert local time to ISO string format
                         };
 
-                        update(updatedProps);
+                        void update(updatedProps);
                       }}
                     />
                   </FormControl>
                 </FormItem>
               )}
             />
-            {/* <div>
-              <Input disabled={true}>{durationHours}</Input>
-            </div> */}
+            <div className="flex w-16 flex-col gap-2 text-center">
+              <Label>Duration</Label>
+              <Input
+                disabled={true}
+                value={durationHours ? durationHours : 0}
+                className=" bg-gray-300 text-center"
+              />
+            </div>
+
+            <FormItem className="flex flex-col gap-2 space-y-0">
+              <FormLabel>Price</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  {...form.register("price")}
+                  // defaultValue={formatPrice(Number(props.price))}
+                  defaultValue={Number(props.price)}
+                  className="bg-white text-right"
+                  onBlur={(e: FocusEvent<HTMLInputElement>) => {
+                    // console.log(e.target.value);
+                    const newPrice = new Prisma.Decimal(e.target.value);
+                    void update({
+                      id: props.id,
+                      price: newPrice,
+                    });
+                  }}
+                />
+              </FormControl>
+              {/* <FormMessage /> */}
+              <UncontrolledFormMessage
+                message={form.formState.errors.price?.message}
+              />
+            </FormItem>
+            <FormItem className="flex flex-col gap-2 space-y-0">
+              <FormLabel>Paid</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  {...form.register("amountPaid")}
+                  // defaultValue={formatPrice(Number(props.amountPaid))}
+                  defaultValue={Number(props.amountPaid)}
+                  className="bg-white text-right"
+                />
+              </FormControl>
+              <UncontrolledFormMessage
+                message={form.formState.errors.amountPaid?.message}
+              />
+            </FormItem>
+            <FormItem className="flex flex-col gap-2 space-y-0">
+              <FormLabel>Balance</FormLabel>
+              <Input
+                // type="number"
+                disabled={true}
+                defaultValue={balance ? formatPrice(balance) : ""}
+                className=" text-right"
+              />
+            </FormItem>
+            <FormField
+              control={form.control}
+              name="santaId"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Santa</FormLabel>
+                  <FormControl>
+                    <Select
+                      value={field.value}
+                      onValueChange={(value: typeof field.value) =>
+                        field.onChange(value)
+                      }
+                      defaultValue={props.santaId}
+                    >
+                      <SelectTrigger className="capitalize">
+                        <SelectValue placeholder={field.value} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {Object.values(products.category.enumValues).map(
+                            (option) => (
+                              <SelectItem
+                                key={option}
+                                value={option}
+                                className="capitalize"
+                              >
+                                {option}
+                              </SelectItem>
+                            )
+                          )}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </CardContent>
         </Card>
       </form>

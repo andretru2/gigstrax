@@ -14,6 +14,7 @@ import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { getGig } from "@/app/_actions/gig";
 import { Separator } from "@/components/ui/separator";
+import GigDetailTabs from "@/components/gigs/gig-detail-tabs";
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -110,8 +111,9 @@ export default async function Page({ params }: Props) {
           {/* <Separator /> */}
         </CardDescription>
       </CardHeader>
-      <CardContent className="">
+      <CardContent className="flex flex-col gap-4">
         <Separator className="mb-8 " />
+        <GigDetailTabs gigId={data.id} />
         <GigForm {...data} />
       </CardContent>
     </Card>

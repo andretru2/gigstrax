@@ -10,18 +10,18 @@ interface Props {
   className?: string;
 }
 
-export default function GigTabs(props: Props) {
+export default function GigDetailTabs({ gigId, ...props }: Props) {
   const router = useRouter();
   const pathname = usePathname();
 
   const tabs = [
     {
       title: "Gig Details",
-      href: `/dashboard/gigs/${props.gigId}`,
+      href: `/dashboard/gigs/${gigId}`,
     },
     {
       title: "Documents",
-      href: `/dashboard/gigs/${props.gigId}/documents`,
+      href: `/dashboard/gigs/${gigId}/documents`,
     },
   ];
 
