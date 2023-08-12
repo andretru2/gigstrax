@@ -1,20 +1,20 @@
 import { ErrorCard } from "@/components/error-card";
 
-interface ProductNotFoundProps {
+interface Props {
   params: {
-    id: string;
+    gigId: string;
   };
 }
 
-export default function ProductNotFound({ params }: ProductNotFoundProps) {
-  const id = params.id;
+export default function NotFound() {
+  // const gigId = params.gigId;
 
   return (
     <ErrorCard
-      title="Product not found"
-      description="The product may have expired or you may have already updated your product"
-      retryLink={`/dashboard/gigs/${id}`}
-      retryLinkText="Go to Products"
+      title="Gig not found"
+      description="Unable to find gig. Please try again or contact Andres for assistance."
+      // retryLink={`/dashboard/gigs/${gigId}`}
+      retryLinkText="Go to Gig"
     />
   );
 }

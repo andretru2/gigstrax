@@ -21,6 +21,11 @@ export async function getGig(id: string) {
           role: true,
         },
       },
+      mrsSanta: {
+        select: {
+          nameFirst: true,
+        },
+      },
       price: true,
       amountPaid: true,
       santaId: true,
@@ -35,6 +40,12 @@ export async function getGig(id: string) {
       client: {
         select: {
           client: true,
+          addressCity: true,
+          addressState: true,
+          addressStreet: true,
+          addressZip: true,
+          clientType: true,
+          contact: true,
         },
       },
     },
@@ -73,7 +84,7 @@ export async function getUpcoming() {
       },
       mrsSanta: {
         select: {
-          role: true,
+          nameFirst: true,
         },
       },
     },
@@ -116,7 +127,7 @@ export async function getRecentlyCreated() {
       },
       mrsSanta: {
         select: {
-          role: true,
+          nameFirst: true,
         },
       },
     },

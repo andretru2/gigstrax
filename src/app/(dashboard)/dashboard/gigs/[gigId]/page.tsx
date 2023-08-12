@@ -15,6 +15,10 @@ import { Button } from "@/components/ui/button";
 import { getGig } from "@/app/_actions/gig";
 import { Separator } from "@/components/ui/separator";
 import GigDetailTabs from "@/components/gigs/gig-detail-tabs";
+import { getSantas, getMrsSantas } from "@/app/_actions/source";
+import { notFound } from "next/navigation";
+
+// import NotFo
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -30,28 +34,34 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const gigId = params.gigId;
-  const data = gigId && (await getGig(gigId));
+  if (!gigId) return <h1>Please select a gig. </h1>;
 
-  if (!data) return <h1>Please select a gig. </h1>;
+  const [gig, santas, mrsSantas] = await Promise.all([
+    getGig(gigId),
+    getSantas(),
+    getMrsSantas(),
+  ]);
 
-  const formattedDate = data?.gigDate && formatDate(data?.gigDate, "friendly");
-  const startTime = data?.timeStart && formatTime(data?.timeStart);
-  const endTime = data?.timeEnd && formatTime(data?.timeEnd);
-  const client = data?.client.client && data?.client.client;
+  if (!gig) return notFound();
+
+  const formattedDate = gig?.gigDate && formatDate(gig?.gigDate, "friendly");
+  const startTime = gig?.timeStart && formatTime(gig?.timeStart);
+  const endTime = gig?.timeEnd && formatTime(gig?.timeEnd);
+  const client = gig?.client.client && gig?.client.client;
   const addressFull =
-    data?.venueAddressName &&
+    gig?.venueAddressName &&
     formatAddress({
-      name: data?.venueAddressName,
-      addressLine1: data?.venueAddressStreet,
-      addressLine2: data?.venueAddressStreet2 ?? "",
-      city: data?.venueAddressCity,
-      state: data?.venueAddressState,
-      zip: data?.venueAddressZip ?? "",
+      name: gig?.venueAddressName,
+      addressLine1: gig?.venueAddressStreet,
+      addressLine2: gig?.venueAddressStreet2 ?? "",
+      city: gig?.venueAddressCity,
+      state: gig?.venueAddressState,
+      zip: gig?.venueAddressZip ?? "",
     });
 
   const durationHours =
-    data?.timeStart && data?.timeEnd
-      ? duration(data.timeStart, data.timeEnd)
+    gig?.timeStart && gig?.timeEnd
+      ? duration(gig.timeStart, gig.timeEnd)
       : null;
 
   return (
@@ -113,8 +123,8 @@ export default async function Page({ params }: Props) {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <Separator className="mb-8 " />
-        <GigDetailTabs gigId={data.id} />
-        <GigForm {...data} />
+        <GigDetailTabs gigId={gig.id} />
+        <GigForm gig={gig} santas={santas} mrsSantas={mrsSantas} />
       </CardContent>
     </Card>
   );

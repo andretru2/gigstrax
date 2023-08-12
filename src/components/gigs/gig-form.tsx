@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { gigSchema } from "@/lib/validations/gig";
-import { type GigProps } from "@/server/db";
+import { type GigProps, type ClientProps, type SourceProps } from "@/server/db";
 import { PrismaClient, Prisma } from "@prisma/client";
 
 import {
@@ -52,28 +52,52 @@ import { PopoverContent } from "@radix-ui/react-popover";
 import { Calendar } from "../ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Label } from "../ui/label";
+// import { getSantas } from "@/app/_actions/source";
+import { type SantaProps, type MrsSantaProps } from "@/types/index";
 
-export default function GigForm(props: Partial<GigProps>) {
+interface Props {
+  gig: Partial<GigProps> &
+    Partial<Omit<ClientProps, "client">> &
+    Partial<SourceProps>;
+  santas: SantaProps[];
+  mrsSantas?: MrsSantaProps[];
+  clients: Partial<ClientProps>[];
+}
+
+export default function GigForm({
+  gig,
+  santas,
+  mrsSantas,
+  clients,
+  ...props
+}: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  // const [santas, setSantas] = useState<SantaProps[]>([]);
 
-  // const { gigDate } = props;
+  // const { gigDate, timeStart, timeEnd, } = gig;
 
   const durationHours =
-    props?.timeStart && props?.timeEnd
-      ? duration(props.timeStart, props.timeEnd)
+    gig?.timeStart && gig?.timeEnd
+      ? duration(gig.timeStart, gig.timeEnd)
       : null;
 
   const balance =
-    props?.price && props?.amountPaid ? props.price - props.amountPaid : null;
+    gig?.price && gig?.amountPaid ? gig.price - gig.amountPaid : null;
 
   const form = useForm<z.infer<typeof gigSchema>>({
     resolver: zodResolver(gigSchema),
     mode: "onBlur",
   });
+  // const santas = async () => await getSantas();
+  // const santas =  getSantas();
+  // const santas = await(async () => {
+  //   return await getSantas();
+
+  // })();
 
   async function handleTimeChange(time: Date) {
-    const dateTime = props.gigDate && new Date(props.gigDate.getTime());
+    const dateTime = gig.gigDate && new Date(gig.gigDate.getTime());
     time &&
       dateTime &&
       dateTime.setHours(time.getHours(), time.getMinutes(), time.getSeconds());
@@ -81,7 +105,7 @@ export default function GigForm(props: Partial<GigProps>) {
     // dateTime && ;
     console.log("time", time, dateTime, dateTime.toUTCString());
     const data = await update({
-      id: props.id,
+      id: gig.id,
       timeStart: time,
     });
 
@@ -102,7 +126,7 @@ export default function GigForm(props: Partial<GigProps>) {
             <FormField
               control={form.control}
               name="gigDate"
-              defaultValue={props.gigDate}
+              defaultValue={gig.gigDate}
               render={({ field }) => (
                 <FormItem className="col-span-2 flex flex-col">
                   <FormLabel>Gig Date</FormLabel>
@@ -126,7 +150,7 @@ export default function GigForm(props: Partial<GigProps>) {
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent
-                      className="w-auto p-0 hover:bg-none"
+                      className="w-auto bg-white p-0 hover:bg-none"
                       align="start"
                     >
                       <Calendar
@@ -148,7 +172,7 @@ export default function GigForm(props: Partial<GigProps>) {
             <FormField
               control={form.control}
               name="timeStart"
-              defaultValue={props.timeStart?.toTimeString().slice(0, 5)}
+              defaultValue={gig.timeStart?.toTimeString().slice(0, 5)}
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Start Time</FormLabel>
@@ -170,7 +194,7 @@ export default function GigForm(props: Partial<GigProps>) {
                           localTime.toISOString()
                         );
                         const updatedProps: Partial<GigProps> = {
-                          id: props.id,
+                          id: gig.id,
                           timeStart: localTime.toISOString(), // Convert local time to ISO string format
                         };
 
@@ -184,11 +208,11 @@ export default function GigForm(props: Partial<GigProps>) {
             <FormField
               control={form.control}
               name="timeEnd"
-              defaultValue={props.timeEnd?.toTimeString().slice(0, 5)}
+              defaultValue={gig.timeEnd?.toTimeString().slice(0, 5)}
               // defaultValue={props.timeEnd?.convertUTCtoLocalTime().slice(0, 5)}
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Start Time</FormLabel>
+                  <FormLabel>End Time</FormLabel>
                   <FormControl>
                     <Input
                       type="time"
@@ -196,7 +220,7 @@ export default function GigForm(props: Partial<GigProps>) {
                       {...field}
                       className="bg-white"
                       // defaultValue={props.timeStart?.toTimeString().slice(0, 5)}
-                      placeholder="Enter the gig start time"
+                      placeholder="Enter the gig end time"
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         const selectedTime = e.target.value; // User-selected time
                         const utcDate = getUTCDate(selectedTime); // Convert to UTC
@@ -235,13 +259,13 @@ export default function GigForm(props: Partial<GigProps>) {
                   inputMode="numeric"
                   {...form.register("price")}
                   // defaultValue={formatPrice(Number(props.price))}
-                  defaultValue={Number(props.price)}
+                  defaultValue={Number(gig.price)}
                   className="bg-white text-right"
                   onBlur={(e: FocusEvent<HTMLInputElement>) => {
                     // console.log(e.target.value);
                     const newPrice = new Prisma.Decimal(e.target.value);
                     void update({
-                      id: props.id,
+                      id: gig.id,
                       price: newPrice,
                     });
                   }}
@@ -260,7 +284,7 @@ export default function GigForm(props: Partial<GigProps>) {
                   inputMode="numeric"
                   {...form.register("amountPaid")}
                   // defaultValue={formatPrice(Number(props.amountPaid))}
-                  defaultValue={Number(props.amountPaid)}
+                  defaultValue={Number(gig.amountPaid)}
                   className="bg-white text-right"
                 />
               </FormControl>
@@ -277,11 +301,77 @@ export default function GigForm(props: Partial<GigProps>) {
                 className=" text-right"
               />
             </FormItem>
+
             <FormField
               control={form.control}
-              name="santaId"
+              name="client"
               render={({ field }) => (
-                <FormItem className="w-full">
+                <FormItem className="flex flex-col">
+                  <FormLabel>Client</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "w-[200px] justify-between",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value
+                            ? clients.find(
+                                (client) => client.client === field.value
+                              )?.client
+                            : "Select Client"}
+                          <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[200px] p-0">
+                      <Command>
+                        <CommandInput
+                          placeholder="Search framework..."
+                          className="h-9"
+                        />
+                        <CommandEmpty>No framework found.</CommandEmpty>
+                        <CommandGroup>
+                          {languages.map((language) => (
+                            <CommandItem
+                              value={language.label}
+                              key={language.value}
+                              onSelect={() => {
+                                form.setValue("language", language.value);
+                              }}
+                            >
+                              {language.label}
+                              <CheckIcon
+                                className={cn(
+                                  "ml-auto h-4 w-4",
+                                  language.value === field.value
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                )}
+                              />
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <FormDescription>
+                    This is the language that will be used in the dashboard.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="santa.role"
+              render={({ field }) => (
+                <FormItem className="col-span-2 w-full ">
                   <FormLabel>Santa</FormLabel>
                   <FormControl>
                     <Select
@@ -289,24 +379,59 @@ export default function GigForm(props: Partial<GigProps>) {
                       onValueChange={(value: typeof field.value) =>
                         field.onChange(value)
                       }
-                      defaultValue={props.santaId}
+                      defaultValue={gig.santa.role}
                     >
-                      <SelectTrigger className="capitalize">
+                      <SelectTrigger className="bg-white capitalize">
                         <SelectValue placeholder={field.value} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          {Object.values(products.category.enumValues).map(
-                            (option) => (
+                          {santas.map((option) => (
+                            <SelectItem
+                              key={option.id}
+                              value={option.role}
+                              className="capitalize"
+                            >
+                              {option.role}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="mrsSanta.nameFirst"
+              render={({ field }) => (
+                <FormItem className="col-span-2 w-full ">
+                  <FormLabel>Mrs. Santa</FormLabel>
+                  <FormControl>
+                    <Select
+                      value={field.value}
+                      onValueChange={(value: typeof field.value) =>
+                        field.onChange(value)
+                      }
+                      defaultValue={gig.mrsSanta.nameFirst}
+                    >
+                      <SelectTrigger className="bg-white capitalize">
+                        <SelectValue placeholder={field.value} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {mrsSantas &&
+                            mrsSantas.map((option) => (
                               <SelectItem
-                                key={option}
-                                value={option}
+                                key={option.id}
+                                value={option.nameFirst}
                                 className="capitalize"
                               >
-                                {option}
+                                {option.nameFirst}
                               </SelectItem>
-                            )
-                          )}
+                            ))}
                         </SelectGroup>
                       </SelectContent>
                     </Select>

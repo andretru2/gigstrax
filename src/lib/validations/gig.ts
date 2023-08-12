@@ -32,7 +32,7 @@ export const gigSchema = z
     venueAddressZip: z.string(),
     clientId: z.string().min(1, { message: "Client is required" }),
     santaId: z.string().min(1, { message: "Santa is required" }),
-    mrsSanta: z.string().optional(),
+    mrsSantaId: z.string().optional(),
     calendarId: z.string().optional(),
     driverId: z.string().optional(),
     contactEmail: z.string().optional(),
@@ -52,6 +52,21 @@ export const gigSchema = z
     createdBy: z.string().optional(),
     updatedAt: z.date().optional(),
     updatedBy: z.string().optional(),
+    santa: z.object({
+      role: z.string().optional(),
+    }),
+    mrsSanta: z.object({
+      nameFirst: z.string().optional(),
+    }),
+    client: z.object({
+      client: z.string().optional(),
+      addressCity: z.string().optional(),
+      addressState: z.string().optional(),
+      addressStreet: z.string().optional(),
+      addressZip: z.string().optional(),
+      clientType: z.string().optional(),
+      contact: z.string().optional(),
+    }),
   })
   .refine(
     (data) => {
