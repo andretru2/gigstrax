@@ -49,7 +49,7 @@ export default async function Page({ params }: Props) {
   const formattedDate = gig?.gigDate && formatDate(gig?.gigDate, "friendly");
   const startTime = gig?.timeStart && formatTime(gig?.timeStart);
   const endTime = gig?.timeEnd && formatTime(gig?.timeEnd);
-  const client = gig?.client.client && gig?.client.client;
+  const client = gig?.client?.client && gig?.client.client;
   const addressFull =
     gig?.venueAddressName &&
     formatAddress({

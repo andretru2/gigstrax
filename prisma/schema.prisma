@@ -19,9 +19,8 @@ model User {
 
 model Gig {
   id                  String     @id @unique @default(cuid())
-  // id         String  @unique
-  client              Client     @relation(fields: [clientId], references: [id])
-  clientId            String
+  client              Client?    @relation(fields: [clientId], references: [id])
+  clientId            String?
   serial              Int?       @default(autoincrement())
   calendarId          String?
   driver              Source?    @relation("sourceOfDriver", fields: [driverId], references: [id])
@@ -30,11 +29,11 @@ model Gig {
   mrsSantaId          String?
   santa               Source?    @relation("sourceOfSanta", fields: [santaId], references: [id])
   santaId             String?
-  contactEmail        String?
+  contactEmail        String?    @default("")
   contactName         String?
   contactPhoneCell    String?
   contactPhoneLand    String?
-  gigDate             DateTime   @db.Date()
+  gigDate             DateTime?  @db.Date()
   invoiceNumber       String?
   notesGig            String?
   notesVenue          String?
@@ -43,10 +42,10 @@ model Gig {
   timeEnd             DateTime?  @db.Time()
   timeStart           DateTime?  @db.Time()
   travelType          String?
-  venueAddressCity    String
-  venueAddressName    String
-  venueAddressState   String
-  venueAddressStreet  String
+  venueAddressCity    String?
+  venueAddressName    String?
+  venueAddressState   String?
+  venueAddressStreet  String?
   venueAddressStreet2 String?
   venueAddressZip     String?
   venueType           VenueType?
