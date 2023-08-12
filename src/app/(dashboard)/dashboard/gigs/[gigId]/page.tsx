@@ -16,6 +16,7 @@ import { getGig } from "@/app/_actions/gig";
 import { Separator } from "@/components/ui/separator";
 import GigDetailTabs from "@/components/gigs/gig-detail-tabs";
 import { getSantas, getMrsSantas } from "@/app/_actions/source";
+import { getClients } from "@/app/_actions/client";
 import { notFound } from "next/navigation";
 
 // import NotFo
@@ -36,10 +37,11 @@ export default async function Page({ params }: Props) {
   const gigId = params.gigId;
   if (!gigId) return <h1>Please select a gig. </h1>;
 
-  const [gig, santas, mrsSantas] = await Promise.all([
+  const [gig, santas, mrsSantas, clients] = await Promise.all([
     getGig(gigId),
     getSantas(),
     getMrsSantas(),
+    getClients(),
   ]);
 
   if (!gig) return notFound();
@@ -65,7 +67,7 @@ export default async function Page({ params }: Props) {
       : null;
 
   return (
-    <Card className="border-0 [&>*]:px-0 ">
+    <Card className="border-0 bg-background [&>*]:px-0 ">
       <CardHeader className="space-y-1">
         <div className="flex items-start justify-between space-x-2 ">
           <CardTitle className=" flex flex-col gap-2 text-xl font-medium">
@@ -124,7 +126,12 @@ export default async function Page({ params }: Props) {
       <CardContent className="flex flex-col gap-4">
         <Separator className="mb-8 " />
         <GigDetailTabs gigId={gig.id} />
-        <GigForm gig={gig} santas={santas} mrsSantas={mrsSantas} />
+        <GigForm
+          gig={gig}
+          santas={santas}
+          mrsSantas={mrsSantas}
+          clients={clients}
+        />
       </CardContent>
     </Card>
   );

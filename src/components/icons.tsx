@@ -40,6 +40,7 @@ import {
   ArrowLeftRight,
   LogIn,
   LogOut,
+  // ArrowUpDownIcon,
   Trash,
   Twitter,
   ThumbsUp,

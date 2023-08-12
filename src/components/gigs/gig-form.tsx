@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { gigSchema } from "@/lib/validations/gig";
-import { type GigProps, type ClientProps, type SourceProps } from "@/server/db";
+import { type GigProps, type SourceProps, type ClientProps } from "@/server/db";
 import { PrismaClient, Prisma } from "@prisma/client";
 
 import {
@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -53,7 +54,18 @@ import { Calendar } from "../ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Label } from "../ui/label";
 // import { getSantas } from "@/app/_actions/source";
-import { type SantaProps, type MrsSantaProps } from "@/types/index";
+import {
+  type SantaProps,
+  type MrsSantaProps,
+  type ClientPickerProps,
+} from "@/types/index";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "../ui/command";
 
 interface Props {
   gig: Partial<GigProps> &
@@ -61,7 +73,7 @@ interface Props {
     Partial<SourceProps>;
   santas: SantaProps[];
   mrsSantas?: MrsSantaProps[];
-  clients: Partial<ClientProps>[];
+  clients: ClientPickerProps[];
 }
 
 export default function GigForm({
@@ -118,7 +130,7 @@ export default function GigForm({
         className="w-full    "
         // onSubmit={(...args) => void form.handleSubmit(onSubmit)(...args)}
       >
-        <Card className="border-2">
+        <Card className="border-2 ">
           <CardHeader className="px-0">
             <CardTitle>Gig Details</CardTitle>
           </CardHeader>
@@ -306,7 +318,7 @@ export default function GigForm({
               control={form.control}
               name="client"
               render={({ field }) => (
-                <FormItem className="flex flex-col">
+                <FormItem className="col-span-3 flex flex-col gap-2 space-y-0 ">
                   <FormLabel>Client</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -315,40 +327,40 @@ export default function GigForm({
                           variant="outline"
                           role="combobox"
                           className={cn(
-                            "w-[200px] justify-between",
+                            " justify-between bg-white",
                             !field.value && "text-muted-foreground"
                           )}
                         >
                           {field.value
                             ? clients.find(
-                                (client) => client.client === field.value
-                              )?.client
+                                (client) => client.id === field.value
+                              )?.id
                             : "Select Client"}
-                          <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          <Icons.arrowUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
+                    <PopoverContent className=" w-full p-2">
                       <Command>
                         <CommandInput
-                          placeholder="Search framework..."
-                          className="h-9"
+                          placeholder="Search client..."
+                          className="h-9 p-2"
                         />
-                        <CommandEmpty>No framework found.</CommandEmpty>
+                        <CommandEmpty>No client found.</CommandEmpty>
                         <CommandGroup>
-                          {languages.map((language) => (
+                          {clients.map((client) => (
                             <CommandItem
-                              value={language.label}
-                              key={language.value}
+                              value={client.client}
+                              key={client.id}
                               onSelect={() => {
-                                form.setValue("language", language.value);
+                                form.setValue("client", client.id);
                               }}
                             >
-                              {language.label}
-                              <CheckIcon
+                              {client.client}
+                              <Icons.check
                                 className={cn(
                                   "ml-auto h-4 w-4",
-                                  language.value === field.value
+                                  client.client === field.value
                                     ? "opacity-100"
                                     : "opacity-0"
                                 )}
@@ -359,9 +371,9 @@ export default function GigForm({
                       </Command>
                     </PopoverContent>
                   </Popover>
-                  <FormDescription>
-                    This is the language that will be used in the dashboard.
-                  </FormDescription>
+                  {/* <FormDescription>
+                    This is the client that will be used in the dashboard.
+                  </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}

@@ -5,7 +5,7 @@ import { type z } from "zod";
 //   checkoutItemSchema,
 // } from "@/lib/validations/cart";
 import { type Icons } from "@/components/icons";
-import { type SourceProps } from "@/server/db";
+import { type SourceProps, type ClientProps } from "@/server/db";
 // import type { Icon } from "@/components/icons";
 
 export interface NavItem {
@@ -96,3 +96,4 @@ export interface Address {
 
 export type SantaProps = Pick<SourceProps, "id" | "role">;
 export type MrsSantaProps = Pick<SourceProps, "id" | "nameFirst">;
+export type ClientPickerProps = Pick<ClientProps, "id" | "client">;

@@ -210,6 +210,10 @@ export function convertUTCtoLocalTime(utcDate: Date): Date {
   return localTime;
 }
 
+export function isMacOs() {
+  return window.navigator.userAgent.includes("Mac");
+}
+
 // const [hours, minutes] = time.split(":");
 // const date = new Date();
 // date.setHours(Number(hours));

@@ -10,13 +10,13 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --popover: 180 7.7% 97.5%;
+    --popover: 250 250% 250%;
     --popover-foreground: 222.2 47.4% 11.2%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
 
-    --card: 180 7.7% 97.5%;
+    --card: 250 250% 250%;
     --card-foreground: 222.2 47.4% 11.2%;
 
     --primary: 6.6 95.8% 62.5%;
@@ -38,7 +38,8 @@
     --secondary-800: 240 7% 16%;
     --secondary-900: 240 8% 10%;
 
-    --accent: 116.7 58.9% 57.1%;
+    /* --accent: 180, 62.5%, 50%; //aquamarine */
+    --accent: 35, 95.8%, 62.5%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 100% 50%;
