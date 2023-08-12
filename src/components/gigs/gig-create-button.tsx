@@ -16,9 +16,24 @@ export default function GigCreateButton() {
   const handleClick = () => {
     setIsLoading(true);
     startTransition(async () => {
-      const id = await create();
-      //   void router.push(`/dashboard/gigs/${id}`);
-      void redirect(`/dashboard/gigs/${id}`);
+      try {
+        const id = await create();
+
+        //const id = await create({ data: { clientId: null } });
+
+        console.log("create", id);
+        void redirect(`/dashboard/gigs/${id}`);
+      } catch (error) {
+        console.error("Error creating gig:", error);
+      } finally {
+        setIsLoading(false);
+      }
+
+      //   const idx = await create();
+      //   //   void router.push(`/dashboard/gigs/${id}`);
+      //   console.log("create", idx);
+      //   void redirect(`/dashboard/gigs/${idx}`);
+      //   setIsLoading(false);
     });
   };
 

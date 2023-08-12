@@ -399,7 +399,7 @@ export default function GigForm({
                       onValueChange={(value: typeof field.value) =>
                         field.onChange(value)
                       }
-                      defaultValue={gig.santa.role}
+                      defaultValue={gig.santa?.role ? gig.santa.role : null}
                     >
                       <SelectTrigger className="bg-white capitalize">
                         <SelectValue placeholder={field.value} />
@@ -435,7 +435,7 @@ export default function GigForm({
                       onValueChange={(value: typeof field.value) =>
                         field.onChange(value)
                       }
-                      defaultValue={gig.mrsSanta.nameFirst}
+                      defaultValue={gig.mrsSanta?.nameFirst}
                     >
                       <SelectTrigger className="bg-white capitalize">
                         <SelectValue placeholder={field.value} />

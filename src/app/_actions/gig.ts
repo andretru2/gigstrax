@@ -192,7 +192,8 @@ export async function create(input?: GigProps) {
   if (input) {
     data = { data: input };
   }
-  const createdGig = await prisma.gig.create(data);
+  // const createdGig = await prisma.gig.create(data);
+  const createdGig = await prisma.gig.create({ data: { id: "abc" } });
   return createdGig.id;
 }
 
