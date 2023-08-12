@@ -134,7 +134,7 @@ export default function GigForm({
           <CardHeader className="px-0">
             <CardTitle>Gig Details</CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-8 gap-4 px-0">
+          <CardContent className="grid grid-cols-8 items-end gap-4 px-0">
             <FormField
               control={form.control}
               name="gigDate"
@@ -254,7 +254,7 @@ export default function GigForm({
                 </FormItem>
               )}
             />
-            <div className="flex w-16 flex-col gap-2 text-center">
+            <div className="flex w-16 flex-col space-y-2   text-center">
               <Label>Duration</Label>
               <Input
                 disabled={true}
@@ -263,7 +263,7 @@ export default function GigForm({
               />
             </div>
 
-            <FormItem className="flex flex-col gap-2 space-y-0">
+            <FormItem className="flex flex-col ">
               <FormLabel>Price</FormLabel>
               <FormControl>
                 <Input
@@ -288,7 +288,7 @@ export default function GigForm({
                 message={form.formState.errors.price?.message}
               />
             </FormItem>
-            <FormItem className="flex flex-col gap-2 space-y-0">
+            <FormItem className="flex flex-col ">
               <FormLabel>Paid</FormLabel>
               <FormControl>
                 <Input
@@ -298,13 +298,21 @@ export default function GigForm({
                   // defaultValue={formatPrice(Number(props.amountPaid))}
                   defaultValue={Number(gig.amountPaid)}
                   className="bg-white text-right"
+                  onBlur={(e: FocusEvent<HTMLInputElement>) => {
+                    // console.log(e.target.value);
+                    const newPaid = new Prisma.Decimal(e.target.value);
+                    void update({
+                      id: gig.id,
+                      amountPaid: newPaid,
+                    });
+                  }}
                 />
               </FormControl>
               <UncontrolledFormMessage
                 message={form.formState.errors.amountPaid?.message}
               />
             </FormItem>
-            <FormItem className="flex flex-col gap-2 space-y-0">
+            <FormItem className="flex flex-col ">
               <FormLabel>Balance</FormLabel>
               <Input
                 // type="number"
@@ -318,7 +326,7 @@ export default function GigForm({
               control={form.control}
               name="client"
               render={({ field }) => (
-                <FormItem className="col-span-3 flex flex-col gap-2 space-y-0 ">
+                <FormItem className="col-span-3 flex flex-col  ">
                   <FormLabel>Client</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -327,8 +335,8 @@ export default function GigForm({
                           variant="outline"
                           role="combobox"
                           className={cn(
-                            " justify-between bg-white",
-                            !field.value && "text-muted-foreground"
+                            " justify-between bg-white ",
+                            !field.value && " text-muted-foreground"
                           )}
                         >
                           {field.value
@@ -340,7 +348,7 @@ export default function GigForm({
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className=" w-full p-2">
+                    <PopoverContent className=" w-[350px] rounded-md border-2 border-accent">
                       <Command>
                         <CommandInput
                           placeholder="Search client..."
@@ -374,7 +382,7 @@ export default function GigForm({
                   {/* <FormDescription>
                     This is the client that will be used in the dashboard.
                   </FormDescription> */}
-                  <FormMessage />
+                  {/* <FormMessage /> */}
                 </FormItem>
               )}
             />

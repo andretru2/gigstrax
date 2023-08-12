@@ -187,9 +187,13 @@ export async function getPast() {
     take: 25,
   });
 }
-
-export async function create(input: GigProps) {
-  return await prisma.gig.create({ data: input });
+export async function create(input?: GigProps) {
+  let data = {};
+  if (input) {
+    data = { data: input };
+  }
+  const createdGig = await prisma.gig.create(data);
+  return createdGig.id;
 }
 
 export async function update(props: Partial<GigProps>) {
