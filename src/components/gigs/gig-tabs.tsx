@@ -61,6 +61,7 @@ export default function GigTabs(props: Props) {
             pathname?.includes("createNew") &&
               "bg-background text-foreground shadow-sm"
           )}
+          asChild
         >
           <GigCreateButton />
         </TabsTrigger>

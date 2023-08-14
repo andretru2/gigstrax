@@ -37,6 +37,14 @@ export async function getGig(id: string) {
       venueAddressStreet2: true,
       venueAddressZip: true,
 
+      venueType: true,
+      contactName: true,
+      contactEmail: true,
+
+      contactPhoneCell: true,
+      contactPhoneLand: true,
+      notesVenue: true,
+
       client: {
         select: {
           client: true,
@@ -46,6 +54,9 @@ export async function getGig(id: string) {
           addressZip: true,
           clientType: true,
           contact: true,
+          source: true,
+
+          notes: true,
         },
       },
     },
@@ -113,10 +124,14 @@ export async function getRecentlyCreated() {
       venueAddressName: true,
       venueAddressZip: true,
       venueAddressStreet: true,
+      venueAddressStreet2: true,
 
       client: {
         select: {
           client: true,
+          contact: true,
+          phoneCell: true,
+          phoneLandline: true,
         },
       },
       santa: {

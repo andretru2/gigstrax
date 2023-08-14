@@ -35,6 +35,6 @@ export async function getClients() {
     orderBy: {
       client: "asc",
     },
-    take: 10,
+    // take: 10,
   });
 }

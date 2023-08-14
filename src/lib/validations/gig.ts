@@ -66,6 +66,11 @@ export const gigSchema = z
       addressZip: z.string().optional(),
       clientType: z.string().optional(),
       contact: z.string().optional(),
+      source: z.string().optional(),
+      notes: z.string().optional(),
+      phoneLandline: z.string().optional(),
+      phoneCell: z.string().optional(),
+      email: z.string().email({ message: "Email invalid" }).optional(),
     }),
   })
   .refine(

@@ -18,9 +18,6 @@ export default function GigCreateButton() {
     startTransition(async () => {
       try {
         const id = await create();
-
-        //const id = await create({ data: { clientId: null } });
-
         console.log("create", id);
         void redirect(`/dashboard/gigs/${id}`);
       } catch (error) {
@@ -38,7 +35,7 @@ export default function GigCreateButton() {
   };
 
   return (
-    <Button onClick={handleClick} isLoading={isLoading}>
+    <Button variant="ghost" onClick={handleClick} isLoading={isLoading}>
       Create
     </Button>
   );

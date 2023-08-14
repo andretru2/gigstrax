@@ -72,24 +72,37 @@ export default async function Page({ params }: Props) {
         <div className="flex items-start justify-between space-x-2 ">
           <CardTitle className=" flex flex-col gap-2 text-xl font-medium">
             <>
+              {/* <h1>Create New Gig</h1> */}
               <div className="flex flex-row items-center gap-2">
                 <Icons.calendar className="h-4 w-4 text-primary/60" />
-                <div>
-                  {formattedDate} | {startTime} - {endTime}{" "}
-                  {durationHours && ` (${durationHours} hours)`}
-                </div>
+                {!formattedDate || !startTime || !endTime ? (
+                  <div className="italic text-destructive/60">incomplete </div>
+                ) : (
+                  <div>
+                    {formattedDate} | {startTime} - {endTime}{" "}
+                    {durationHours && ` (${durationHours} hours)`}
+                  </div>
+                )}
               </div>
             </>
             <>
               <div className="flex flex-row items-center gap-2">
                 <Icons.user className="h-4 w-4 text-primary/60" />
-                <div>{client}</div>
+                {!client ? (
+                  <div className="italic text-destructive/60">incomplete </div>
+                ) : (
+                  <div>{client}</div>
+                )}
               </div>
             </>
             <>
               <div className="flex flex-row items-center gap-2">
                 <Icons.map className="h-4 w-4 text-primary/60" />
-                <div>{addressFull}</div>
+                {!addressFull ? (
+                  <div className="italic text-destructive/60">incomplete </div>
+                ) : (
+                  <div>{addressFull}</div>
+                )}
               </div>
             </>
           </CardTitle>
