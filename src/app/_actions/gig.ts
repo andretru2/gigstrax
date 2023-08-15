@@ -4,6 +4,7 @@ import { prisma, type GigProps } from "@/server/db";
 import { type z } from "zod";
 import { type gigSchema } from "@/lib/validations/gig";
 import { revalidatePath } from "next/cache";
+import { fromUTC, toUTC } from "@/lib/utils";
 
 // import * as z from "zod";
 
@@ -64,6 +65,21 @@ export async function getGig(id: string) {
       id: id,
     },
   });
+
+  if (data?.gigDate) {
+    const localGigDate = fromUTC(data.gigDate);
+    data.gigDate = localGigDate;
+  }
+
+  if (data?.timeStart) {
+    const newTime = fromUTC(data?.timeStart);
+    data.timeStart = newTime;
+  }
+
+  if (data?.timeEnd) {
+    const newTime = fromUTC(data?.timeEnd);
+    data.timeEnd = newTime;
+  }
 
   return data;
 }
@@ -213,19 +229,33 @@ export async function create(input?: GigProps) {
 }
 
 export async function update(props: Partial<GigProps>) {
-  if (props.timeStart) {
-    props.timeStart.setSeconds(0);
-    props.timeStart.setMilliseconds(0);
-  }
-
-  if (props.timeEnd) {
-    props.timeEnd.setSeconds(0);
-    props.timeEnd.setMilliseconds(0);
-  }
-
   const gig = await prisma.gig.findFirst({
     where: { id: props.id },
   });
+
+  // if (props?.timeStart) {
+  //   const [hours, minutes] = props?.timeStart.split(":");
+
+  //   const localTime = new Date(
+  //     gig?.gigDate?.getFullYear(),
+  //     gig?.gigDate?.getMonth(),
+  //     gig?.gigDate?.getDate(),
+  //     Number(hours),
+  //     Number(minutes),
+  //     0,
+  //     0
+  //   );
+
+  //   const date = new Date(gig?.gigDate);
+  //   date.setMinutes;
+  //   const newTime = toUTC(props?.timeStart.toISOString());
+  //   props.timeStart = newTime;
+  // }
+
+  // if (props?.timeEnd) {
+  //   const newTime = toUTC(props?.timeEnd.toISOString());
+  //   props.timeEnd = newTime;
+  // }
 
   if (!gig) {
     throw new Error("Product not found.");

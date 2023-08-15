@@ -13,12 +13,12 @@ import {
   formatDate,
   formatTime,
   convertUTCtoLocalTime,
-  getUTCDate,
-  formatTimeToUTC,
+  fromUTC,
+  toUTC,
   duration,
   formatPrice,
 } from "@/lib/utils";
-import { useTransition, type FocusEvent } from "react";
+import { useTransition, type FocusEvent, useState } from "react";
 
 import { update } from "@/app/_actions/gig";
 
@@ -61,6 +61,7 @@ import {
 } from "@/types/index";
 import {
   Command,
+  CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandInput,
@@ -85,44 +86,48 @@ export default function GigForm({
 }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  // const [santas, setSantas] = useState<SantaProps[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
 
-  // const { gigDate, timeStart, timeEnd, } = gig;
+  const { id, gigDate, timeStart, timeEnd, amountPaid, price } = gig;
+  // const { client } = gig.client
 
   const durationHours =
-    gig?.timeStart && gig?.timeEnd
-      ? duration(gig.timeStart, gig.timeEnd)
-      : null;
+    gig.timeStart && timeEnd ? duration(timeStart, timeEnd) : null;
 
   const balance =
-    gig?.price && gig?.amountPaid ? gig.price - gig.amountPaid : null;
+    price && amountPaid ? Number(price) - Number(amountPaid) : null;
 
   const form = useForm<z.infer<typeof gigSchema>>({
     resolver: zodResolver(gigSchema),
     mode: "onBlur",
+    defaultValues: {
+      gigDate: gigDate ? gigDate : undefined,
+      timeStart: timeStart ? timeStart?.toTimeString().slice(0, 5) : undefined,
+      timeEnd: timeEnd ? timeEnd?.toTimeString().slice(0, 5) : undefined,
+      // client: {
+      //   client: gig.client ? client : undefined,
+      //  addressCity:  gig.client.addressCity ?
+      // }
+      // client:
+      // gigDate: gigDate ? gigDate : undefined,
+    },
   });
-  // const santas = async () => await getSantas();
-  // const santas =  getSantas();
-  // const santas = await(async () => {
-  //   return await getSantas();
 
-  // })();
+  // async function handleTimeChange(time: Date) {
+  //   const dateTime = gig.gigDate && new Date(gig.gigDate.getTime());
+  //   time &&
+  //     dateTime &&
+  //     dateTime.setHours(time.getHours(), time.getMinutes(), time.getSeconds());
 
-  async function handleTimeChange(time: Date) {
-    const dateTime = gig.gigDate && new Date(gig.gigDate.getTime());
-    time &&
-      dateTime &&
-      dateTime.setHours(time.getHours(), time.getMinutes(), time.getSeconds());
+  //   // dateTime && ;
+  //   console.log("time", time, dateTime, dateTime.toUTCString());
+  //   const data = await update({
+  //     id: gig.id,
+  //     timeStart: time,
+  //   });
 
-    // dateTime && ;
-    console.log("time", time, dateTime, dateTime.toUTCString());
-    const data = await update({
-      id: gig.id,
-      timeStart: time,
-    });
-
-    console.log("handle change", data);
-  }
+  //   console.log("handle change", data);
+  // }
 
   return (
     <Form {...form}>
@@ -138,7 +143,6 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="gigDate"
-              defaultValue={gig.gigDate}
               render={({ field }) => (
                 <FormItem className="col-span-2 flex flex-col">
                   <FormLabel>Gig Date</FormLabel>
@@ -168,10 +172,16 @@ export default function GigForm({
                       <Calendar
                         mode="single"
                         selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date("1900-01-01")
-                        }
+                        onSelect={(selectedDate) => {
+                          field.onChange(selectedDate);
+                          void update({
+                            id: gig.id,
+                            gigDate: selectedDate,
+                          });
+                        }}
+                        // disabled={(date) =>
+                        //   date > new Date() || date < new Date("1900-01-01")
+                        // }
                         initialFocus
                       />
                     </PopoverContent>
@@ -184,33 +194,46 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="timeStart"
-              defaultValue={gig.timeStart?.toTimeString().slice(0, 5)}
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Start Time</FormLabel>
                   <FormControl>
                     <Input
                       type="time"
-                      // aria-invalid={!!form.formState.errors.timeStart}
+                      disabled={gigDate == null}
                       {...field}
                       className="bg-white"
-                      // defaultValue={props.timeStart?.toTimeString().slice(0, 5)}
-                      placeholder="Enter the gig start time"
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        const selectedTime = e.target.value; // User-selected time
-                        const utcDate = getUTCDate(selectedTime); // Convert to UTC
-                        const localTime = convertUTCtoLocalTime(utcDate); // Convert to local time
-                        console.log(
-                          utcDate,
-                          localTime,
-                          localTime.toISOString()
-                        );
-                        const updatedProps: Partial<GigProps> = {
-                          id: gig.id,
-                          timeStart: localTime.toISOString(), // Convert local time to ISO string format
-                        };
+                        const selectedTime = e.target.value;
 
-                        update(updatedProps);
+                        if (selectedTime) {
+                          const [hours, minutes] = selectedTime.split(":");
+                          const currentDate = new Date();
+                          const utcOffset = currentDate.getTimezoneOffset(); // Get the UTC offset in minutes
+
+                          const localTime = new Date(
+                            currentDate.getFullYear(),
+                            currentDate.getMonth(),
+                            currentDate.getDate(),
+                            Number(hours),
+                            Number(minutes),
+                            0,
+                            0
+                          );
+
+                          // Adjust the local time by subtracting the UTC offset
+                          localTime.setMinutes(
+                            localTime.getMinutes() - utcOffset
+                          );
+
+                          const isoTime = localTime.toISOString();
+
+                          // console.log(isoTime);
+                          void update({
+                            id: id,
+                            timeStart: isoTime,
+                          });
+                        }
                       }}
                     />
                   </FormControl>
@@ -220,8 +243,6 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="timeEnd"
-              defaultValue={gig.timeEnd?.toTimeString().slice(0, 5)}
-              // defaultValue={props.timeEnd?.convertUTCtoLocalTime().slice(0, 5)}
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>End Time</FormLabel>
@@ -234,20 +255,36 @@ export default function GigForm({
                       // defaultValue={props.timeStart?.toTimeString().slice(0, 5)}
                       placeholder="Enter the gig end time"
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        const selectedTime = e.target.value; // User-selected time
-                        const utcDate = getUTCDate(selectedTime); // Convert to UTC
-                        const localTime = convertUTCtoLocalTime(utcDate); // Convert to local time
-                        console.log(
-                          utcDate,
-                          localTime,
-                          localTime.toISOString()
-                        );
-                        const updatedProps: Partial<GigProps> = {
-                          id: props.id,
-                          timeStart: localTime.toISOString(), // Convert local time to ISO string format
-                        };
+                        const selectedTime = e.target.value;
 
-                        void update(updatedProps);
+                        if (selectedTime) {
+                          const [hours, minutes] = selectedTime.split(":");
+                          const currentDate = new Date();
+                          const utcOffset = currentDate.getTimezoneOffset(); // Get the UTC offset in minutes
+
+                          const localTime = new Date(
+                            currentDate.getFullYear(),
+                            currentDate.getMonth(),
+                            currentDate.getDate(),
+                            Number(hours),
+                            Number(minutes),
+                            0,
+                            0
+                          );
+
+                          // Adjust the local time by subtracting the UTC offset
+                          localTime.setMinutes(
+                            localTime.getMinutes() - utcOffset
+                          );
+
+                          const isoTime = localTime.toISOString();
+
+                          console.log(isoTime);
+                          void update({
+                            id: id,
+                            timeEnd: isoTime,
+                          });
+                        }
                       }}
                     />
                   </FormControl>
@@ -270,11 +307,9 @@ export default function GigForm({
                   type="number"
                   inputMode="numeric"
                   {...form.register("price")}
-                  // defaultValue={formatPrice(Number(props.price))}
                   defaultValue={Number(gig.price)}
                   className="bg-white text-right"
                   onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                    // console.log(e.target.value);
                     const newPrice = new Prisma.Decimal(e.target.value);
                     void update({
                       id: gig.id,
@@ -328,62 +363,66 @@ export default function GigForm({
               render={({ field }) => (
                 <FormItem className="col-span-3 flex flex-col  ">
                   <FormLabel>Client</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            " justify-between bg-white ",
-                            !field.value && " text-muted-foreground"
-                          )}
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      onClick={() => setIsOpen(true)}
+                      className={cn(
+                        " justify-between bg-white ",
+                        !field.value && " text-muted-foreground"
+                      )}
+                    >
+                      {field.value
+                        ? clients.find(
+                            (client) => client.client === field.value
+                          )?.client
+                        : "Select Client"}
+                      <Icons.arrowUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </FormControl>
+
+                  {/* <PopoverContent className=" w-[400px] rounded-md border-2 border-accent"> */}
+                  <CommandDialog
+                    position="top"
+                    open={isOpen}
+                    // onOpenChange={setIsOpen}
+                  >
+                    <CommandInput
+                      placeholder="Search client..."
+                      className="h-9 p-2"
+                    />
+                    <CommandEmpty>No clients found.</CommandEmpty>
+                    <CommandGroup>
+                      {clients.map((client) => (
+                        <CommandItem
+                          value={client.client}
+                          key={client.id}
+                          onSelect={() => {
+                            void update({
+                              id: gig.id,
+                              clientId: client.id,
+                            });
+                            // onblur{}
+                            // form.setValue("client", client.id);
+                          }}
                         >
-                          {field.value
-                            ? clients.find(
-                                (client) => client.client === field.value
-                              )?.client
-                            : "Select Client"}
-                          <Icons.arrowUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className=" w-[400px] rounded-md border-2 border-accent">
-                      <Command>
-                        <CommandInput
-                          placeholder="Search client..."
-                          className="h-9 p-2"
-                        />
-                        <CommandEmpty>No client found.</CommandEmpty>
-                        <CommandGroup>
-                          {clients.map((client) => (
-                            <CommandItem
-                              value={client.client}
-                              key={client.id}
-                              onSelect={() => {
-                                void update({
-                                  id: gig.id,
-                                  clientId: client.id,
-                                });
-                                // onblur{}
-                                // form.setValue("client", client.id);
-                              }}
-                            >
-                              {client.client}
-                              <Icons.check
-                                className={cn(
-                                  "ml-auto h-4 w-4",
-                                  client.client === field.value
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                                )}
-                              />
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
+                          {client.client}
+                          <Icons.check
+                            className={cn(
+                              "ml-auto h-4 w-4",
+                              client.client === field.value
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                    {/* </PopoverContent> */}
+
+                    {/* </Popover> */}
+                  </CommandDialog>
                   {/* <FormDescription>
                     This is the client that will be used in the dashboard.
                   </FormDescription> */}

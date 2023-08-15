@@ -9,7 +9,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import GigForm from "@/components/gigs/gig-form";
-import { formatDate, formatTime, duration, formatAddress } from "@/lib/utils";
+import {
+  formatDate,
+  formatTime,
+  duration,
+  formatAddress,
+  fromUTC,
+  toUTC,
+  convertUTCtoLocalTime,
+} from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { getGig } from "@/app/_actions/gig";
@@ -46,7 +54,8 @@ export default async function Page({ params }: Props) {
 
   if (!gig) return notFound();
 
-  const formattedDate = gig?.gigDate && formatDate(gig?.gigDate, "friendly");
+  const formattedDate =
+    gig?.gigDate && formatDate(gig?.gigDate.getTime(), "friendly");
   const startTime = gig?.timeStart && formatTime(gig?.timeStart);
   const endTime = gig?.timeEnd && formatTime(gig?.timeEnd);
   const client = gig?.client?.client && gig?.client.client;
