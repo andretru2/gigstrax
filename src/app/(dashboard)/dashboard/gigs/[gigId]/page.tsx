@@ -17,6 +17,7 @@ import {
   fromUTC,
   toUTC,
   convertUTCtoLocalTime,
+  calculateTimeDifference,
 } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
@@ -72,7 +73,7 @@ export default async function Page({ params }: Props) {
 
   const durationHours =
     gig?.timeStart && gig?.timeEnd
-      ? duration(gig.timeStart, gig.timeEnd)
+      ? calculateTimeDifference(gig.timeStart, gig.timeEnd)
       : null;
 
   return (

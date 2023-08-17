@@ -1,12 +1,28 @@
 "use server";
 
-import { prisma, type GigProps } from "@/server/db";
+import { prisma, type GigProps, type ClientProps } from "@/server/db";
 import { type z } from "zod";
 import { type gigSchema } from "@/lib/validations/gig";
 import { revalidatePath } from "next/cache";
 import { fromUTC, toUTC } from "@/lib/utils";
 
 // import * as z from "zod";
+
+/**TODO: create an array here with the whereClause, sort, etc. so we have one funciton to getGigs 
+ * i.e. 
+ * const = [
+ * {name: upcoming,
+ * whereClause: {
+      gigDate: { gte: today },
+
+ * 
+ * }, 
+ * orderBy...,
+ * take..
+ * 
+ }
+ * ]
+ */
 
 export async function getGig(id: string) {
   if (id.length === 0) return null;
@@ -19,17 +35,20 @@ export async function getGig(id: string) {
       timeEnd: true,
       santa: {
         select: {
+          id: true,
           role: true,
         },
       },
       mrsSanta: {
         select: {
+          id: true,
           nameFirst: true,
         },
       },
       price: true,
       amountPaid: true,
       santaId: true,
+      mrsSantaId: true,
 
       venueAddressCity: true,
       venueAddressName: true,
@@ -48,6 +67,7 @@ export async function getGig(id: string) {
 
       client: {
         select: {
+          id: true,
           client: true,
           addressCity: true,
           addressState: true,
@@ -56,7 +76,9 @@ export async function getGig(id: string) {
           clientType: true,
           contact: true,
           source: true,
-
+          phoneCell: true,
+          phoneLandline: true,
+          email: true,
           notes: true,
         },
       },
@@ -86,7 +108,7 @@ export async function getGig(id: string) {
 
 export async function getUpcoming() {
   const today = new Date(2022, 12, 31);
-  return await prisma.gig.findMany({
+  const data = await prisma.gig.findMany({
     select: {
       id: true,
       gigDate: true,
@@ -123,13 +145,32 @@ export async function getUpcoming() {
       gigDate: "asc",
     },
   });
+
+  return data.map((gig) => {
+    if (gig.gigDate) {
+      const localGigDate = fromUTC(gig.gigDate);
+      gig.gigDate = localGigDate;
+    }
+
+    if (gig?.timeStart) {
+      const newTime = fromUTC(gig?.timeStart);
+      gig.timeStart = newTime;
+    }
+
+    if (gig?.timeEnd) {
+      const newTime = fromUTC(gig?.timeEnd);
+      gig.timeEnd = newTime;
+    }
+
+    return gig;
+  });
 }
 
 export async function getRecentlyCreated() {
   const today = new Date(2022, 12, 31);
   const fiveDaysAgo = new Date(today);
   fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 128);
-  return await prisma.gig.findMany({
+  const data = await prisma.gig.findMany({
     select: {
       id: true,
       gigDate: true,
@@ -173,12 +214,31 @@ export async function getRecentlyCreated() {
       gigDate: "desc",
     },
   });
+
+  return data.map((gig) => {
+    if (gig.gigDate) {
+      const localGigDate = fromUTC(gig.gigDate);
+      gig.gigDate = localGigDate;
+    }
+
+    if (gig?.timeStart) {
+      const newTime = fromUTC(gig?.timeStart);
+      gig.timeStart = newTime;
+    }
+
+    if (gig?.timeEnd) {
+      const newTime = fromUTC(gig?.timeEnd);
+      gig.timeEnd = newTime;
+    }
+
+    return gig;
+  });
 }
 
 export async function getPast() {
   const today = new Date(2022, 12, 31);
   console.log("today", today);
-  return await prisma.gig.findMany({
+  const data = await prisma.gig.findMany({
     select: {
       id: true,
       gigDate: true,
@@ -217,6 +277,25 @@ export async function getPast() {
     },
     take: 25,
   });
+
+  return data.map((gig) => {
+    if (gig.gigDate) {
+      const localGigDate = fromUTC(gig.gigDate);
+      gig.gigDate = localGigDate;
+    }
+
+    if (gig?.timeStart) {
+      const newTime = fromUTC(gig?.timeStart);
+      gig.timeStart = newTime;
+    }
+
+    if (gig?.timeEnd) {
+      const newTime = fromUTC(gig?.timeEnd);
+      gig.timeEnd = newTime;
+    }
+
+    return gig;
+  });
 }
 export async function create(input?: GigProps) {
   let data = {};
@@ -228,7 +307,9 @@ export async function create(input?: GigProps) {
   return createdGig.id;
 }
 
-export async function update(props: Partial<GigProps>) {
+export async function update(
+  props: Partial<GigProps> & { client?: { update: Partial<ClientProps> } }
+) {
   const gig = await prisma.gig.findFirst({
     where: { id: props.id },
   });

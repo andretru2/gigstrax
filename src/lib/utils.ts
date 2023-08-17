@@ -45,11 +45,11 @@ export function formatDate(
 
   if (format === "friendly") {
     return date.toLocaleDateString("en-US", {
-      // dateStyle: "full",
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-      year: "2-digit",
+      dateStyle: "full",
+      // weekday: "short",
+      // month: "short",
+      // day: "numeric",
+      // year: "",
     });
   }
 
@@ -60,6 +60,21 @@ export function formatDate(
       year: "numeric",
     });
   }
+}
+
+export function formatPhone(phone: string): string {
+  if (!phone) return "";
+  // Remove all non-digit characters
+  const cleaned = phone.replace(/\D/g, "");
+
+  // Format the cleaned number
+  const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+  if (match) {
+    return `${match[1]}-${match[2]}-${match[3]}`;
+  }
+
+  // If no match, return the original input
+  return phone;
 }
 
 export function catchError(err: unknown) {
@@ -85,7 +100,9 @@ export function calculateTimeDifference(
     startTime.getTime() - endTime.getTime()
   );
   const timeDiffInHours = timeDiffInMilliseconds / (1000 * 60 * 60);
-  return timeDiffInHours;
+  const roundedTimeDiff = Math.round(timeDiffInHours * 100) / 100;
+
+  return roundedTimeDiff;
 }
 export function slugify(str: string) {
   return str
@@ -184,21 +201,21 @@ export function formatTime(time: Date) {
   });
 }
 
-export function duration(startTime: Date, endTime: Date): number {
-  startTime.setSeconds(0);
-  endTime.setSeconds(0);
-  startTime.setMilliseconds(0);
-  endTime.setMilliseconds(0);
+// export function duration(startTime: Date, endTime: Date): number {
+//   startTime.setSeconds(0);
+//   endTime.setSeconds(0);
+//   startTime.setMilliseconds(0);
+//   endTime.setMilliseconds(0);
 
-  const startMs = startTime.getTime();
-  const endMs = endTime.getTime();
+//   const startMs = startTime.getTime();
+//   const endMs = endTime.getTime();
 
-  const diffMs = endMs - startMs;
+//   const diffMs = endMs - startMs;
 
-  const diffHrs = diffMs / (1000 * 60 * 60);
+//   const diffHrs = Math.ceil(diffMs / (1000 * 60 * 60) / 10);
 
-  return diffHrs;
-}
+//   return diffHrs;
+// }
 
 export function fromUTC(dateTimeString: string | Date): Date {
   const utc = new Date(dateTimeString);

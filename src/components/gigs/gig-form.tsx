@@ -4,7 +4,12 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { gigSchema } from "@/lib/validations/gig";
-import { type GigProps, type SourceProps, type ClientProps } from "@/server/db";
+import {
+  type GigProps,
+  type SourceProps,
+  type ClientProps,
+  type VenueTypeProps,
+} from "@/server/db";
 import { PrismaClient, Prisma } from "@prisma/client";
 
 import {
@@ -12,13 +17,14 @@ import {
   cn,
   formatDate,
   formatTime,
-  convertUTCtoLocalTime,
   fromUTC,
   toUTC,
-  duration,
+  // duration,
   formatPrice,
+  calculateTimeDifference,
+  formatPhone,
 } from "@/lib/utils";
-import { useTransition, type FocusEvent, useState } from "react";
+import { type FocusEvent, useState } from "react";
 
 import { update } from "@/app/_actions/gig";
 
@@ -53,6 +59,7 @@ import { PopoverContent } from "@radix-ui/react-popover";
 import { Calendar } from "../ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Label } from "../ui/label";
+import { ClientType } from "@prisma/client";
 // import { getSantas } from "@/app/_actions/source";
 import {
   type SantaProps,
@@ -68,13 +75,27 @@ import {
   CommandItem,
 } from "../ui/command";
 
+type GigFormProps = Partial<GigProps> & {
+  client: Partial<ClientProps>;
+  santa?: Pick<SourceProps, "id" | "role">;
+  mrsSanta?: Pick<SourceProps, "id" | "nameFirst">;
+};
+
+// interface Props {
+//   gig: Partial<GigProps> &
+//     Partial<Omit<ClientProps, "client">> &
+//     Partial<SourceProps>;
+//   santas: SantaProps[];
+//   mrsSantas?: MrsSantaProps[];
+//   clients: ClientPickerProps[];
+// }
+
 interface Props {
-  gig: Partial<GigProps> &
-    Partial<Omit<ClientProps, "client">> &
-    Partial<SourceProps>;
+  gig: GigFormProps;
   santas: SantaProps[];
   mrsSantas?: MrsSantaProps[];
   clients: ClientPickerProps[];
+  // venueTypes: VenueTypeProps[];
 }
 
 export default function GigForm({
@@ -85,17 +106,62 @@ export default function GigForm({
   ...props
 }: Props) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  // const [isPending, startTransition] = useTransition();
   const [isOpen, setIsOpen] = useState(false);
 
-  const { id, gigDate, timeStart, timeEnd, amountPaid, price } = gig;
-  // const { client } = gig.client
+  const {
+    id,
+    gigDate,
+    timeStart,
+    timeEnd,
+    amountPaid,
+    venueAddressCity,
+    venueAddressName,
+    venueAddressState,
+    venueAddressStreet,
+    venueAddressZip,
+    venueType,
+    notesVenue,
+    price,
+    client,
+    santa,
+    mrsSanta,
+  } = gig;
+  const {
+    source: clientSource,
+    phoneCell,
+    phoneLandline,
+    addressCity,
+    addressStreet,
+    addressZip,
+    addressState,
+    email,
+    id: clientId,
+    client: clientName,
+    clientType,
+    notes,
+    contact,
+  } = client;
+  const { id: santaId, role } = santa ?? {};
+  const { id: mrsSantaId, nameFirst } = mrsSanta ?? {};
 
   const durationHours =
-    gig.timeStart && timeEnd ? duration(timeStart, timeEnd) : null;
+    timeStart && timeEnd ? calculateTimeDifference(timeStart, timeEnd) : null;
 
   const balance =
     price && amountPaid ? Number(price) - Number(amountPaid) : null;
+
+  // const phoneCellFormatted = {
+  //   if (!phoneCell) return undefined
+  //    switch(
+  //   case(
+  //  phoneCell && phoneCell.replace(/\D/g, "").length === 10
+  // ? formatPhone(phoneCell)
+  // : undefined;
+
+  //   )
+  // )
+  // }
 
   const form = useForm<z.infer<typeof gigSchema>>({
     resolver: zodResolver(gigSchema),
@@ -104,12 +170,39 @@ export default function GigForm({
       gigDate: gigDate ? gigDate : undefined,
       timeStart: timeStart ? timeStart?.toTimeString().slice(0, 5) : undefined,
       timeEnd: timeEnd ? timeEnd?.toTimeString().slice(0, 5) : undefined,
-      // client: {
-      //   client: gig.client ? client : undefined,
-      //  addressCity:  gig.client.addressCity ?
-      // }
-      // client:
-      // gigDate: gigDate ? gigDate : undefined,
+      venueAddressCity: venueAddressCity ? venueAddressCity : undefined,
+      venueAddressState: venueAddressState ? venueAddressState : undefined,
+      venueAddressStreet: venueAddressStreet ? venueAddressStreet : undefined,
+      venueAddressName: venueAddressName ? venueAddressName : undefined,
+      venueAddressZip: venueAddressZip ? venueAddressZip : undefined,
+      venueType: venueType ? venueType : undefined,
+      notesVenue: notesVenue ? notesVenue : undefined,
+      price: price ? Number(price) : undefined,
+      amountPaid: amountPaid ? Number(amountPaid) : undefined,
+
+      client: {
+        id: clientId ? clientId : undefined,
+        client: clientName ? clientName : undefined,
+        clientType: clientType ? clientType : undefined,
+        contact: contact ? contact : undefined,
+        source: clientSource ? clientSource : undefined,
+        phoneCell: phoneCell ? phoneCell : undefined,
+        phoneLandline: phoneLandline ? phoneLandline : undefined,
+        addressCity: addressCity ? addressCity : undefined,
+        addressStreet: addressStreet ? addressStreet : undefined,
+        addressState: addressState ? addressState : undefined,
+        addressZip: addressZip ? addressZip : undefined,
+        email: email ? email : undefined,
+        notes: notes ? notes : undefined,
+      },
+      santa: {
+        id: santaId ? santaId : undefined,
+        role: role ? role : undefined,
+      },
+      mrsSanta: {
+        id: mrsSantaId ? mrsSantaId : undefined,
+        nameFirst: nameFirst ? nameFirst : undefined,
+      },
     },
   });
 
@@ -175,12 +268,12 @@ export default function GigForm({
                         onSelect={(selectedDate) => {
                           field.onChange(selectedDate);
                           void update({
-                            id: gig.id,
+                            id: id,
                             gigDate: selectedDate,
                           });
                         }}
                         // disabled={(date) =>
-                        //   date > new Date() || date < new Date("1900-01-01")
+                        //   date < new Date()
                         // }
                         initialFocus
                       />
@@ -249,11 +342,8 @@ export default function GigForm({
                   <FormControl>
                     <Input
                       type="time"
-                      // aria-invalid={!!form.formState.errors.timeStart}
                       {...field}
                       className="bg-white"
-                      // defaultValue={props.timeStart?.toTimeString().slice(0, 5)}
-                      placeholder="Enter the gig end time"
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         const selectedTime = e.target.value;
 
@@ -397,7 +487,7 @@ export default function GigForm({
                       {clients.map((client) => (
                         <CommandItem
                           value={client.client}
-                          key={client.id}
+                          key={id}
                           onSelect={() => {
                             void update({
                               id: gig.id,
@@ -433,17 +523,20 @@ export default function GigForm({
 
             <FormField
               control={form.control}
-              name="santa.role"
+              name="santa.id"
               render={({ field }) => (
                 <FormItem className="col-span-2 w-full ">
                   <FormLabel>Santa</FormLabel>
                   <FormControl>
                     <Select
                       value={field.value}
-                      onValueChange={(value: typeof field.value) =>
-                        field.onChange(value)
-                      }
-                      defaultValue={gig.santa?.role}
+                      onValueChange={(value: typeof field.value) => {
+                        field.onChange(value);
+                        void update({
+                          id: gig.id,
+                          santaId: value,
+                        });
+                      }}
                     >
                       <SelectTrigger className="bg-white capitalize">
                         <SelectValue placeholder={field.value} />
@@ -453,7 +546,7 @@ export default function GigForm({
                           {santas.map((option) => (
                             <SelectItem
                               key={option.id}
-                              value={option.role}
+                              value={option.id}
                               className="capitalize"
                             >
                               {option.role}
@@ -469,17 +562,21 @@ export default function GigForm({
             />
             <FormField
               control={form.control}
-              name="mrsSanta.nameFirst"
+              name="mrsSanta.id"
               render={({ field }) => (
                 <FormItem className="col-span-2 w-full ">
                   <FormLabel>Mrs. Santa</FormLabel>
                   <FormControl>
                     <Select
                       value={field.value}
-                      onValueChange={(value: typeof field.value) =>
-                        field.onChange(value)
-                      }
-                      defaultValue={gig.mrsSanta?.nameFirst}
+                      onValueChange={(value: typeof field.value) => {
+                        field.onChange(value);
+                        console.log();
+                        void update({
+                          id: gig.id,
+                          mrsSantaId: value,
+                        });
+                      }}
                     >
                       <SelectTrigger className="bg-white capitalize">
                         <SelectValue placeholder={field.value} />
@@ -490,7 +587,7 @@ export default function GigForm({
                             mrsSantas.map((option) => (
                               <SelectItem
                                 key={option.id}
-                                value={option.nameFirst}
+                                value={option.id}
                                 className="capitalize"
                               >
                                 {option.nameFirst}
@@ -514,9 +611,7 @@ export default function GigForm({
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={gig.clientId?.length === 0}
-                      // {...form.register("client.source")}
-                      // defaultValue={gig.client?.source}
+                      disabled={clientId?.length === 0}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         void update({
@@ -540,7 +635,7 @@ export default function GigForm({
           </CardContent>
         </Card>
 
-        <Card className="p-4 ">
+        <Card className=" p-4">
           <CardHeader className="px-0">
             <CardTitle>Client Details</CardTitle>
           </CardHeader>
@@ -548,21 +643,21 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="client.client"
-              defaultValue={gig.client?.client}
               render={({ field }) => (
                 <FormItem className="col-span-6 flex flex-col ">
                   <FormLabel>Client</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={gig.clientId?.length === 0}
+                      type="search"
+                      disabled={clientId?.length === 0}
                       className="bg-white"
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         void update({
                           id: gig.id,
                           client: {
                             update: {
-                              source: e.target.value,
+                              client: e.target.value,
                             },
                           },
                         });
@@ -579,14 +674,13 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="client.contact"
-              defaultValue={gig.client?.contact}
               render={({ field }) => (
-                <FormItem className="col-span-3 flex flex-col ">
+                <FormItem className="col-span-6 flex flex-col ">
                   <FormLabel>Contact at Client</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={gig.clientId?.length === 0}
+                      disabled={clientId?.length === 0}
                       className="bg-white"
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         void update({
@@ -610,49 +704,17 @@ export default function GigForm({
 
             <FormField
               control={form.control}
-              name="client.source"
-              defaultValue={gig.client?.source}
-              render={({ field }) => (
-                <FormItem className="col-span-3 flex flex-col ">
-                  <FormLabel>Source</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      disabled={gig.clientId?.length === 0}
-                      // {...form.register("client.source")}
-                      // defaultValue={gig.client?.source}
-                      className="bg-white "
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: gig.id,
-                          client: {
-                            update: {
-                              source: e.target.value,
-                            },
-                          },
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  {/* <FormMessage /> */}
-                  <UncontrolledFormMessage
-                    message={form.formState.errors.client?.source?.message}
-                  />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="client.phoneCell"
-              defaultValue={gig.client?.phoneCell}
               render={({ field }) => (
                 <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>Cell</FormLabel>
                   <FormControl>
                     <Input
+                      type="text"
                       {...field}
-                      disabled={gig.clientId?.length === 0}
+                      disabled={clientId?.length === 0}
                       className="bg-white "
+                      placeholder="xxx-xxx-xxxx"
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         void update({
                           id: gig.id,
@@ -674,22 +736,21 @@ export default function GigForm({
             />
             <FormField
               control={form.control}
-              name="client.phoneLandLine"
-              defaultValue={gig.client?.phoneLandLine}
+              name="client.phoneLandline"
               render={({ field }) => (
                 <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>Landline</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={gig.clientId?.length === 0}
+                      disabled={clientId?.length === 0}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         void update({
                           id: gig.id,
                           client: {
                             update: {
-                              phoneLandLine: e.target.value,
+                              phoneLandline: e.target.value,
                             },
                           },
                         });
@@ -708,50 +769,60 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="client.clientType"
-              defaultValue={gig.client?.clientType}
               render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col ">
-                  <FormLabel>Type</FormLabel>
+                <FormItem className="col-span-2 w-full ">
+                  <FormLabel>Client Type</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      disabled={gig.clientId?.length === 0}
-                      className="bg-white "
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        e.target.value !== gig.client?.clientType &&
-                          void update({
-                            id: gig.id,
-                            client: {
-                              update: {
-                                clientType: e.target.value,
-                              },
+                    <Select
+                      value={field.value}
+                      onValueChange={(value: ClientType) => {
+                        field.onChange(value);
+                        void update({
+                          id: gig.id,
+                          client: {
+                            update: {
+                              clientType: value,
                             },
-                          });
+                          },
+                        });
                       }}
-                    />
+                    >
+                      <SelectTrigger className="bg-white capitalize">
+                        <SelectValue placeholder={field.value} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {Object.values(ClientType).map((option) => (
+                            <SelectItem
+                              key={option}
+                              value={option}
+                              className="capitalize"
+                            >
+                              {option}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </FormControl>
-                  {/* <FormMessage /> */}
-                  <UncontrolledFormMessage
-                    message={form.formState.errors.client?.addressZip?.message}
-                  />
+                  <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
               name="client.email"
-              defaultValue={gig.client?.email}
               render={({ field }) => (
                 <FormItem className="col-span-6 flex flex-col ">
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={gig.clientId?.length === 0}
+                      disabled={clientId?.length === 0}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         void update({
-                          id: gig.id,
+                          id: id,
                           client: {
                             update: {
                               email: e.target.value,
@@ -763,9 +834,7 @@ export default function GigForm({
                   </FormControl>
                   {/* <FormMessage /> */}
                   <UncontrolledFormMessage
-                    message={
-                      form.formState.errors.client?.addressStreet?.message
-                    }
+                    message={form.formState.errors.client?.email?.message}
                   />
                 </FormItem>
               )}
@@ -773,14 +842,13 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="client.addressStreet"
-              defaultValue={gig.client?.addressStreet}
               render={({ field }) => (
                 <FormItem className="col-span-6 flex flex-col ">
                   <FormLabel>Street</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={gig.clientId?.length === 0}
+                      disabled={clientId?.length === 0}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         void update({
@@ -807,14 +875,13 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="client.addressCity"
-              defaultValue={gig.client?.addressCity}
               render={({ field }) => (
                 <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>City</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={gig.clientId?.length === 0}
+                      disabled={clientId?.length === 0}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         void update({
@@ -838,14 +905,13 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="client.addressState"
-              defaultValue={gig.client?.addressState}
               render={({ field }) => (
                 <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>State</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={gig.clientId?.length === 0}
+                      disabled={clientId?.length === 0}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         void update({
@@ -871,14 +937,13 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="client.addressZip"
-              defaultValue={gig.client?.addressZip}
               render={({ field }) => (
                 <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>Zip</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={gig.clientId?.length === 0}
+                      disabled={clientId?.length === 0}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         void update({
@@ -902,16 +967,15 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="client.notes"
-              defaultValue={gig.client?.notes}
               render={({ field }) => (
                 <FormItem className="col-span-6 flex flex-col ">
                   <FormLabel>Notes</FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
-                      disabled={gig.clientId?.length === 0}
+                      disabled={clientId?.length === 0}
                       className="bg-white "
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
+                      onBlur={(e: FocusEvent<HTMLTextAreaElement>) => {
                         void update({
                           id: gig.id,
                           client: {
@@ -925,9 +989,7 @@ export default function GigForm({
                   </FormControl>
                   {/* <FormMessage /> */}
                   <UncontrolledFormMessage
-                    message={
-                      form.formState.errors.client?.addressState?.message
-                    }
+                    message={form.formState.errors.client?.notes?.message}
                   />
                 </FormItem>
               )}

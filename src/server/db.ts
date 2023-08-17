@@ -3,6 +3,7 @@ import {
   type Gig,
   type Client,
   type Source,
+  type VenueType,
 } from "@prisma/client";
 import { env } from "@/env.mjs";
 

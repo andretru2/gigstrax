@@ -1,6 +1,8 @@
 import { type GigProps } from "@/server/db";
 import * as z from "zod";
 import { isValidDate, isValidTime, isValidPrice } from "../utils";
+import { clientSchema } from "./client";
+import { VenueType } from "@prisma/client";
 
 const timeSchema = z.string().refine(isValidTime, {
   message: "Must be a valid date",
@@ -35,7 +37,10 @@ export const gigSchema = z
     mrsSantaId: z.string().optional(),
     calendarId: z.string().optional(),
     driverId: z.string().optional(),
-    contactEmail: z.string().optional(),
+    contactEmail: z
+      .string()
+      .email({ message: "Please enter a valid Email." })
+      .optional(),
     contactName: z.string().optional(),
     contactPhoneCell: z.string().optional(),
     contactPhoneLand: z.string().optional(),
@@ -46,32 +51,22 @@ export const gigSchema = z
     price: priceSchema,
     serial: z.number().optional(),
     travelType: z.string().optional(),
-    venueType: z.string().optional(),
+    venueType: z.nativeEnum(VenueType).optional(),
     isSoftHold: z.boolean().optional(),
     createdAt: z.date().optional(),
     createdBy: z.string().optional(),
     updatedAt: z.date().optional(),
     updatedBy: z.string().optional(),
     santa: z.object({
+      id: z.string().optional(),
       role: z.string().optional(),
     }),
     mrsSanta: z.object({
+      id: z.string().optional(),
       nameFirst: z.string().optional(),
     }),
-    client: z.object({
-      client: z.string().optional(),
-      addressCity: z.string().optional(),
-      addressState: z.string().optional(),
-      addressStreet: z.string().optional(),
-      addressZip: z.string().optional(),
-      clientType: z.string().optional(),
-      contact: z.string().optional(),
-      source: z.string().optional(),
-      notes: z.string().optional(),
-      phoneLandline: z.string().optional(),
-      phoneCell: z.string().optional(),
-      email: z.string().email({ message: "Email invalid" }).optional(),
-    }),
+    // client: z.object({ update: clientSchema }),
+    client: clientSchema,
   })
   .refine(
     (data) => {
@@ -80,6 +75,7 @@ export const gigSchema = z
     {
       message: "Start time must be before end time",
     }
-  ) satisfies z.ZodType<GigProps>;
+  );
+//satisfies z.ZodType<GigProps>;
 
 // export type GigSchemaType = z.infer<typeof gigSchema>;

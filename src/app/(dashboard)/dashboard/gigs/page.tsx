@@ -14,13 +14,16 @@ interface Props {
 
 const TAB_DEFAULT = "upcoming";
 
+export const revalidate = 120;
+
 export default async function Page({ params, searchParams }: Props) {
   const { tab = TAB_DEFAULT } = searchParams;
 
+  // console.log("revalidate");
   //entering the following on the url works:
   //http://localhost:3002/dashboard/gigs?status=CreateNew
 
-  if (tab === "createNew") return redirect("/dashboard/gigs/new");
+  // if (tab === "createNew") return redirect("/dashboard/gigs/new");
 
   const data =
     tab === "upcoming"
