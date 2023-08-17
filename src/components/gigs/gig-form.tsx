@@ -10,7 +10,7 @@ import {
   type ClientProps,
   type VenueTypeProps,
 } from "@/server/db";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient, Prisma, VenueType } from "@prisma/client";
 
 import {
   catchError,
@@ -126,6 +126,10 @@ export default function GigForm({
     client,
     santa,
     mrsSanta,
+    contactEmail,
+    contactName,
+    contactPhoneCell,
+    contactPhoneLand,
   } = gig;
   const {
     source: clientSource,
@@ -179,6 +183,10 @@ export default function GigForm({
       notesVenue: notesVenue ? notesVenue : undefined,
       price: price ? Number(price) : undefined,
       amountPaid: amountPaid ? Number(amountPaid) : undefined,
+      contactEmail: contactEmail ? contactEmail : undefined,
+      contactName: contactName ? contactName : undefined,
+      contactPhoneCell: contactPhoneCell ? contactPhoneCell : undefined,
+      contactPhoneLand: contactPhoneLand ? contactPhoneLand : undefined,
 
       client: {
         id: clientId ? clientId : undefined,
@@ -1004,14 +1012,12 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="venueAddressName"
-              defaultValue={gig.venueAddressName ? gig.venueAddressName : ""}
               render={({ field }) => (
                 <FormItem className="col-span-6 flex flex-col ">
                   <FormLabel>Venue</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={gig.clientId?.length === 0}
                       className="bg-white"
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         void update({
@@ -1031,19 +1037,17 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="contactName"
-              defaultValue={gig?.contactName}
               render={({ field }) => (
                 <FormItem className="col-span-6 flex flex-col ">
                   <FormLabel>Contact at Venue</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={gig.clientId?.length === 0}
                       className="bg-white"
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         void update({
                           id: gig.id,
-                          contactPhoneCell: e.target.value,
+                          contactName: e.target.value,
                         });
                       }}
                     />
@@ -1059,7 +1063,6 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="contactPhoneCell"
-              defaultValue={gig.contactPhoneCell}
               render={({ field }) => (
                 <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>Cell</FormLabel>
@@ -1086,7 +1089,6 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="contactPhoneLand"
-              defaultValue={gig.contactPhoneLand}
               render={({ field }) => (
                 <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>Landline</FormLabel>
@@ -1113,28 +1115,39 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="venueType"
-              defaultValue={gig.venueType}
               render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col ">
-                  <FormLabel>Type</FormLabel>
+                <FormItem className="col-span-2 w-full ">
+                  <FormLabel>Venue Type</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      disabled={gig.clientId?.length === 0}
-                      className="bg-white "
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        e.target.value !== gig.venueType &&
-                          void update({
-                            id: gig.id,
-                            venueType: e.target.value,
-                          });
+                    <Select
+                      value={field.value}
+                      onValueChange={(value: VenueType) => {
+                        field.onChange(value);
+                        void update({
+                          id: gig.id,
+                          venueType: value,
+                        });
                       }}
-                    />
+                    >
+                      <SelectTrigger className="bg-white capitalize">
+                        <SelectValue placeholder={field.value} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {Object.values(VenueType).map((option) => (
+                            <SelectItem
+                              key={option}
+                              value={option}
+                              className="capitalize"
+                            >
+                              {option}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </FormControl>
-                  {/* <FormMessage /> */}
-                  <UncontrolledFormMessage
-                    message={form.formState.errors.venueType?.message}
-                  />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -1142,14 +1155,12 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="contactEmail"
-              defaultValue={gig.contactEmail}
               render={({ field }) => (
                 <FormItem className="col-span-6 flex flex-col ">
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={gig.clientId?.length === 0}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         void update({
@@ -1170,7 +1181,6 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="venueAddressStreet"
-              defaultValue={gig.venueAddressStreet}
               render={({ field }) => (
                 <FormItem className="col-span-6 flex flex-col ">
                   <FormLabel>Street</FormLabel>
@@ -1197,7 +1207,6 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="venueAddressCity"
-              defaultValue={gig.venueAddressCity}
               render={({ field }) => (
                 <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>City</FormLabel>
@@ -1224,14 +1233,12 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="venueAddressState"
-              defaultValue={gig.venueAddressState}
               render={({ field }) => (
                 <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>State</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={gig.clientId?.length === 0}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         void update({
@@ -1251,14 +1258,12 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="venueAddressZip"
-              defaultValue={gig.venueAddressZip}
               render={({ field }) => (
                 <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>Zip</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={gig.clientId?.length === 0}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         void update({
@@ -1278,16 +1283,14 @@ export default function GigForm({
             <FormField
               control={form.control}
               name="notesVenue"
-              defaultValue={gig.notesVenue}
               render={({ field }) => (
                 <FormItem className="col-span-6 flex flex-col ">
                   <FormLabel>Notes</FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
-                      disabled={gig.clientId?.length === 0}
                       className="bg-white "
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
+                      onBlur={(e: FocusEvent<HTMLTextAreaElement>) => {
                         void update({
                           id: gig.id,
                           notesVenue: e.target.value,
