@@ -297,14 +297,15 @@ export async function getPast() {
     return gig;
   });
 }
-export async function create(input?: GigProps) {
+export async function create(props?: GigProps) {
   let data = {};
-  if (input) {
-    data = { data: input };
+  if (props) {
+    data = { data: props };
   }
   // const createdGig = await prisma.gig.create(data);
-  const createdGig = await prisma.gig.create({ data: { id: "abc" } });
-  return createdGig.id;
+  // const createdGig = await prisma.gig.create({ data: { id: "abc" } });
+  const newRecord = await prisma.gig.create({});
+  return newRecord.id;
 }
 
 export async function update(
@@ -339,7 +340,7 @@ export async function update(
   // }
 
   if (!gig) {
-    throw new Error("Product not found.");
+    throw new Error("Gig not found.");
   }
 
   await prisma.gig.update({

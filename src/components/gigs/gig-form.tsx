@@ -4,13 +4,8 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { gigSchema } from "@/lib/validations/gig";
-import {
-  type GigProps,
-  type SourceProps,
-  type ClientProps,
-  type VenueTypeProps,
-} from "@/server/db";
-import { PrismaClient, Prisma, VenueType } from "@prisma/client";
+import { type GigProps, type SourceProps, type ClientProps } from "@/server/db";
+import { Prisma, VenueType, ClientType } from "@prisma/client";
 
 import {
   catchError,
@@ -24,7 +19,8 @@ import {
   calculateTimeDifference,
   formatPhone,
 } from "@/lib/utils";
-import { type FocusEvent, useState } from "react";
+import { type FocusEvent, useState, useEffect } from "react";
+import { useDebounce } from "@/hooks/use-debounce";
 
 import { update } from "@/app/_actions/gig";
 
@@ -54,12 +50,10 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Icons } from "@/components/icons";
-import { Popover, PopoverTrigger } from "../ui/popover";
-import { PopoverContent } from "@radix-ui/react-popover";
+import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Label } from "../ui/label";
-import { ClientType } from "@prisma/client";
 // import { getSantas } from "@/app/_actions/source";
 import {
   type SantaProps,
@@ -68,12 +62,16 @@ import {
 } from "@/types/index";
 import {
   Command,
-  CommandDialog,
+  // CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
+  CommandSeparator,
 } from "../ui/command";
+
+import ClientCreate from "../clients/client-create";
 
 type GigFormProps = Partial<GigProps> & {
   client: Partial<ClientProps>;
@@ -94,7 +92,8 @@ interface Props {
   gig: GigFormProps;
   santas: SantaProps[];
   mrsSantas?: MrsSantaProps[];
-  clients: ClientPickerProps[];
+  clients?: ClientPickerProps[];
+  clientSuggestions?: ClientPickerProps[];
   // venueTypes: VenueTypeProps[];
 }
 
@@ -103,11 +102,18 @@ export default function GigForm({
   santas,
   mrsSantas,
   clients,
+  clientSuggestions,
   ...props
 }: Props) {
   const router = useRouter();
   // const [isPending, startTransition] = useTransition();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [searchClient, setSearchlient] = useState("");
+  const [searchClientResults, setSearchClientResults] = useState<
+    ClientPickerProps[]
+  >([]);
+  const debouncedSearchClient = useDebounce(searchClient, 300);
 
   const {
     id,
@@ -155,17 +161,21 @@ export default function GigForm({
   const balance =
     price && amountPaid ? Number(price) - Number(amountPaid) : null;
 
-  // const phoneCellFormatted = {
-  //   if (!phoneCell) return undefined
-  //    switch(
-  //   case(
-  //  phoneCell && phoneCell.replace(/\D/g, "").length === 10
-  // ? formatPhone(phoneCell)
-  // : undefined;
+  useEffect(() => {
+    const searchClient = () => {
+      setSearchClientResults([]);
+      if (debouncedSearchClient.length > 1 && clients) {
+        setIsLoading(true);
+        const searchClientResults = clients.filter(({ client }) =>
+          client.toLowerCase().includes(debouncedSearchClient)
+        );
+        setSearchClientResults(searchClientResults);
+        setIsLoading(false);
+      }
+    };
 
-  //   )
-  // )
-  // }
+    searchClient();
+  }, [debouncedSearchClient, clients]);
 
   const form = useForm<z.infer<typeof gigSchema>>({
     resolver: zodResolver(gigSchema),
@@ -213,6 +223,10 @@ export default function GigForm({
       },
     },
   });
+
+  function handleClientSearch(e: FocusEvent<HTMLInputElement>) {
+    setSearchlient(e.target.value);
+  }
 
   // async function handleTimeChange(time: Date) {
   //   const dateTime = gig.gigDate && new Date(gig.gigDate.getTime());
@@ -459,72 +473,131 @@ export default function GigForm({
               control={form.control}
               name="client.client"
               render={({ field }) => (
-                <FormItem className="col-span-3 flex flex-col  ">
+                <FormItem className=" col-span-3 flex flex-col ">
                   <FormLabel>Client</FormLabel>
-                  <FormControl>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      onClick={() => setIsOpen(true)}
-                      className={cn(
-                        " justify-between bg-white ",
-                        !field.value && " text-muted-foreground"
-                      )}
-                    >
-                      {field.value
-                        ? clients.find(
-                            (client) => client.client === field.value
-                          )?.client
-                        : "Select Client"}
-                      <Icons.arrowUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </FormControl>
-
-                  {/* <PopoverContent className=" w-[400px] rounded-md border-2 border-accent"> */}
-                  <CommandDialog
-                    position="top"
-                    open={isOpen}
-                    // onOpenChange={setIsOpen}
-                  >
-                    <CommandInput
-                      placeholder="Search client..."
-                      className="h-9 p-2"
-                    />
-                    <CommandEmpty>No clients found.</CommandEmpty>
-                    <CommandGroup>
-                      {clients.map((client) => (
-                        <CommandItem
-                          value={client.client}
-                          key={id}
-                          onSelect={() => {
-                            void update({
-                              id: gig.id,
-                              clientId: client.id,
-                            });
-                            // onblur{}
-                            // form.setValue("client", client.id);
-                          }}
+                  <Popover open={isOpen} onOpenChange={setIsOpen}>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className="w-full justify-between"
                         >
-                          {client.client}
-                          <Icons.check
-                            className={cn(
-                              "ml-auto h-4 w-4",
-                              client.client === field.value
-                                ? "opacity-100"
-                                : "opacity-0"
-                            )}
-                          />
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                    {/* </PopoverContent> */}
+                          {client.client ? (
+                            <>{client.client}</>
+                          ) : (
+                            <>Select Client...</>
+                          )}
+                          {isLoading ? (
+                            <Icons.spinner className="h-4 w-4 animate-spin text-accent" />
+                          ) : (
+                            <Icons.arrowUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          )}
+                        </Button>
+                        {/* <Input
+                          {...field}
+                          onClick={() => setIsOpen(true)}
+                          placeholder="Type to search..."
+                        /> */}
+                      </FormControl>
+                    </PopoverTrigger>
 
-                    {/* </Popover> */}
-                  </CommandDialog>
-                  {/* <FormDescription>
-                    This is the client that will be used in the dashboard.
-                  </FormDescription> */}
-                  {/* <FormMessage /> */}
+                    <PopoverContent
+                      className=" h-max w-[420px] p-0 "
+                      side="right"
+
+                      // align="start"
+                    >
+                      <Command className="flex  flex-col gap-3 border p-4">
+                        {/* <CommandInput placeholder="Search..."  /> */}
+                        <h1>Search Clients</h1>
+                        <Input
+                          onChange={handleClientSearch}
+                          placeholder="Type to search..."
+                          // className="p-2"
+                        />
+
+                        <CommandList>
+                          <CommandSeparator />
+
+                          <CommandEmpty>No results found.</CommandEmpty>
+                          <CommandGroup heading="Results">
+                            {searchClientResults &&
+                              searchClientResults.map((client) => (
+                                <CommandItem
+                                  value={client.client}
+                                  key={client.id}
+                                  onSelect={() => {
+                                    setIsLoading(true);
+                                    setIsOpen(false);
+                                    void update({
+                                      id: gig.id,
+                                      clientId: client.id,
+                                    });
+
+                                    setIsLoading(false);
+                                  }}
+                                >
+                                  {client.client}
+                                  <Icons.check
+                                    className={cn(
+                                      "ml-auto h-4 w-4",
+                                      client.client === field.value
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                </CommandItem>
+                              ))}
+                          </CommandGroup>
+                          <CommandSeparator />
+
+                          <CommandGroup heading="Suggestions">
+                            {clientSuggestions &&
+                              clientSuggestions.map((client) => (
+                                <CommandItem
+                                  value={client.client}
+                                  key={client.id}
+                                  onSelect={() => {
+                                    setIsLoading(true);
+                                    setIsOpen(false);
+                                    void update({
+                                      id: gig.id,
+                                      clientId: client.id,
+                                    });
+                                    setIsLoading(false);
+                                  }}
+                                >
+                                  {client.client}
+                                  <Icons.check
+                                    className={cn(
+                                      "ml-auto h-4 w-4",
+                                      client.client === field.value
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                </CommandItem>
+                              ))}
+                          </CommandGroup>
+                          <CommandSeparator />
+                          <CommandGroup heading="Create new">
+                            <CommandItem className="flex flex-col gap-2 ">
+                              <ClientCreate
+                                onSuccess={(newClientId) => {
+                                  void update({
+                                    id: gig.id,
+                                    clientId: newClientId,
+                                  });
+                                  setIsOpen(false);
+                                }}
+                              />
+                            </CommandItem>
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                 </FormItem>
               )}
             />
@@ -1069,7 +1142,7 @@ export default function GigForm({
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={gig.clientId?.length === 0}
+                      disabled={clientId?.length === 0}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         void update({
@@ -1095,7 +1168,7 @@ export default function GigForm({
                   <FormControl>
                     <Input
                       {...field}
-                      disabled={gig.clientId?.length === 0}
+                      disabled={clientId?.length === 0}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         void update({

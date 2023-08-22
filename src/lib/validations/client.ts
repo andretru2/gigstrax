@@ -2,8 +2,8 @@ import * as z from "zod";
 import { ClientType } from "@prisma/client";
 
 export const clientSchema = z.object({
-  id: z.string().min(1, { message: "please select a client" }),
-  client: z.string().optional(),
+  id: z.string().optional(),
+  client: z.string().min(2, { message: "Please enter a valid client" }),
   addressCity: z.string().optional(),
   addressState: z.string().optional(),
   addressStreet: z.string().optional(),
