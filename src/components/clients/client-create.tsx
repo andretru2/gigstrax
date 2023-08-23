@@ -1,6 +1,6 @@
 "use client";
 
-import { create, checkIfExists } from "@/app/_actions/client";
+import { create } from "@/app/_actions/client";
 
 import { useTransition, useState } from "react";
 import { type ClientProps } from "@/server/db";
@@ -8,6 +8,7 @@ import { type ClientProps } from "@/server/db";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { clientSchema } from "@/lib/validations/client";
+import { useRouter } from "next/navigation";
 
 import type * as z from "zod";
 
@@ -24,20 +25,18 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { Icons } from "@/components/icons";
-import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
-import { Calendar } from "../ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Label } from "../ui/label";
-import { ClientType } from "@prisma/client";
+
 import { Button } from "../ui/button";
 import { toast } from "@/hooks/use-toast";
 import { catchError } from "@/lib/utils";
 
 interface ClientFormFastProps {
   onSuccess?: (newClientId: string) => void;
+  goto?: boolean;
 }
 
 export default function ClientCreate(props: ClientFormFastProps) {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -58,6 +57,9 @@ export default function ClientCreate(props: ClientFormFastProps) {
         props.onSuccess && props.onSuccess(clientId);
         setIsLoading(false);
 
+        if (props.goto) {
+          router.push(`/dashboard/clients/${clientId}`);
+        }
         toast({ description: "Client added successfully." });
 
         form.reset();

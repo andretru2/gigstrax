@@ -4,39 +4,31 @@ import { usePathname, useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import GigCreateButton from "@/components/gigs/gig-create-button";
+// import GigCreateButton from "@/components/gigs/gig-create-button";
+import ClientCreate from "./client-create";
 
 interface Props {
   className?: string;
 }
 
-export default function GigTabs(props: Props) {
+export default function ClientTabs(props: Props) {
   const router = useRouter();
   const pathname = usePathname();
 
   const tabs = [
     {
-      title: "Upcoming",
-      href: "/dashboard/gigs?tab=upcoming",
+      title: "All",
+      href: "/dashboard/clients?",
     },
     {
       title: "Recently Created",
-      href: "/dashboard/gigs?tab=recentlyCreated",
+      href: "/dashboard/clients?tab=recentlyCreated",
     },
-    {
-      title: "Past",
-      href: "/dashboard/gigs?tab=past",
-    },
-    // {
-    //   title: "New Gig",
-    //   href: "/dashboard/gigs?tab=createNew",
-    // },
   ];
 
   return (
     <Tabs
       {...props}
-      defaultValue="/dashboard/gigs?tab=upcoming"
       className={cn("w-full overflow-x-auto", props.className)}
       onValueChange={(value) => router.push(value)}
     >
@@ -64,7 +56,7 @@ export default function GigTabs(props: Props) {
           )}
           asChild
         >
-          <GigCreateButton />
+          <ClientCreate goto={true} />
         </TabsTrigger>
       </TabsList>
     </Tabs>

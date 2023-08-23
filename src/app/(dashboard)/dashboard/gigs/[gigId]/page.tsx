@@ -19,7 +19,7 @@ import {
 } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { getGig } from "@/app/_actions/gig";
+import { get } from "@/app/_actions/gig";
 import { Separator } from "@/components/ui/separator";
 import GigDetailTabs from "@/components/gigs/gig-detail-tabs";
 import { getSantas, getMrsSantas } from "@/app/_actions/source";
@@ -33,6 +33,9 @@ export const metadata: Metadata = {
   title: "Manage Gig",
   description: "Manage your gig",
 };
+
+export const revalidate = 30;
+export const dynamic = "force-dynamic";
 
 interface Props {
   params: {
@@ -50,10 +53,10 @@ export default async function Page({ params }: Props) {
 
   const [gig, santas, mrsSantas, clients, clientSuggestions] =
     await Promise.all([
-      getGig(gigId),
+      get(gigId),
       getSantas(),
       getMrsSantas(),
-      getClients({}),
+      getClients({ limit: 1000 }),
       getClients({
         whereClause: {
           createdAt: { gte: fiveDaysAgo, lte: today },

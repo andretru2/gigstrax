@@ -6,12 +6,35 @@ import { type gigSchema } from "@/lib/validations/gig";
 import { revalidatePath } from "next/cache";
 import { type Prisma } from "@prisma/client";
 
-export async function getClient(id: string) {
+export async function get(id: string) {
   if (id.length === 0) return null;
 
   const data = await prisma.client.findFirst({
     select: {
       id: true,
+      client: true,
+      clientType: true,
+      contact: true,
+      phoneCell: true,
+      email: true,
+      addressCity: true,
+      addressState: true,
+      addressStreet: true,
+      addressZip: true,
+      source: true,
+      notes: true,
+      phoneLandline: true,
+      createdAt: true,
+      updatedAt: true,
+      createdBy: true,
+
+      updatedBy: true,
+      status: true,
+      _count: {
+        select: {
+          gigs: true,
+        },
+      },
     },
     where: {
       id: id,

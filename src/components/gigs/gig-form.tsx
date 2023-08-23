@@ -19,7 +19,7 @@ import {
   calculateTimeDifference,
   formatPhone,
 } from "@/lib/utils";
-import { type FocusEvent, useState, useEffect } from "react";
+import { type FocusEvent, useState, useEffect, useMemo } from "react";
 import { useDebounce } from "@/hooks/use-debounce";
 
 import { update } from "@/app/_actions/gig";
@@ -136,7 +136,7 @@ export default function GigForm({
     contactName,
     contactPhoneCell,
     contactPhoneLand,
-  } = gig;
+  } = useMemo(() => gig, [gig]);
   const {
     source: clientSource,
     phoneCell,
@@ -151,7 +151,9 @@ export default function GigForm({
     clientType,
     notes,
     contact,
-  } = client;
+  } = useMemo(() => client, [client]);
+
+  console.log("client", client);
   const { id: santaId, role } = santa ?? {};
   const { id: mrsSantaId, nameFirst } = mrsSanta ?? {};
 
@@ -176,6 +178,11 @@ export default function GigForm({
 
     searchClient();
   }, [debouncedSearchClient, clients]);
+
+  const handleRefresh = () => {
+    router.refresh();
+    console.log("refreshed");
+  };
 
   const form = useForm<z.infer<typeof gigSchema>>({
     resolver: zodResolver(gigSchema),
@@ -530,12 +537,20 @@ export default function GigForm({
                                   onSelect={() => {
                                     setIsLoading(true);
                                     setIsOpen(false);
+                                    setSearchClientResults([]);
                                     void update({
                                       id: gig.id,
                                       clientId: client.id,
                                     });
 
+                                    form.reset();
+                                    // router.refresh(`/dashboard/gigs/${gig.id}`);
+                                    // router.refresh();
+                                    // router.replace(`/dashboard/gigs/${gig.id}`);
+                                    // router.push(`/dashboard/gigs/${gig.id}`);
+
                                     setIsLoading(false);
+                                    void handleRefresh();
                                   }}
                                 >
                                   {client.client}
@@ -730,19 +745,9 @@ export default function GigForm({
                   <FormControl>
                     <Input
                       {...field}
-                      type="search"
-                      disabled={clientId?.length === 0}
+                      type="text"
+                      disabled={true}
                       className="bg-white"
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: gig.id,
-                          client: {
-                            update: {
-                              client: e.target.value,
-                            },
-                          },
-                        });
-                      }}
                     />
                   </FormControl>
                   {/* <FormMessage /> */}

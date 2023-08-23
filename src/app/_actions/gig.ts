@@ -24,7 +24,7 @@ import { fromUTC, toUTC } from "@/lib/utils";
  * ]
  */
 
-export async function getGig(id: string) {
+export async function get(id: string) {
   if (id.length === 0) return null;
 
   const data = await prisma.gig.findFirst({
@@ -315,6 +315,8 @@ export async function update(
     where: { id: props.id },
   });
 
+  console.log(props);
+
   // if (props?.timeStart) {
   //   const [hours, minutes] = props?.timeStart.split(":");
 
@@ -343,12 +345,12 @@ export async function update(
     throw new Error("Gig not found.");
   }
 
-  await prisma.gig.update({
+  const res = await prisma.gig.update({
     data: props,
     where: { id: props.id },
   });
 
-  // console.log("actions", data);
+  // console.("actions", data);
 
   revalidatePath(`/dashboard/gigs/${gig.id}`);
 

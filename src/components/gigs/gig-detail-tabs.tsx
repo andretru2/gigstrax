@@ -28,6 +28,7 @@ export default function GigDetailTabs({ gigId, ...props }: Props) {
   return (
     <Tabs
       {...props}
+      defaultValue={`/dashboard/gigs/${gigId}`}
       className={cn("w-full overflow-x-auto", props.className)}
       onValueChange={(value) => router.push(value)}
     >
@@ -39,7 +40,7 @@ export default function GigDetailTabs({ gigId, ...props }: Props) {
             className={cn(
               // pathname === tab.href && "bg-background text-foreground shadow-sm"
               pathname?.includes(tab.href) &&
-                "bg-background text-foreground shadow-sm"
+                "bg-accent text-foreground shadow-sm"
             )}
             onClick={() => router.push(tab.href)}
           >
