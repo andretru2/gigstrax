@@ -47,9 +47,9 @@ export default async function Page({ params }: Props) {
   const gigId = params.gigId;
   if (!gigId) return <h1>Please select a gig. </h1>;
 
-  const today = new Date();
-  const fiveDaysAgo = new Date();
-  fiveDaysAgo.setDate(today.getDate() - 400);
+  // const today = new Date();
+  // const fiveDaysAgo = new Date();
+  // fiveDaysAgo.setDate(today.getDate() - 400);
 
   const [gig, santas, mrsSantas, clients, clientSuggestions] =
     await Promise.all([
@@ -59,13 +59,14 @@ export default async function Page({ params }: Props) {
       getClients({ limit: 1000 }),
       getClients({
         whereClause: {
-          createdAt: { gte: fiveDaysAgo, lte: today },
+          // createdAt: { gte: fiveDaysAgo, lte: today },
           client: {
             not: {
               equals: "",
             },
           },
         },
+        orderBy: [{ createdAt: "desc" }, { client: "asc" }],
 
         limit: 5,
       }),

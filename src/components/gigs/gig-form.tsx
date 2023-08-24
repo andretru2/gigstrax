@@ -1060,7 +1060,7 @@ export default function GigForm({
                     <Textarea
                       {...field}
                       disabled={clientId?.length === 0}
-                      className="bg-white "
+                      className="h-48 bg-white"
                       onBlur={(e: FocusEvent<HTMLTextAreaElement>) => {
                         void update({
                           id: gig.id,
@@ -1367,7 +1367,7 @@ export default function GigForm({
                   <FormControl>
                     <Textarea
                       {...field}
-                      className="bg-white "
+                      className="h-48  bg-white"
                       onBlur={(e: FocusEvent<HTMLTextAreaElement>) => {
                         void update({
                           id: gig.id,

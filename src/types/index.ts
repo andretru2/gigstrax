@@ -84,6 +84,8 @@ export interface DataTableFilterableColumn<TData>
 }
 
 export type GigTab = "upcoming" | "recentlyCreated" | "all" | "createNew";
+export type ClientTab = "recentlyCreated" | "all" | "createNew";
+export type SourceTab = "recentlyCreated" | "all" | "createNew";
 
 export interface Address {
   addressLine1: string;

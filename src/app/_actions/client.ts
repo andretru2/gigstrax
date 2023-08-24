@@ -6,7 +6,7 @@ import { type gigSchema } from "@/lib/validations/gig";
 import { revalidatePath } from "next/cache";
 import { type Prisma } from "@prisma/client";
 
-export async function get(id: string) {
+export async function getClient(id: string) {
   if (id.length === 0) return null;
 
   const data = await prisma.client.findFirst({
@@ -45,27 +45,21 @@ export async function get(id: string) {
 }
 
 export async function getClients({
+  select = { id: true, client: true },
   whereClause = {},
-  limit = 25,
+  orderBy = [{ client: "asc" }],
+  limit = 10,
 }: {
+  select?: Prisma.ClientSelect;
   whereClause?: Prisma.ClientWhereInput;
-  limit?: number;
+  orderBy?: Prisma.ClientOrderByWithRelationInput[];
+  limit?: Prisma.ClientFindManyArgs["take"];
 }) {
   return await prisma.client.findMany({
-    select: {
-      id: true,
-      client: true,
-    },
-
+    select: select,
     where: whereClause,
-
-    orderBy: {
-      client: "asc",
-    },
-
+    orderBy: orderBy,
     take: limit,
-
-    // take: 10,
   });
 }
 

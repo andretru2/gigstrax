@@ -37,26 +37,26 @@ export const siteConfig: SiteConfig = {
     {
       title: "Gigs",
       href: "/dashboard/gigs",
-      items: [
-        {
-          title: "All",
-          href: "/dashboard/gigs",
-          description: "All Gigs",
-          items: [],
-        },
-        {
-          title: "Upcoming",
-          href: `/dashboard/gigs?gigDate=${today}`,
-          description: "Upcoming Gigs",
-          items: [],
-        },
-        {
-          title: "New",
-          href: "/dashboard/gigs/new",
-          description: "Create New Gig",
-          items: [],
-        },
-      ],
+      // items: [
+      //   {
+      //     title: "All",
+      //     href: "/dashboard/gigs",
+      //     description: "All Gigs",
+      //     items: [],
+      //   },
+      //   {
+      //     title: "Upcoming",
+      //     href: `/dashboard/gigs?gigDate=${today}`,
+      //     description: "Upcoming Gigs",
+      //     items: [],
+      //   },
+      //   {
+      //     title: "New",
+      //     href: "/dashboard/gigs/new",
+      //     description: "Create New Gig",
+      //     items: [],
+      //   },
+      // ],
       icon: "luggage",
     },
     {

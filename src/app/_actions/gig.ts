@@ -5,6 +5,7 @@ import { type z } from "zod";
 import { type gigSchema } from "@/lib/validations/gig";
 import { revalidatePath } from "next/cache";
 import { fromUTC, toUTC } from "@/lib/utils";
+import { getSantas } from "./source";
 
 // import * as z from "zod";
 
@@ -209,7 +210,7 @@ export async function getRecentlyCreated() {
         gte: fiveDaysAgo,
       },
     },
-    take: 25,
+    take: 10,
     orderBy: {
       gigDate: "desc",
     },
@@ -275,7 +276,7 @@ export async function getPast() {
     orderBy: {
       gigDate: "desc",
     },
-    take: 25,
+    take: 10,
   });
 
   return data.map((gig) => {
@@ -355,4 +356,40 @@ export async function update(
   revalidatePath(`/dashboard/gigs/${gig.id}`);
 
   // return data;
+}
+
+export async function getAvailableSantas(gigId: string) {
+  const gig = await prisma.gig.findFirst({
+    where: { id: gigId },
+  });
+
+  if (!gig) {
+    throw new Error("Gig not found.");
+  }
+
+  const { gigDate, timeStart, timeEnd } = gig;
+
+  const santas = getSantas();
+
+  santas && santas.map((santa) => {});
+
+  const data = await prisma.source.findMany({
+    select: {
+      id: true,
+      role: true,
+      nameFirst: true,
+      nameLast: true,
+    },
+    where: {
+      status: "Active",
+      role: {
+        contains: "RBS",
+      },
+    },
+    orderBy: {
+      role: "asc",
+    },
+  });
+
+  return data;
 }

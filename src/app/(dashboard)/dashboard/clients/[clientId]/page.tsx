@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import ClientForm from "@/components/clients/client-form";
-import ClientTabs from "@/components/clients/client-tabs";
+import ClientDetailTabs from "@/components/clients/client-detail-tabs";
 import {
   formatDate,
   formatTime,
@@ -17,12 +17,12 @@ import {
   fromUTC,
   toUTC,
   calculateTimeDifference,
+  formatPhone,
 } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { get } from "@/app/_actions/client";
+import { getClient } from "@/app/_actions/client";
 import { Separator } from "@/components/ui/separator";
-import GigDetailTabs from "@/components/gigs/gig-detail-tabs";
 import { notFound } from "next/navigation";
 
 // import NotFo
@@ -35,21 +35,24 @@ export const metadata: Metadata = {
 
 interface Props {
   params: {
-    id: string;
+    clientId: string;
   };
 }
 
 export default async function Page({ params }: Props) {
-  const id = params.id;
+  const id = params.clientId;
+  console.log(params);
   if (!id) return <h1>Please select a client. </h1>;
 
-  const today = new Date();
-  const fiveDaysAgo = new Date();
-  fiveDaysAgo.setDate(today.getDate() - 400);
+  // const today = new Date();
+  // const fiveDaysAgo = new Date();
+  // fiveDaysAgo.setDate(today.getDate() - 400);
 
-  const [client] = await Promise.all([get(id)]);
+  const [client] = await Promise.all([getClient(id)]);
 
   if (!client) return notFound();
+
+  console.log(client);
 
   const {
     addressCity,
@@ -57,14 +60,8 @@ export default async function Page({ params }: Props) {
     addressStreet,
     addressZip,
     client: clientName,
-    clientType,
-    contact,
-    email,
+
     phoneCell,
-    phoneLandline,
-    notes,
-    source,
-    status,
   } = client;
 
   const addressFull =
@@ -101,6 +98,16 @@ export default async function Page({ params }: Props) {
                 )}
               </div>
             </>
+            <>
+              <div className="flex flex-row items-center gap-2">
+                <Icons.phone className="h-4 w-4 text-primary/60" />
+                {!phoneCell ? (
+                  <div className="italic text-destructive/60">incomplete </div>
+                ) : (
+                  <div>{formatPhone(phoneCell)}</div>
+                )}
+              </div>
+            </>
           </CardTitle>
           <div className="flex flex-row gap-2">
             <Button
@@ -134,8 +141,8 @@ export default async function Page({ params }: Props) {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <Separator className="mb-8 " />
-        <ClientTabs id={id} />
-        <ClientForm client={client} />
+        <ClientDetailTabs id={id} />
+        <ClientForm {...client} />
       </CardContent>
     </Card>
   );

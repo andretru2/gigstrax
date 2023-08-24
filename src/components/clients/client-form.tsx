@@ -90,6 +90,8 @@ export default function ClientForm(props: ClientProps) {
     status,
   } = props;
 
+  console.log(props);
+
   const form = useForm<z.infer<typeof clientSchema>>({
     resolver: zodResolver(clientSchema),
     mode: "onBlur",
@@ -118,7 +120,7 @@ export default function ClientForm(props: ClientProps) {
   return (
     <Form {...form}>
       <form
-        className="grid w-full grid-cols-2  gap-4  "
+        className="grid w-full   gap-4  "
         // onSubmit={(...args) => void form.handleSubmit(onSubmit)(...args)}
       >
         <Card className=" p-4">
@@ -410,7 +412,7 @@ export default function ClientForm(props: ClientProps) {
                   <FormControl>
                     <Textarea
                       {...field}
-                      className="bg-white "
+                      className="h-48 bg-white"
                       onBlur={(e: FocusEvent<HTMLTextAreaElement>) => {
                         void update({
                           id: id,
