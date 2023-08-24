@@ -4,35 +4,31 @@ import { usePathname, useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// import GigCreateButton from "@/components/gigs/gig-create-button";
+import SourceCreate from "./source-create";
 
 interface Props {
-  id: string;
   className?: string;
 }
 
-export default function SourceDetailTabs({ id, ...props }: Props) {
+export default function SourceTabs(props: Props) {
   const router = useRouter();
   const pathname = usePathname();
 
   const tabs = [
     {
-      title: "Overview",
-      href: `/dashboard/clients/${id}`,
+      title: "All",
+      href: "/dashboard/sources?",
     },
     {
-      title: "Gigs",
-      href: `/dashboard/clients/${id}/gigs`,
-    },
-    {
-      title: "Documents",
-      href: `/dashboard/clients/${id}/documents`,
+      title: "Recently Created",
+      href: "/dashboard/sources?tab=recentlyCreated",
     },
   ];
 
   return (
     <Tabs
       {...props}
-      defaultValue={`/dashboard/clients/${id}`}
       className={cn("w-full overflow-x-auto", props.className)}
       onValueChange={(value) => router.push(value)}
     >
@@ -44,13 +40,24 @@ export default function SourceDetailTabs({ id, ...props }: Props) {
             className={cn(
               // pathname === tab.href && "bg-background text-foreground shadow-sm"
               pathname?.includes(tab.href) &&
-                "bg-accent text-foreground shadow-sm"
+                "bg-primary text-foreground shadow-sm"
             )}
             onClick={() => router.push(tab.href)}
           >
             {tab.title}
           </TabsTrigger>
         ))}
+        <TabsTrigger // This is the new tab for GigCreateButton
+          key="createNew"
+          value=""
+          className={cn(
+            pathname?.includes("createNew") &&
+              "bg-background text-foreground shadow-sm"
+          )}
+          asChild
+        >
+          <SourceCreate goto={true} />
+        </TabsTrigger>
       </TabsList>
     </Tabs>
   );

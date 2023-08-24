@@ -1,8 +1,6 @@
 "use server";
 
-import { type ClientProps, prisma, type SourceProps } from "@/server/db";
-import { type z } from "zod";
-import { type gigSchema } from "@/lib/validations/gig";
+import { type ClientProps, prisma } from "@/server/db";
 import { revalidatePath } from "next/cache";
 import { type Prisma } from "@prisma/client";
 

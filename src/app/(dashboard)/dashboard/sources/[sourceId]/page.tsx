@@ -8,8 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import ClientForm from "@/components/clients/client-form";
-import ClientTabs from "@/components/clients/client-tabs";
+import SourceForm from "@/components/sources/source-form";
+import SourceTabs from "@/components/sources/source-tabs";
 import {
   formatDate,
   formatTime,
@@ -20,7 +20,7 @@ import {
 } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { get } from "@/app/_actions/client";
+import { getSource } from "@/app/_actions/source";
 import { Separator } from "@/components/ui/separator";
 import GigDetailTabs from "@/components/gigs/gig-detail-tabs";
 import { notFound } from "next/navigation";
@@ -29,8 +29,8 @@ import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
-  title: "Manage Client",
-  description: "Manage your client",
+  title: "Manage Source",
+  description: "Manage your source",
 };
 
 interface Props {
@@ -41,23 +41,23 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const id = params.id;
-  if (!id) return <h1>Please select a client. </h1>;
+  if (!id) return <h1>Please select a source. </h1>;
 
   const today = new Date();
   const fiveDaysAgo = new Date();
   fiveDaysAgo.setDate(today.getDate() - 400);
 
-  const [client] = await Promise.all([get(id)]);
+  const [source] = await Promise.all([getSource(id)]);
 
-  if (!client) return notFound();
+  if (!source) return notFound();
 
   const {
     addressCity,
     addressState,
     addressStreet,
     addressZip,
-    client: clientName,
-    clientType,
+    source: sourceName,
+    sourceType,
     contact,
     email,
     phoneCell,
@@ -65,7 +65,7 @@ export default async function Page({ params }: Props) {
     notes,
     source,
     status,
-  } = client;
+  } = source;
 
   const addressFull =
     addressStreet &&
@@ -84,10 +84,10 @@ export default async function Page({ params }: Props) {
             <>
               <div className="flex flex-row items-center gap-2">
                 <Icons.user className="h-4 w-4 text-primary/60" />
-                {!clientName ? (
+                {!sourceName ? (
                   <div className="italic text-destructive/60">incomplete </div>
                 ) : (
-                  <div>{clientName}</div>
+                  <div>{sourceName}</div>
                 )}
               </div>
             </>
@@ -134,8 +134,8 @@ export default async function Page({ params }: Props) {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <Separator className="mb-8 " />
-        <ClientTabs id={id} />
-        <ClientForm client={client} />
+        <SourceTabs id={id} />
+        <SourceForm source={source} />
       </CardContent>
     </Card>
   );

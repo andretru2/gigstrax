@@ -1,11 +1,11 @@
 import DataTable from "@/components/clients/data-table";
-import { type ClientTab } from "@/types/index";
+import { type Tab } from "@/types/index";
 import { redirect } from "next/navigation";
 import { getClients } from "@/app/_actions/client";
 
 interface Props {
   params: {
-    tab: ClientTab;
+    tab: Tab;
   };
   searchParams: {
     [key: string]: string | string[] | undefined;

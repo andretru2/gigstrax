@@ -17,22 +17,22 @@ export default function SourceDetailTabs({ id, ...props }: Props) {
   const tabs = [
     {
       title: "Overview",
-      href: `/dashboard/clients/${id}`,
+      href: `/dashboard/sources/${id}`,
     },
     {
       title: "Gigs",
-      href: `/dashboard/clients/${id}/gigs`,
+      href: `/dashboard/sources/${id}/gigs`,
     },
     {
       title: "Documents",
-      href: `/dashboard/clients/${id}/documents`,
+      href: `/dashboard/sources/${id}/documents`,
     },
   ];
 
   return (
     <Tabs
       {...props}
-      defaultValue={`/dashboard/clients/${id}`}
+      defaultValue={`/dashboard/sources/${id}`}
       className={cn("w-full overflow-x-auto", props.className)}
       onValueChange={(value) => router.push(value)}
     >
