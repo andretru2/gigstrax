@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import SourceForm from "@/components/sources/source-form";
-import SourceTabs from "@/components/sources/source-tabs";
+import SourceDetailTabs from "@/components/sources/source-detail-tabs";
 import {
   formatDate,
   formatTime,
@@ -17,12 +17,12 @@ import {
   fromUTC,
   toUTC,
   calculateTimeDifference,
+  formatPhone,
 } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { getSource } from "@/app/_actions/source";
 import { Separator } from "@/components/ui/separator";
-import GigDetailTabs from "@/components/gigs/gig-detail-tabs";
 import { notFound } from "next/navigation";
 
 // import NotFo
@@ -35,12 +35,12 @@ export const metadata: Metadata = {
 
 interface Props {
   params: {
-    id: string;
+    sourceId: string;
   };
 }
 
 export default async function Page({ params }: Props) {
-  const id = params.id;
+  const id = params.sourceId;
   if (!id) return <h1>Please select a source. </h1>;
 
   const today = new Date();
@@ -56,15 +56,10 @@ export default async function Page({ params }: Props) {
     addressState,
     addressStreet,
     addressZip,
-    source: sourceName,
-    sourceType,
-    contact,
+    nameFirst,
+    nameLast,
+    phone,
     email,
-    phoneCell,
-    phoneLandline,
-    notes,
-    source,
-    status,
   } = source;
 
   const addressFull =
@@ -84,10 +79,33 @@ export default async function Page({ params }: Props) {
             <>
               <div className="flex flex-row items-center gap-2">
                 <Icons.user className="h-4 w-4 text-primary/60" />
-                {!sourceName ? (
+                {!nameFirst ? (
                   <div className="italic text-destructive/60">incomplete </div>
                 ) : (
-                  <div>{sourceName}</div>
+                  <div>
+                    {nameFirst}
+                    {nameLast}
+                  </div>
+                )}
+              </div>
+            </>
+            <>
+              <div className="flex flex-row items-center gap-2">
+                <Icons.phone className="h-4 w-4 text-primary/60" />
+                {!phone ? (
+                  <div className="italic text-destructive/60">incomplete </div>
+                ) : (
+                  <div>{formatPhone(phone)}</div>
+                )}
+              </div>
+            </>
+            <>
+              <div className="flex flex-row items-center gap-2">
+                <Icons.email className="h-4 w-4 text-primary/60" />
+                {!email ? (
+                  <div className="italic text-destructive/60">incomplete </div>
+                ) : (
+                  <div>{email}</div>
                 )}
               </div>
             </>
@@ -134,8 +152,8 @@ export default async function Page({ params }: Props) {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <Separator className="mb-8 " />
-        <SourceTabs id={id} />
-        <SourceForm source={source} />
+        <SourceDetailTabs id={id} />
+        <SourceForm {...source} />
       </CardContent>
     </Card>
   );

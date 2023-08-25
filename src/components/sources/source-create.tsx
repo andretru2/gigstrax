@@ -114,8 +114,8 @@ export default function SourceCreate(props: SourceFormFastProps) {
           isLoading={isLoading}
           className="flex flex-row items-center"
         >
-          <Icons.add className="mr-2 h-4 w-4" />
-          Create new Source
+          Next
+          <Icons.chevronRight className="mr-2 h-4 w-4" />
         </Button>
       </form>
     </Form>

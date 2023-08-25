@@ -38,7 +38,6 @@ interface ClientFormFastProps {
 export default function ClientCreate(props: ClientFormFastProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof clientSchema>>({
     resolver: zodResolver(clientSchema),
@@ -51,11 +50,9 @@ export default function ClientCreate(props: ClientFormFastProps) {
   function onSubmit(data: z.infer<typeof clientSchema>) {
     startTransition(async () => {
       try {
-        setIsLoading(true);
         const clientId = await create(data as ClientProps);
 
         props.onSuccess && props.onSuccess(clientId);
-        setIsLoading(false);
 
         if (props.goto) {
           router.push(`/dashboard/clients/${clientId}`);
@@ -91,8 +88,22 @@ export default function ClientCreate(props: ClientFormFastProps) {
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={false} isLoading={isLoading}>
-          Create new client
+        <Button type="submit" disabled={isPending}>
+          {isPending ? (
+            <div className="flex flex-col items-center gap-2">
+              <Icons.spinner
+                className="mr-2 h-4 w-4 animate-spin"
+                aria-hidden="true"
+              />
+              <div className="opacity-75">Submitting...</div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-2">
+              <Icons.chevronRight className="mr-2 h-4 w-4" />
+              Submit
+              <span className="sr-only">Submit</span>
+            </div>
+          )}
         </Button>
       </form>
     </Form>

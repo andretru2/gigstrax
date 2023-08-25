@@ -1,7 +1,7 @@
-import DataTable from "@/components/clients/data-table";
+import DataTable from "@/components/sources/data-table";
 import { type Tab } from "@/types/index";
 import { redirect } from "next/navigation";
-import { getClients } from "@/app/_actions/client";
+import { getSources } from "@/app/_actions/source";
 
 interface Props {
   params: {
@@ -27,33 +27,39 @@ export default async function Page({ params, searchParams }: Props) {
 
   const data =
     tab === "recentlyCreated"
-      ? await getClients({
+      ? await getSources({
           select: {
             id: true,
-            client: true,
-            clientType: true,
-            contact: true,
-            phoneCell: true,
+            role: true,
+            nameFirst: true,
+            nameLast: true,
             email: true,
             addressCity: true,
             addressState: true,
             addressStreet: true,
             addressZip: true,
-
-            phoneLandline: true,
+            notes: true,
             createdAt: true,
-
+            updatedAt: true,
+            createdBy: true,
+            dob: true,
+            updatedBy: true,
             status: true,
-            _count: {
-              select: {
-                gigs: true,
-              },
-            },
+
+            entity: true,
+
+            phone: true,
+            resource: true,
+            website: true,
+            ssn: true,
+            videoUrl: true,
+            gender: true,
+            costume: true,
           },
-          orderBy: [{ createdAt: "desc" }, { client: "asc" }],
+          orderBy: [{ createdAt: "desc" }, { nameLast: "asc" }],
           limit: 10,
         })
-      : await getClients({});
+      : await getSources({});
 
   return <DataTable data={data} pageCount={10} />;
 }

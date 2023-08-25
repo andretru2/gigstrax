@@ -66,7 +66,7 @@ import {
 import { update } from "@/app/_actions/source";
 import SourceCreate from "./source-create";
 
-export default function SourceForm(props: SourceProps) {
+export default function SourceForm(props: Partial<SourceProps>) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const {

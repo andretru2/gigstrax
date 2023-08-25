@@ -15,25 +15,19 @@ export async function getSource(id: string) {
       role: true,
       nameFirst: true,
       nameLast: true,
-      phoneCell: true,
       email: true,
       addressCity: true,
       addressState: true,
       addressStreet: true,
       addressZip: true,
       notes: true,
-      phoneLandline: true,
       createdAt: true,
       updatedAt: true,
       createdBy: true,
       dob: true,
       updatedBy: true,
       status: true,
-      _count: {
-        select: {
-          gigs: true,
-        },
-      },
+
       entity: true,
 
       phone: true,

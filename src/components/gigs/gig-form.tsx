@@ -19,7 +19,13 @@ import {
   calculateTimeDifference,
   formatPhone,
 } from "@/lib/utils";
-import { type FocusEvent, useState, useEffect, useMemo } from "react";
+import {
+  type FocusEvent,
+  useState,
+  useEffect,
+  useMemo,
+  useTransition,
+} from "react";
 import { useDebounce } from "@/hooks/use-debounce";
 
 import { update } from "@/app/_actions/gig";
@@ -72,6 +78,7 @@ import {
 } from "../ui/command";
 
 import ClientCreate from "../clients/client-create";
+import { toast } from "@/hooks/use-toast";
 
 type GigFormProps = Partial<GigProps> & {
   client: Partial<ClientProps>;
@@ -114,6 +121,7 @@ export default function GigForm({
     ClientPickerProps[]
   >([]);
   const debouncedSearchClient = useDebounce(searchClient, 300);
+  const [isPending, startTransition] = useTransition();
 
   const {
     id,
@@ -233,6 +241,31 @@ export default function GigForm({
 
   function handleClientSearch(e: FocusEvent<HTMLInputElement>) {
     setSearchlient(e.target.value);
+  }
+
+  function handleSelectClient(value: string) {
+    console.log(value);
+    startTransition(async () => {
+      try {
+        void (await update({
+          id: gig.id,
+          clientId: value,
+        }));
+        setIsOpen(false);
+        setSearchClientResults([]);
+        form.reset();
+        router.refresh();
+        // void handleRefresh();
+      } catch (error) {
+        error instanceof Error
+          ? toast({
+              description: error.message,
+            })
+          : toast({
+              description: "Something went wrong, please try again.",
+            });
+      }
+    });
   }
 
   // async function handleTimeChange(time: Date) {
@@ -495,7 +528,7 @@ export default function GigForm({
                           ) : (
                             <>Select Client...</>
                           )}
-                          {isLoading ? (
+                          {isPending ? (
                             <Icons.spinner className="h-4 w-4 animate-spin text-accent" />
                           ) : (
                             <Icons.arrowUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -534,26 +567,10 @@ export default function GigForm({
                                 <CommandItem
                                   value={client.client}
                                   key={client.id}
-                                  onSelect={() => {
-                                    setIsLoading(true);
-                                    setIsOpen(false);
-                                    setSearchClientResults([]);
-                                    void update({
-                                      id: gig.id,
-                                      clientId: client.id,
-                                    });
-
-                                    form.reset();
-                                    // router.refresh(`/dashboard/gigs/${gig.id}`);
-                                    // router.refresh();
-                                    // router.replace(`/dashboard/gigs/${gig.id}`);
-                                    // router.push(`/dashboard/gigs/${gig.id}`);
-
-                                    setIsLoading(false);
-                                    void handleRefresh();
-                                  }}
+                                  onSelect={() => handleSelectClient(client.id)}
                                 >
                                   {client.client}
+
                                   <Icons.check
                                     className={cn(
                                       "ml-auto h-4 w-4",
@@ -573,15 +590,7 @@ export default function GigForm({
                                 <CommandItem
                                   value={client.client}
                                   key={client.id}
-                                  onSelect={() => {
-                                    setIsLoading(true);
-                                    setIsOpen(false);
-                                    void update({
-                                      id: gig.id,
-                                      clientId: client.id,
-                                    });
-                                    setIsLoading(false);
-                                  }}
+                                  onSelect={() => handleSelectClient(client.id)}
                                 >
                                   {client.client}
                                   <Icons.check
@@ -596,8 +605,8 @@ export default function GigForm({
                               ))}
                           </CommandGroup>
                           <CommandSeparator />
-                          <CommandGroup heading="Create new">
-                            <CommandItem className="flex flex-col gap-2 ">
+                          <CommandGroup className="" heading="Create new">
+                            <CommandItem className="flex flex-col gap-2 data-[selected]:bg-none">
                               <ClientCreate
                                 onSuccess={(newClientId) => {
                                   void update({
