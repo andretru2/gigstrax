@@ -7,21 +7,20 @@ import { useTransition, useState } from "react";
 // import { useRouter } from "next/navigation";
 import { redirect } from "next/navigation";
 import { Icons } from "../icons";
+import { useRouter } from "next/navigation";
 
 export default function GigCreateButton() {
   const [isPending, startTransition] = useTransition();
 
-  //   const router = useRouter();
+  const router = useRouter();
 
   const handleClick = () => {
     startTransition(async () => {
       try {
         const id = await create();
-        console.log("create", id);
-        void redirect(`/dashboard/gigs/${id}`);
+        router.push(`/dashboard/gigs/${id}`);
       } catch (error) {
         console.error("Error creating gig:", error);
-      } finally {
       }
 
       //   const idx = await create();
@@ -39,6 +38,7 @@ export default function GigCreateButton() {
       className="opacity-80"
       disabled={isPending}
       isLoading={isPending}
+      content="flex flex-row items-center gap-2"
     >
       <Icons.add className="mr-2 h-4 w-4" />
       {isPending ? "Adding..." : "New Gig"}

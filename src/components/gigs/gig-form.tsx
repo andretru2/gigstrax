@@ -80,6 +80,7 @@ import {
 
 import ClientCreate from "../clients/client-create";
 import { toast } from "@/hooks/use-toast";
+import { revalidatePath } from "next/cache";
 
 // interface Props {
 //   gig: Partial<GigProps> &
@@ -154,7 +155,7 @@ export default function GigForm({
     clientType,
     notes,
     contact,
-  } = useMemo(() => client, [client]);
+  } = useMemo(() => client || {}, [client]);
 
   console.log("client", client);
   const { id: santaId, role } = santa ?? {};
@@ -243,6 +244,9 @@ export default function GigForm({
         setIsOpen(false);
         setSearchClientResults([]);
         form.reset();
+        console.log(gig.id);
+        gig.id && router.push(`/dashboard/gigs/${gig.id}`);
+
         router.refresh();
         // void handleRefresh();
       } catch (error) {
@@ -500,7 +504,7 @@ export default function GigForm({
 
             <FormField
               control={form.control}
-              name="client.client"
+              name="clientId"
               render={({ field }) => (
                 <FormItem className=" col-span-3 flex flex-col ">
                   <FormLabel>Client</FormLabel>
@@ -512,7 +516,7 @@ export default function GigForm({
                           role="combobox"
                           className="w-full justify-between"
                         >
-                          {client.client ? (
+                          {client?.client ? (
                             <>{client.client}</>
                           ) : (
                             <>Select Client...</>

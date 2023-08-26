@@ -203,7 +203,7 @@ export default function Datatable({ data, pageCount }: Props) {
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Created At" />
         ),
-        cell: ({ cell }) => formatDate(cell.getValue() as Date),
+        cell: ({ cell }) => cell.getValue(),
         enableColumnFilter: false,
       },
       {

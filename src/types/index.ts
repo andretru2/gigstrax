@@ -100,7 +100,7 @@ export type MrsSantaProps = Pick<SourceProps, "id" | "nameFirst">;
 export type ClientPickerProps = Pick<ClientProps, "id" | "client">;
 
 export type GigExtendedProps = Partial<GigProps> & {
-  client: Partial<ClientProps>;
+  client?: Partial<ClientProps>;
   santa?: Pick<SourceProps, "id" | "role">;
   mrsSanta?: Pick<SourceProps, "id" | "nameFirst">;
 };
