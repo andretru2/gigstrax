@@ -5,7 +5,7 @@ import { type z } from "zod";
 //   checkoutItemSchema,
 // } from "@/lib/validations/cart";
 import { type Icons } from "@/components/icons";
-import { type SourceProps, type ClientProps } from "@/server/db";
+import { type SourceProps, type ClientProps, type GigProps } from "@/server/db";
 // import type { Icon } from "@/components/icons";
 
 export interface NavItem {
@@ -58,11 +58,11 @@ export type NavItemNavItem = NavItemWithChildren;
 
 export type UserRole = "user" | "admin" | "superadmin";
 
-export type Option = {
+export interface Option {
   label: string;
   value: string;
-};
-
+  icon?: React.ComponentType<{ className?: string }>;
+}
 export type FileWithPreview = FileWithPath & {
   preview: string;
 };
@@ -98,3 +98,9 @@ export interface Address {
 export type SantaProps = Pick<SourceProps, "id" | "role">;
 export type MrsSantaProps = Pick<SourceProps, "id" | "nameFirst">;
 export type ClientPickerProps = Pick<ClientProps, "id" | "client">;
+
+export type GigExtendedProps = Partial<GigProps> & {
+  client: Partial<ClientProps>;
+  santa?: Pick<SourceProps, "id" | "role">;
+  mrsSanta?: Pick<SourceProps, "id" | "nameFirst">;
+};

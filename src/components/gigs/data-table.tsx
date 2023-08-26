@@ -6,7 +6,6 @@ import Link from "next/link";
 import { type ColumnDef } from "@tanstack/react-table";
 // import { toast } from "sonner"
 import { toast } from "@/hooks/use-toast";
-import { type Gig } from "@prisma/client";
 
 import {
   catchError,
@@ -32,11 +31,12 @@ import { DataTable } from "@/components/data-table/data-table";
 // import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import { DataTableColumnHeader } from "@/components/data-table/shadcn/data-table-column-header";
 import { Icons } from "../icons";
-import { type GigProps } from "@/server/db";
-// import { deleteProductAction } from "@/app/_actions/product"
+import { type ClientProps, type GigProps } from "@/server/db";
+import { type GigExtendedProps } from "@/types/index";
 
 interface Props {
-  data: Gig[];
+  // data: GigProps & { clients: Partial<ClientProps> };
+  data: GigExtendedProps;
   pageCount: number;
 }
 
@@ -83,13 +83,14 @@ export default function Datatable({ data, pageCount }: Props) {
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Date" />
         ),
-        cell: ({ row }) => {
-          return (
-            <span className="w-96">
-              {formatDate(row.original.gigDate, "friendly")}
-            </span>
-          );
-        },
+        cell: ({ cell }) => formatDate(cell.getValue() as Date),
+        // cell: ({ row }) => {
+        //   return (
+        //     <span className="w-96">
+        //       {formatDate(row.original.gigDate, "friendly")}
+        //     </span>
+        //   );
+        // },
       },
       {
         accessorKey: "timeStart",
@@ -186,16 +187,24 @@ export default function Datatable({ data, pageCount }: Props) {
           return (
             <span>
               {formatAddress({
-                name: row.original.venueAddressName,
-                addressLine1: row.original.venueAddressStreet,
+                name: row.original.venueAddressName ?? "",
+                addressLine1: row.original.venueAddressStreet ?? "",
                 addressLine2: row.original.venueAddressStreet2 ?? "",
-                city: row.original.venueAddressCity,
-                state: row.original.venueAddressState,
+                city: row.original.venueAddressCity ?? "",
+                state: row.original.venueAddressState ?? "",
                 zip: row.original.venueAddressZip ?? "",
               })}
             </span>
           );
         },
+      },
+      {
+        accessorKey: "createdAt",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Created At" />
+        ),
+        cell: ({ cell }) => formatDate(cell.getValue() as Date),
+        enableColumnFilter: false,
       },
       {
         id: "actions",
@@ -308,12 +317,8 @@ export default function Datatable({ data, pageCount }: Props) {
       // ]}
       searchableColumns={[
         {
-          id: "gigDate",
-          title: "Gig Date",
-        },
-        {
-          id: "timeStart",
-          title: "Start",
+          id: "client.client",
+          title: "Client",
         },
       ]}
       // newRowLink={`/dashboard/gigs/new`}

@@ -63,6 +63,7 @@ import { Label } from "../ui/label";
 // import { getSantas } from "@/app/_actions/source";
 import {
   type SantaProps,
+  type GigExtendedProps,
   type MrsSantaProps,
   type ClientPickerProps,
 } from "@/types/index";
@@ -80,12 +81,6 @@ import {
 import ClientCreate from "../clients/client-create";
 import { toast } from "@/hooks/use-toast";
 
-type GigFormProps = Partial<GigProps> & {
-  client: Partial<ClientProps>;
-  santa?: Pick<SourceProps, "id" | "role">;
-  mrsSanta?: Pick<SourceProps, "id" | "nameFirst">;
-};
-
 // interface Props {
 //   gig: Partial<GigProps> &
 //     Partial<Omit<ClientProps, "client">> &
@@ -96,7 +91,7 @@ type GigFormProps = Partial<GigProps> & {
 // }
 
 interface Props {
-  gig: GigFormProps;
+  gig: GigExtendedProps;
   santas: SantaProps[];
   mrsSantas?: MrsSantaProps[];
   clients?: ClientPickerProps[];
@@ -187,11 +182,6 @@ export default function GigForm({
     searchClient();
   }, [debouncedSearchClient, clients]);
 
-  const handleRefresh = () => {
-    router.refresh();
-    console.log("refreshed");
-  };
-
   const form = useForm<z.infer<typeof gigSchema>>({
     resolver: zodResolver(gigSchema),
     mode: "onBlur",
@@ -244,7 +234,6 @@ export default function GigForm({
   }
 
   function handleSelectClient(value: string) {
-    console.log(value);
     startTransition(async () => {
       try {
         void (await update({
