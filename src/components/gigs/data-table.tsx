@@ -29,7 +29,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DataTable } from "@/components/data-table/data-table";
 // import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
-import { DataTableColumnHeader } from "@/components/data-table/shadcn/data-table-column-header";
+import { DataTableColumnHeader } from "../data-table/data-table-column-header";
+
 import { Icons } from "../icons";
 import { type ClientProps, type GigProps } from "@/server/db";
 import { type GigExtendedProps } from "@/types/index";
@@ -45,7 +46,7 @@ export default function Datatable({ data, pageCount }: Props) {
   const [selectedRowIds, setSelectedRowIds] = React.useState<number[]>([]);
 
   // Memoize the columns so they don't re-render on every render
-  const columns = React.useMemo<ColumnDef<GigProps, unknown>[]>(
+  const columns = React.useMemo<ColumnDef<GigExtendedProps, unknown>[]>(
     () => [
       // {
       //   id: "select",
@@ -151,7 +152,7 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader column={column} title="Santa" />
         ),
         cell: ({ row }) => {
-          return <span>{row.original?.santa?.role}</span>;
+          return <span>{row.original.santa?.role}</span>;
         },
       },
       {
@@ -221,7 +222,9 @@ export default function Datatable({ data, pageCount }: Props) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[160px]">
               <DropdownMenuItem asChild>
-                <Link href={`/dashboard/gigs/${row.original.id}`}>Edit</Link>
+                {row.original.id && (
+                  <Link href={`/dashboard/gigs/${row.original.id}`}>Edit</Link>
+                )}
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />

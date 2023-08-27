@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DataTable } from "@/components/data-table/data-table";
 // import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
-import { DataTableColumnHeader } from "@/components/data-table/shadcn/data-table-column-header";
+import { DataTableColumnHeader } from "../data-table/data-table-column-header";
 import { Icons } from "../icons";
 import { type ClientProps } from "@/server/db";
 // import { deleteProductAction } from "@/app/_actions/product"

@@ -112,12 +112,15 @@ export function DataTable<TData, TValue>({
   }, [page, per_page]);
 
   React.useEffect(() => {
-    router.push(
-      `${pathname}?${createQueryString({
-        page: pageIndex + 1,
-        per_page: pageSize,
-      })}`
-    );
+    {
+      pathname &&
+        router.push(
+          `${pathname}?${createQueryString({
+            page: pageIndex + 1,
+            per_page: pageSize,
+          })}`
+        );
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex, pageSize]);
@@ -131,14 +134,17 @@ export function DataTable<TData, TValue>({
   ]);
 
   React.useEffect(() => {
-    router.push(
-      `${pathname}?${createQueryString({
-        page,
-        sort: sorting[0]?.id
-          ? `${sorting[0]?.id}.${sorting[0]?.desc ? "desc" : "asc"}`
-          : null,
-      })}`
-    );
+    {
+      pathname &&
+        router.push(
+          `${pathname}?${createQueryString({
+            page,
+            sort: sorting[0]?.id
+              ? `${sorting[0]?.id}.${sorting[0]?.desc ? "desc" : "asc"}`
+              : null,
+          })}`
+        );
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sorting]);
@@ -162,26 +168,35 @@ export function DataTable<TData, TValue>({
   React.useEffect(() => {
     for (const column of debouncedSearchableColumnFilters) {
       if (typeof column.value === "string") {
-        router.push(
-          `${pathname}?${createQueryString({
-            page: 1,
-            [column.id]: typeof column.value === "string" ? column.value : null,
-          })}`
-        );
+        {
+          pathname &&
+            router.push(
+              `${pathname}?${createQueryString({
+                page: 1,
+                [column.id]:
+                  typeof column.value === "string" ? column.value : null,
+              })}`
+            );
+        }
       }
     }
 
-    for (const key of searchParams.keys()) {
-      if (
-        searchableColumns.find((column) => column.id === key) &&
-        !debouncedSearchableColumnFilters.find((column) => column.id === key)
-      ) {
-        router.push(
-          `${pathname}?${createQueryString({
-            page: 1,
-            [key]: null,
-          })}`
-        );
+    if (searchParams) {
+      for (const key of searchParams.keys()) {
+        if (
+          searchableColumns.find((column) => column.id === key) &&
+          !debouncedSearchableColumnFilters.find((column) => column.id === key)
+        ) {
+          {
+            pathname &&
+              router.push(
+                `${pathname}?${createQueryString({
+                  page: 1,
+                  [key]: null,
+                })}`
+              );
+          }
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -190,26 +205,36 @@ export function DataTable<TData, TValue>({
   React.useEffect(() => {
     for (const column of filterableColumnFilters) {
       if (typeof column.value === "object" && Array.isArray(column.value)) {
-        router.push(
-          `${pathname}?${createQueryString({
-            page: 1,
-            [column.id]: column.value.join("."),
-          })}`
-        );
+        {
+          pathname &&
+            router.push(
+              `${pathname}?${
+                createQueryString({
+                  page: 1,
+                  [column.id]: column.value.join("."),
+                }) ?? ""
+              }`
+            );
+        }
       }
     }
 
-    for (const key of searchParams.keys()) {
-      if (
-        filterableColumns.find((column) => column.id === key) &&
-        !filterableColumnFilters.find((column) => column.id === key)
-      ) {
-        router.push(
-          `${pathname}?${createQueryString({
-            page: 1,
-            [key]: null,
-          })}`
-        );
+    if (searchParams) {
+      for (const key of searchParams.keys()) {
+        if (
+          filterableColumns.find((column) => column.id === key) &&
+          !filterableColumnFilters.find((column) => column.id === key)
+        ) {
+          {
+            pathname &&
+              router.push(
+                `${pathname}?${createQueryString({
+                  page: 1,
+                  [key]: null,
+                })}`
+              );
+          }
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

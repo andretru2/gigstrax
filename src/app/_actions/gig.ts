@@ -1,6 +1,11 @@
 "use server";
 
-import { prisma, type GigProps, type ClientProps } from "@/server/db";
+import {
+  prisma,
+  type GigProps,
+  type ClientProps,
+  type SourceProps,
+} from "@/server/db";
 import { type z } from "zod";
 import { type gigSchema } from "@/lib/validations/gig";
 import { revalidatePath } from "next/cache";
@@ -359,9 +364,9 @@ export async function update(
   // return data;
 }
 
-export async function getAvailableSantas(gigId: string) {
+export async function getAvailableSantas(id: string) {
   const gig = await prisma.gig.findFirst({
-    where: { id: gigId },
+    where: { id: id },
   });
 
   if (!gig) {
@@ -370,9 +375,41 @@ export async function getAvailableSantas(gigId: string) {
 
   const { gigDate, timeStart, timeEnd } = gig;
 
-  const santas = getSantas();
+  if (!gigDate || !timeStart || !timeEnd)
+    throw new Error("Gig date, start time, or end time not found.");
 
-  santas && santas.map((santa) => {});
+  const dateStart = new Date(gigDate.getTime());
+  dateStart.setHours(timeStart.getHours(), timeStart.getMinutes());
+
+  const dateEnd = new Date(gigDate.getTime());
+  dateEnd.setHours(timeEnd.getHours(), timeEnd.getMinutes());
+
+  const santas = await getSantas();
+
+  const santaIds = santas.map((santa) => santa.id);
+
+  const bookedSantas = await prisma.gig.findMany({
+    where: {
+      AND: [
+        { gigDate },
+        {
+          OR: [
+            { timeStart: { lte: dateStart, gte: dateEnd } },
+            { timeEnd: { lte: dateStart, gte: dateEnd } },
+          ],
+        },
+        { santaId: { in: santaIds } },
+      ],
+    },
+  });
+
+  const bookedSantaIds = bookedSantas.map((gig) => gig.santaId);
+
+  const availableSantas = santas.filter(
+    (santa) => !bookedSantaIds.includes(santa.id)
+  );
+
+  return { available: availableSantas, unavailable: bookedSantas };
 
   const data = await prisma.source.findMany({
     select: {

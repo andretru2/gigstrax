@@ -64,18 +64,18 @@ export function CommandMenu({ ...props }: DialogProps) {
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Gigs">
+          {/* <CommandGroup heading="Gigs">
             <CommandItem
-              // key={navItem.href}
-              // value={navItem.title}
+              key={navItem.href}
+              value={navItem.title}
               onSelect={() => {
-                runCommand(() => router.push(navItem.href as string));
+                navItem?.href && runCommand(() =>  router.push(navItem.href as string))};
               }}
             >
               <Icons.page className="mr-2 h-4 w-4" />
               Gigs (under construction)
             </CommandItem>
-          </CommandGroup>
+          </CommandGroup> */}
 
           <CommandSeparator />
         </CommandList>
