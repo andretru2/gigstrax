@@ -19,7 +19,7 @@ import {
 } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { get } from "@/app/_actions/gig";
+import { getGig } from "@/app/_actions/gig";
 import { Separator } from "@/components/ui/separator";
 import GigDetailTabs from "@/components/gigs/gig-detail-tabs";
 import { getSantas, getMrsSantas } from "@/app/_actions/source";
@@ -53,7 +53,7 @@ export default async function Page({ params }: Props) {
 
   const [gig, santas, mrsSantas, clients, clientSuggestions] =
     await Promise.all([
-      get(gigId),
+      getGig(gigId),
       getSantas(),
       getMrsSantas(),
       getClients({ limit: 1000 }),
@@ -83,10 +83,10 @@ export default async function Page({ params }: Props) {
     gig?.venueAddressName &&
     formatAddress({
       name: gig?.venueAddressName,
-      addressLine1: gig?.venueAddressStreet,
+      addressLine1: gig?.venueAddressStreet ?? "",
       addressLine2: gig?.venueAddressStreet2 ?? "",
-      city: gig?.venueAddressCity,
-      state: gig?.venueAddressState,
+      city: gig?.venueAddressCity ?? "",
+      state: gig?.venueAddressState ?? "",
       zip: gig?.venueAddressZip ?? "",
     });
 

@@ -73,6 +73,8 @@ export async function checkIfExists(name: string) {
 
   if (exists?.id) return true;
 
+  return;
+
   // return exists?.id;
   // if (exists) {
   //   throw new Error("Client name already taken.");
@@ -85,11 +87,12 @@ export async function create(data: ClientProps) {
     throw new Error("Client name already taken.");
   }
   const newRecord = await prisma.client.create({ data: data });
+  revalidatePath(`/dashboard/clients/`);
   return newRecord.id;
 }
 
 export async function update(props: Partial<ClientProps>) {
-  const client = await prisma.gig.findFirst({
+  const client = await prisma.client.findFirst({
     where: { id: props.id },
   });
 
@@ -105,6 +108,7 @@ export async function update(props: Partial<ClientProps>) {
   // console.log("actions", data);
 
   revalidatePath(`/dashboard/clients/${client.id}`);
+  revalidatePath(`/dashboard/clients/`);
 
   // return data;
 }

@@ -47,28 +47,12 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Icons } from "@/components/icons";
-import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
-import { Calendar } from "../ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Label } from "../ui/label";
 
-import {
-  Command,
-  // CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from "../ui/command";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 import { update } from "@/app/_actions/client";
-import ClientCreate from "./client-create";
 
 export default function ClientForm(props: ClientProps) {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
   const {
     addressCity,
     addressState,
@@ -89,8 +73,6 @@ export default function ClientForm(props: ClientProps) {
     updatedBy,
     status,
   } = props;
-
-  console.log(props);
 
   const form = useForm<z.infer<typeof clientSchema>>({
     resolver: zodResolver(clientSchema),

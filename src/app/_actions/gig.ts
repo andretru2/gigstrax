@@ -11,6 +11,9 @@ import { type gigSchema } from "@/lib/validations/gig";
 import { revalidatePath } from "next/cache";
 import { fromUTC, toUTC } from "@/lib/utils";
 import { getSantas } from "./source";
+import { connect } from "http2";
+import { type Prisma } from "@prisma/client";
+import { type GigExtendedProps } from "@/types/index";
 
 // import * as z from "zod";
 
@@ -30,7 +33,7 @@ import { getSantas } from "./source";
  * ]
  */
 
-export async function get(id: string) {
+export async function getGig(id: string) {
   if (id.length === 0) return null;
 
   const data = await prisma.gig.findFirst({
@@ -113,7 +116,7 @@ export async function get(id: string) {
 }
 
 export async function getUpcoming() {
-  const today = new Date(2022, 12, 31);
+  const today = new Date();
   const data = await prisma.gig.findMany({
     select: {
       id: true,
@@ -173,9 +176,9 @@ export async function getUpcoming() {
 }
 
 export async function getRecentlyCreated() {
-  const today = new Date(2022, 12, 31);
-  const fiveDaysAgo = new Date(today);
-  fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 128);
+  // const today = new Date(2022, 12, 31);
+  // const fiveDaysAgo = new Date(today);
+  // fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 128);
   const data = await prisma.gig.findMany({
     select: {
       id: true,
@@ -210,15 +213,13 @@ export async function getRecentlyCreated() {
       },
     },
     where: {
-      gigDate: {
-        lte: today,
-        gte: fiveDaysAgo,
-      },
+      createdAt: { not: null },
     },
-    take: 10,
     orderBy: {
-      gigDate: "desc",
+      createdAt: "desc",
     },
+
+    take: 10,
   });
 
   return data.map((gig) => {
@@ -308,21 +309,19 @@ export async function create(props?: GigProps) {
   if (props) {
     data = { data: props };
   }
-  // const createdGig = await prisma.gig.create(data);
-  // const createdGig = await prisma.gig.create({ data: { id: "abc" } });
+
   const newRecord = await prisma.gig.create({ data: { id: undefined } });
-  console.log(newRecord);
+
+  revalidatePath(`/dashboard/gigs`);
   return newRecord.id;
 }
 
 export async function update(
   props: Partial<GigProps> & { client?: { update: Partial<ClientProps> } }
 ) {
-  const gig = await prisma.gig.findFirst({
-    where: { id: props.id },
-  });
-
-  console.log(props);
+  // const gig = await prisma.gig.findFirst({
+  //   where: { id: props.id },
+  // });
 
   // if (props?.timeStart) {
   //   const [hours, minutes] = props?.timeStart.split(":");
@@ -348,18 +347,69 @@ export async function update(
   //   props.timeEnd = newTime;
   // }
 
-  if (!gig) {
-    throw new Error("Gig not found.");
+  // if (!gig) {
+  //   throw new Error("Gig not found.");
+  // }
+
+  // revalidatePath(`/dashboard/gigs/${gig.id}`);
+  // revalidatePath(`/dashboard/gigs`);
+
+  // let data: Prisma.Gig = {};
+
+  console.log(props);
+  const data = { ...props };
+  const include: Prisma.GigInclude = {};
+
+  if (props.clientId) {
+    data.client = { connect: { id: props.clientId } };
+    delete data.clientId;
+
+    include.client = true;
+  }
+  if (props.mrsSantaId) {
+    data.mrsSanta = { connect: { id: props.mrsSantaId } };
+    delete data.mrsSantaId;
+    include.mrsSanta = true;
+  }
+  if (props.santaId) {
+    data.santa = { connect: { id: props.santaId } };
+    delete data.santaId;
+    include.santa = true;
   }
 
-  const res = await prisma.gig.update({
-    data: props,
+  const res = (await prisma.gig.update({
+    data: data,
     where: { id: props.id },
-  });
+    include: include ? include : undefined,
+  })) as GigExtendedProps;
+  console.log(res);
+
+  revalidatePath(`/dashboard/gigs/${props.id}`);
+  return res;
+
+  //  const res = await prisma.gig.update({
+  //    data: {
+  //      // clientId: props.clientId,
+  //      client: {
+  //        connect: { id: props.clientId },
+  //      },
+  //      mrsSanta: { id: props.mrsSantaId ?? "" },
+  //    },
+  //    where: { id: props.id },
+  //    include: {
+  //      client: true,
+  //      santa: true,
+  //      mrsSanta: true,
+  //    },
+  //  });
+  console.log(res);
+
+  // const res = await prisma.gig.update({
+  //   data: props,
+  //   where: { id: props.id },
+  // });
 
   // console.("actions", data);
-
-  revalidatePath(`/dashboard/gigs/${gig.id}`);
 
   // return data;
 }

@@ -134,6 +134,7 @@ export async function create(data: SourceProps) {
     throw new Error("Source name already exists.");
   }
   const newRecord = await prisma.source.create({ data: data });
+  revalidatePath(`/dashboard/sources/`);
   return newRecord.id;
 }
 
@@ -154,6 +155,7 @@ export async function update(props: Partial<SourceProps>) {
   // console.log("actions", data);
 
   revalidatePath(`/dashboard/sources/${source.id}`);
+  revalidatePath(`/dashboard/sources/`);
 
   // return data;
 }
