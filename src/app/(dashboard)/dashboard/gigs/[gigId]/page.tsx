@@ -23,7 +23,7 @@ import { getGig } from "@/app/_actions/gig";
 import { Separator } from "@/components/ui/separator";
 import GigDetailTabs from "@/components/gigs/gig-detail-tabs";
 import { getSantas, getMrsSantas } from "@/app/_actions/source";
-import { getClients } from "@/app/_actions/client";
+import { getClient, getClients } from "@/app/_actions/client";
 import { notFound } from "next/navigation";
 
 // import NotFo
@@ -36,6 +36,7 @@ export const metadata: Metadata = {
 
 export const revalidate = 30;
 export const dynamic = "force-dynamic";
+export const cache = "no-store";
 
 interface Props {
   params: {
@@ -47,19 +48,22 @@ export default async function Page({ params }: Props) {
   const gigId = params.gigId;
   if (!gigId) return <h1>Please select a gig. </h1>;
 
+  const gig = await getGig(gigId);
+  if (!gig) return notFound();
+
   // const today = new Date();
   // const fiveDaysAgo = new Date();
   // fiveDaysAgo.setDate(today.getDate() - 400);
 
-  const [gig, santas, mrsSantas, clients, clientSuggestions] =
+  const [client, santas, mrsSantas, clients, clientSuggestions] =
     await Promise.all([
-      getGig(gigId),
+      // getGig(gigId),
+      gig.clientId ? getClient(gig.clientId) : undefined,
       getSantas(),
       getMrsSantas(),
       getClients({ limit: 1000 }),
       getClients({
         whereClause: {
-          // createdAt: { gte: fiveDaysAgo, lte: today },
           client: {
             not: {
               equals: "",
@@ -67,7 +71,6 @@ export default async function Page({ params }: Props) {
           },
         },
         orderBy: [{ createdAt: "desc" }, { client: "asc" }],
-
         limit: 5,
       }),
     ]);
@@ -76,9 +79,10 @@ export default async function Page({ params }: Props) {
 
   const formattedDate =
     gig?.gigDate && formatDate(gig?.gigDate.getTime(), "friendly");
-  const startTime = gig?.timeStart && formatTime(gig?.timeStart);
+  const startTime = gig.timeStart && formatTime(gig?.timeStart);
+  // const startTime = gig.timeStart && formatTime(gig.get("")timeStart);
   const endTime = gig?.timeEnd && formatTime(gig?.timeEnd);
-  const client = gig?.client?.client && gig?.client.client;
+  const clientName = client?.client ?? "";
   const addressFull =
     gig?.venueAddressName &&
     formatAddress({
@@ -130,7 +134,7 @@ export default async function Page({ params }: Props) {
                 {!client ? (
                   <div className="italic text-destructive/60">incomplete </div>
                 ) : (
-                  <div>{client}</div>
+                  <div>{clientName}</div>
                 )}
               </div>
             </>
@@ -180,6 +184,7 @@ export default async function Page({ params }: Props) {
         <GigDetailTabs gigId={gig.id} />
         <GigForm
           gig={gig}
+          client={client ?? undefined}
           santas={santas}
           mrsSantas={mrsSantas}
           clients={clients}

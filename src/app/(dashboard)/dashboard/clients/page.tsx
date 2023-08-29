@@ -50,6 +50,11 @@ export default async function Page({ params, searchParams }: Props) {
               },
             },
           },
+          whereClause: {
+            createdAt: {
+              not: null,
+            },
+          },
           orderBy: [{ createdAt: "desc" }, { client: "asc" }],
           limit: 10,
         })

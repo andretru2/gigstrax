@@ -56,6 +56,11 @@ export default async function Page({ params, searchParams }: Props) {
             gender: true,
             costume: true,
           },
+          // whereClause: {
+          //   nameFirst: {
+          //     not: null,
+          //   },
+          // },
           orderBy: [{ createdAt: "desc" }, { nameLast: "asc" }],
           limit: 10,
         })

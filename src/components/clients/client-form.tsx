@@ -19,7 +19,7 @@ import {
   calculateTimeDifference,
   formatPhone,
 } from "@/lib/utils";
-import { type FocusEvent, useState } from "react";
+import { type FocusEvent, useState, useTransition } from "react";
 
 import type * as z from "zod";
 
@@ -74,6 +74,8 @@ export default function ClientForm(props: ClientProps) {
     status,
   } = props;
 
+  const [isPending, startTransition] = useTransition();
+
   const form = useForm<z.infer<typeof clientSchema>>({
     resolver: zodResolver(clientSchema),
     mode: "onBlur",
@@ -122,9 +124,11 @@ export default function ClientForm(props: ClientProps) {
                       type="text"
                       className="bg-white"
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: id,
-                          client: e.target.value,
+                        startTransition(() => {
+                          void update({
+                            id: id,
+                            client: e.target.value,
+                          });
                         });
                       }}
                     />

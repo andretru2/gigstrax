@@ -89,7 +89,6 @@ import ClientForm from "@/components/clients/client-form";
 
 interface Props {
   gig: GigExtendedProps;
-  client?: ClientProps;
   santas: SantaProps[];
   mrsSantas?: MrsSantaProps[];
   clients?: ClientPickerProps[];
@@ -99,7 +98,6 @@ interface Props {
 
 export default function GigForm({
   gig,
-  client,
   santas,
   mrsSantas,
   clients,
@@ -109,9 +107,9 @@ export default function GigForm({
   const router = useRouter();
   // const [isPending, startTransition] = useTransition();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [selectedClient, setSelectedClient] = useState<ClientProps | undefined>(
-    client ? client : undefined
-  );
+  const [selectedClient, setSelectedClient] = useState<
+    Partial<ClientProps> | undefined
+  >({ ...gig.client });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchClient, setSearchlient] = useState("");
   const [searchClientResults, setSearchClientResults] = useState<
@@ -134,8 +132,7 @@ export default function GigForm({
     venueType,
     notesVenue,
     price,
-    client: clientName,
-    clientId,
+    client,
     santa,
     mrsSanta,
     contactEmail,
@@ -301,8 +298,6 @@ export default function GigForm({
       }
     });
   }
-
-  console.log(selectedClient);
 
   // async function handleTimeChange(time: Date) {
   //   const dateTime = gig.gigDate && new Date(gig.gigDate.getTime());
@@ -749,7 +744,7 @@ export default function GigForm({
                   <FormControl>
                     <Input
                       {...field}
-                      // disabled={clientId?.length === 0}
+                      disabled={clientId?.length === 0}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         void update({
@@ -773,14 +768,359 @@ export default function GigForm({
           </CardContent>
         </Card>
 
-        {selectedClient && <ClientForm {...selectedClient} />}
+        <Card className=" p-4">
+          <CardHeader className="px-0">
+            <CardTitle>Client Details</CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-6 items-end gap-4 px-0">
+            <FormField
+              control={form.control}
+              name="clientName"
+              render={({ field }) => (
+                <FormItem className="col-span-6 flex flex-col ">
+                  <FormLabel>Client</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="text"
+                      disabled={true}
+                      className="bg-white"
+                    />
+                  </FormControl>
+                  {/* <FormMessage /> */}
+                  <UncontrolledFormMessage
+                    message={form.formState.errors?.client?.message}
+                  />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="clientContact"
+              render={({ field }) => (
+                <FormItem className="col-span-6 flex flex-col ">
+                  <FormLabel>Contact at Client</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      disabled={clientId?.length === 0}
+                      className="bg-white"
+                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
+                        void update({
+                          id: gig.id,
+                          client: {
+                            update: {
+                              contact: e.target.value,
+                            },
+                          },
+                        });
+                      }}
+                    />
+                  </FormControl>
+                  {/* <FormMessage /> */}
+                  <UncontrolledFormMessage
+                    message={form.formState.errors.client?.contact?.message}
+                  />
+                </FormItem>
+              )}
+            />
 
+            <FormField
+              control={form.control}
+              name="clientPhoneCell"
+              render={({ field }) => (
+                <FormItem className="col-span-2 flex flex-col ">
+                  <FormLabel>Cell</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      {...field}
+                      disabled={clientId?.length === 0}
+                      className="bg-white "
+                      placeholder="xxx-xxx-xxxx"
+                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
+                        void update({
+                          id: gig.id,
+                          client: {
+                            update: {
+                              phoneCell: e.target.value,
+                            },
+                          },
+                        });
+                      }}
+                    />
+                  </FormControl>
+                  {/* <FormMessage /> */}
+                  <UncontrolledFormMessage
+                    message={form.formState.errors.client?.phoneCell?.message}
+                  />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="clientPhoneLandline"
+              render={({ field }) => (
+                <FormItem className="col-span-2 flex flex-col ">
+                  <FormLabel>Landline</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      disabled={clientId?.length === 0}
+                      className="bg-white "
+                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
+                        void update({
+                          id: gig.id,
+                          client: {
+                            update: {
+                              phoneLandline: e.target.value,
+                            },
+                          },
+                        });
+                      }}
+                    />
+                  </FormControl>
+                  {/* <FormMessage /> */}
+                  <UncontrolledFormMessage
+                    message={
+                      form.formState.errors.client?.addressState?.message
+                    }
+                  />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="clientType"
+              render={({ field }) => (
+                <FormItem className="col-span-2 w-full ">
+                  <FormLabel>Client Type</FormLabel>
+                  <FormControl>
+                    <Select
+                      onValueChange={(value: ClientType) => {
+                        field.onChange(value);
+                        void update({
+                          id: gig.id,
+                          client: {
+                            update: {
+                              clientType: value,
+                            },
+                          },
+                        });
+                      }}
+                    >
+                      <SelectTrigger className="bg-white capitalize">
+                        <SelectValue placeholder={field.value} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {Object.values(ClientType).map((option) => (
+                            <SelectItem
+                              key={option}
+                              value={option}
+                              className="capitalize"
+                            >
+                              {option}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="clientEmail"
+              render={({ field }) => (
+                <FormItem className="col-span-6 flex flex-col ">
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      disabled={clientId?.length === 0}
+                      className="bg-white "
+                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
+                        void update({
+                          id: id,
+                          client: {
+                            update: {
+                              email: e.target.value,
+                            },
+                          },
+                        });
+                      }}
+                    />
+                  </FormControl>
+                  {/* <FormMessage /> */}
+                  <UncontrolledFormMessage
+                    message={form.formState.errors.client?.email?.message}
+                  />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="clientAddressStreet"
+              render={({ field }) => (
+                <FormItem className="col-span-6 flex flex-col ">
+                  <FormLabel>Street</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      disabled={clientId?.length === 0}
+                      className="bg-white "
+                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
+                        void update({
+                          id: gig.id,
+                          client: {
+                            update: {
+                              addressStreet: e.target.value,
+                            },
+                          },
+                        });
+                      }}
+                    />
+                  </FormControl>
+                  {/* <FormMessage /> */}
+                  <UncontrolledFormMessage
+                    message={
+                      form.formState.errors.client?.addressStreet?.message
+                    }
+                  />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="clientAddressCity"
+              render={({ field }) => (
+                <FormItem className="col-span-2 flex flex-col ">
+                  <FormLabel>City</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      disabled={clientId?.length === 0}
+                      className="bg-white "
+                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
+                        void update({
+                          id: gig.id,
+                          client: {
+                            update: {
+                              addressCity: e.target.value,
+                            },
+                          },
+                        });
+                      }}
+                    />
+                  </FormControl>
+                  {/* <FormMessage /> */}
+                  <UncontrolledFormMessage
+                    message={form.formState.errors.client?.addressCity?.message}
+                  />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="clientAddressState"
+              render={({ field }) => (
+                <FormItem className="col-span-2 flex flex-col ">
+                  <FormLabel>State</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      disabled={clientId?.length === 0}
+                      className="bg-white "
+                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
+                        void update({
+                          id: gig.id,
+                          client: {
+                            update: {
+                              addressState: e.target.value,
+                            },
+                          },
+                        });
+                      }}
+                    />
+                  </FormControl>
+                  {/* <FormMessage /> */}
+                  <UncontrolledFormMessage
+                    message={
+                      form.formState.errors.client?.addressState?.message
+                    }
+                  />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="clientAddressZip"
+              render={({ field }) => (
+                <FormItem className="col-span-2 flex flex-col ">
+                  <FormLabel>Zip</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      disabled={clientId?.length === 0}
+                      className="bg-white "
+                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
+                        void update({
+                          id: gig.id,
+                          client: {
+                            update: {
+                              addressZip: e.target.value,
+                            },
+                          },
+                        });
+                      }}
+                    />
+                  </FormControl>
+                  {/* <FormMessage /> */}
+                  <UncontrolledFormMessage
+                    message={form.formState.errors.client?.addressZip?.message}
+                  />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="clientNotes"
+              render={({ field }) => (
+                <FormItem className="col-span-6 flex flex-col ">
+                  <FormLabel>Notes</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      disabled={clientId?.length === 0}
+                      className="h-48 bg-white"
+                      onBlur={(e: FocusEvent<HTMLTextAreaElement>) => {
+                        void update({
+                          id: gig.id,
+                          client: {
+                            update: {
+                              notes: e.target.value,
+                            },
+                          },
+                        });
+                      }}
+                    />
+                  </FormControl>
+                  {/* <FormMessage /> */}
+                  <UncontrolledFormMessage
+                    message={form.formState.errors.client?.notes?.message}
+                  />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        </Card>
         <Card className="p-4 ">
-          <CardHeader className="flex flex-row items-center gap-3 px-0">
+          <CardHeader className="px-0">
             <CardTitle>Venue Details</CardTitle>
-            <Button variant="link" className=" self-center text-left">
-              Same as client?
-            </Button>
           </CardHeader>
           <CardContent className="grid grid-cols-6 items-end gap-4 px-0">
             <FormField
@@ -843,6 +1183,7 @@ export default function GigForm({
                   <FormControl>
                     <Input
                       {...field}
+                      disabled={clientId?.length === 0}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         void update({
@@ -868,6 +1209,7 @@ export default function GigForm({
                   <FormControl>
                     <Input
                       {...field}
+                      disabled={clientId?.length === 0}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         void update({

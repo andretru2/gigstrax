@@ -2,7 +2,7 @@ import * as z from "zod";
 import { SourceStatus, Gender } from "@prisma/client";
 
 export const sourceSchema = z.object({
-  id: z.string(),
+  id: z.string().optional(),
   nameFirst: z.string(),
   nameLast: z.string().optional(),
   addressCity: z.string().optional(),
@@ -10,7 +10,7 @@ export const sourceSchema = z.object({
   addressStreet: z.string().optional(),
   addressZip: z.string().optional(),
   costume: z.string().optional(),
-  dob: z.date().nullable(),
+  dob: z.date().nullable().optional(),
   email: z.string().optional(),
   entity: z.string().optional(),
   gender: z.nativeEnum(Gender).optional(),

@@ -1,6 +1,6 @@
 "use client";
 
-import { create } from "@/app/_actions/source";
+import { checkIfExists, create } from "@/app/_actions/source";
 
 import { useTransition, useState } from "react";
 import { type SourceProps } from "@/server/db";
@@ -38,25 +38,32 @@ interface SourceFormFastProps {
 export default function SourceCreate(props: SourceFormFastProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
   const form = useForm<z.infer<typeof sourceSchema>>({
     resolver: zodResolver(sourceSchema),
     mode: "onSubmit",
     defaultValues: {
-      nameFirst: "",
-      nameLast: "",
+      nameFirst: undefined,
+      nameLast: undefined,
     },
   });
 
   function onSubmit(data: z.infer<typeof sourceSchema>) {
     startTransition(async () => {
       try {
-        setIsLoading(true);
+        console.log(data);
+        // const exists = await checkIfExists({
+        //   nameFirst: data.nameFirst ?? "",
+        //   nameLast: data.nameLast ?? "",
+        // });
+        // console.log("exists", exists);
+        // if (exists) {
+        //   toast({ description: "Source already exists." });
+        //   return;
+        // }
+
         const sourceId = await create(data as SourceProps);
 
         props.onSuccess && props.onSuccess(sourceId);
-        setIsLoading(false);
 
         if (props.goto) {
           router.push(`/dashboard/sources/${sourceId}`);
@@ -74,7 +81,7 @@ export default function SourceCreate(props: SourceFormFastProps) {
     <Form {...form}>
       <form
         className="flex flex-col gap-3  "
-        onSubmit={void form.handleSubmit(onSubmit)}
+        onSubmit={(...args) => void form.handleSubmit(onSubmit)(...args)}
       >
         <FormField
           control={form.control}
@@ -85,9 +92,9 @@ export default function SourceCreate(props: SourceFormFastProps) {
               <FormControl>
                 <Input placeholder="Source name " {...field} />
               </FormControl>
-              {/* <FormDescription>
-                This is your public display name.
-              </FormDescription> */}
+              <UncontrolledFormMessage>
+                {form.formState.errors.nameFirst?.message}
+              </UncontrolledFormMessage>
               <FormMessage />
             </FormItem>
           )}
@@ -101,6 +108,9 @@ export default function SourceCreate(props: SourceFormFastProps) {
               <FormControl>
                 <Input placeholder="Source's last " {...field} />
               </FormControl>
+              <UncontrolledFormMessage>
+                {form.formState.errors.nameLast?.message}
+              </UncontrolledFormMessage>
               {/* <FormDescription>
                 This is your public display name.
               </FormDescription> */}
@@ -108,14 +118,22 @@ export default function SourceCreate(props: SourceFormFastProps) {
             </FormItem>
           )}
         />
-        <Button
-          type="submit"
-          disabled={false}
-          isLoading={isLoading}
-          className="flex flex-row items-center"
-        >
-          Next
-          <Icons.chevronRight className="mr-2 h-4 w-4" />
+        <Button type="submit" disabled={isPending}>
+          {isPending ? (
+            <div className="flex flex-row items-center gap-2">
+              <Icons.spinner
+                className="mr-2 h-4 w-4 animate-spin"
+                aria-hidden="true"
+              />
+              <div className="opacity-75">Creating...</div>
+            </div>
+          ) : (
+            <div className="flex flex-row items-center gap-2">
+              Next
+              <Icons.chevronRight className="mr-2 h-4 w-4" />
+              <span className="sr-only">Submit</span>
+            </div>
+          )}
         </Button>
       </form>
     </Form>

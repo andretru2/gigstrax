@@ -89,6 +89,19 @@ export async function getGig(id: string) {
           phoneLandline: true,
           email: true,
           notes: true,
+
+          contact,
+          email,
+          id,
+          notes,
+          phoneCell,
+          phoneLandline,
+          source,
+          createdAt,
+          updatedAt,
+          createdBy,
+          updatedBy,
+          status,
         },
       },
     },
@@ -384,7 +397,7 @@ export async function update(
   })) as GigExtendedProps;
   console.log(res);
 
-  revalidatePath(`/dashboard/gigs/${props.id}`);
+  props.id && revalidatePath(`/dashboard/gigs/${props.id}`);
   return res;
 
   //  const res = await prisma.gig.update({

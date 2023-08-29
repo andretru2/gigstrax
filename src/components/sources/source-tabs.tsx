@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // import GigCreateButton from "@/components/gigs/gig-create-button";
 import SourceCreate from "./source-create";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Icons } from "../icons";
 
 interface Props {
   className?: string;
@@ -56,7 +58,17 @@ export default function SourceTabs(props: Props) {
           )}
           asChild
         >
-          <SourceCreate goto={true} />
+          <Popover>
+            <PopoverTrigger>
+              <div className="flex flex-row items-center gap-1 border-l-2 border-primary px-2 text-primary">
+                <Icons.add className="h-5 w-5" />
+                New Source
+              </div>
+            </PopoverTrigger>
+            <PopoverContent>
+              <SourceCreate goto={true} />
+            </PopoverContent>
+          </Popover>
         </TabsTrigger>
       </TabsList>
     </Tabs>

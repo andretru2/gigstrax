@@ -13,6 +13,11 @@ export const clientSchema = z.object({
   source: z.string().optional(),
   notes: z.string().optional(),
   phoneLandline: z.string().optional(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+  createdBy: z.string().optional(),
+  updatedBy: z.string().optional(),
+  status: z.string().optional(),
   phoneCell: z.string().optional(),
   email: z.string().email({ message: "Email invalid" }).optional(),
 });

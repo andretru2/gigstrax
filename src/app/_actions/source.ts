@@ -2,7 +2,6 @@
 
 import { prisma, type SourceProps } from "@/server/db";
 import { type z } from "zod";
-import { type gigSchema } from "@/lib/validations/gig";
 import { revalidatePath } from "next/cache";
 import { type Prisma } from "@prisma/client";
 
@@ -126,15 +125,17 @@ export async function checkIfExists({
 }
 
 export async function create(data: SourceProps) {
-  const exists = await checkIfExists({
-    nameFirst: data.nameFirst,
-    nameLast: data.nameFirst,
-  });
-  if (exists) {
-    throw new Error("Source name already exists.");
-  }
+  // const exists = await checkIfExists({
+  //   nameFirst: data.nameFirst,
+  //   nameLast: data.nameFirst,
+  // });
+  // if (exists) {
+  //   throw new Error("Source name already exists.");
+  // }
+  console.log(data);
   const newRecord = await prisma.source.create({ data: data });
   revalidatePath(`/dashboard/sources/`);
+  console.log(newRecord);
   return newRecord.id;
 }
 

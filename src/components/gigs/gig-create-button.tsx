@@ -33,9 +33,9 @@ export default function GigCreateButton() {
 
   return (
     <Button
-      variant="default"
+      variant="ghost"
       onClick={handleClick}
-      className="opacity-80"
+      className="rounded-none border-l-2 border-primary text-primary"
       disabled={isPending}
       isLoading={isPending}
       content="flex flex-row items-center gap-2"

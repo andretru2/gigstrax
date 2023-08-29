@@ -146,7 +146,7 @@ export default function SourceForm(props: Partial<SourceProps>) {
               control={form.control}
               name="nameFirst"
               render={({ field }) => (
-                <FormItem className="col-span-6 flex flex-col ">
+                <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>First Name</FormLabel>
                   <FormControl>
                     <Input
@@ -172,7 +172,7 @@ export default function SourceForm(props: Partial<SourceProps>) {
               control={form.control}
               name="nameLast"
               render={({ field }) => (
-                <FormItem className="col-span-6 flex flex-col ">
+                <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>Last Name</FormLabel>
                   <FormControl>
                     <Input
@@ -291,7 +291,7 @@ export default function SourceForm(props: Partial<SourceProps>) {
               control={form.control}
               name="role"
               render={({ field }) => (
-                <FormItem className="col-span-6 flex flex-col ">
+                <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>Role</FormLabel>
                   <FormControl>
                     <Input
@@ -316,7 +316,7 @@ export default function SourceForm(props: Partial<SourceProps>) {
               control={form.control}
               name="ssn"
               render={({ field }) => (
-                <FormItem className="col-span-6 flex flex-col ">
+                <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>SSN</FormLabel>
                   <FormControl>
                     <Input
@@ -380,7 +380,7 @@ export default function SourceForm(props: Partial<SourceProps>) {
               control={form.control}
               name="gigMastersAccount"
               render={({ field }) => (
-                <FormItem className="col-span-6 flex flex-col ">
+                <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>Gig Masters Account</FormLabel>
                   <FormControl>
                     <Input
@@ -405,7 +405,7 @@ export default function SourceForm(props: Partial<SourceProps>) {
               control={form.control}
               name="videoUrl"
               render={({ field }) => (
-                <FormItem className="col-span-6 flex flex-col ">
+                <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>Video Url</FormLabel>
                   <FormControl>
                     <Input
@@ -431,7 +431,7 @@ export default function SourceForm(props: Partial<SourceProps>) {
               control={form.control}
               name="website"
               render={({ field }) => (
-                <FormItem className="col-span-6 flex flex-col ">
+                <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>website</FormLabel>
                   <FormControl>
                     <Input
@@ -456,7 +456,7 @@ export default function SourceForm(props: Partial<SourceProps>) {
               control={form.control}
               name="costume"
               render={({ field }) => (
-                <FormItem className="col-span-6 flex flex-col ">
+                <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>Costume</FormLabel>
                   <FormControl>
                     <Input
