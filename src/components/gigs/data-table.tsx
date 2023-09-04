@@ -37,7 +37,7 @@ import { type GigExtendedProps } from "@/types/index";
 
 interface Props {
   // data: GigProps & { clients: Partial<ClientProps> };
-  data: GigExtendedProps;
+  data: GigExtendedProps[];
   pageCount: number;
 }
 
@@ -95,9 +95,7 @@ export default function Datatable({ data, pageCount }: Props) {
       },
       {
         accessorKey: "timeStart",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Start" />
-        ),
+        header: "Start",
         cell: ({ row }) => {
           return (
             <span>
@@ -108,9 +106,7 @@ export default function Datatable({ data, pageCount }: Props) {
       },
       {
         accessorKey: "timeEnd",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="End" />
-        ),
+        header: "End",
         cell: ({ row }) => {
           return (
             <span>
@@ -126,13 +122,7 @@ export default function Datatable({ data, pageCount }: Props) {
       },
       {
         accessorKey: "duration",
-        header: ({ column }) => (
-          <DataTableColumnHeader
-            column={column}
-            title="Duration"
-            className="text-center"
-          />
-        ),
+        header: "Duration",
         cell: ({ row }) => {
           return (
             <span className="w-2 text-center">
@@ -199,14 +189,14 @@ export default function Datatable({ data, pageCount }: Props) {
           );
         },
       },
-      {
-        accessorKey: "createdAt",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Created At" />
-        ),
-        cell: ({ cell }) => cell.getValue(),
-        enableColumnFilter: false,
-      },
+      // {
+      //   accessorKey: "createdAt",
+      //   header: ({ column }) => (
+      //     <DataTableColumnHeader column={column} title="Created At" />
+      //   ),
+      //   cell: ({ cell }) => cell.getValue(),
+      //   enableColumnFilter: false,
+      // },
       {
         id: "actions",
         cell: ({ row }) => (
@@ -322,6 +312,10 @@ export default function Datatable({ data, pageCount }: Props) {
         {
           id: "client.client",
           title: "Client",
+        },
+        {
+          id: "gigDate",
+          title: "Gig Date",
         },
       ]}
       // newRowLink={`/dashboard/gigs/new`}

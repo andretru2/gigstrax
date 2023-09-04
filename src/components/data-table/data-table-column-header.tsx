@@ -1,9 +1,4 @@
-// import {
-//   ArrowDownIcon,
-//   ArrowUpIcon,
-//   CaretSortIcon,
-//   EyeNoneIcon,
-// } from "@radix-ui/react-icons"
+
 import { Icons } from "../icons"
 import { type Column } from "@tanstack/react-table"
 

@@ -21,6 +21,7 @@ import {
 } from "@/lib/utils";
 import {
   type FocusEvent,
+  type ReactNode,
   useState,
   useEffect,
   useMemo,
@@ -77,6 +78,8 @@ import {
 import ClientCreate from "../clients/client-create";
 import { toast } from "@/hooks/use-toast";
 import ClientForm from "@/components/clients/client-form";
+import { revalidatePath } from "next/cache";
+import { useGigStore } from "@/app/_store/gig";
 
 // interface Props {
 //   gig: Partial<GigProps> &
@@ -94,24 +97,26 @@ interface Props {
   mrsSantas?: MrsSantaProps[];
   clients?: ClientPickerProps[];
   clientSuggestions?: ClientPickerProps[];
+  children?: ReactNode;
   // venueTypes: VenueTypeProps[];
 }
 
 export default function GigForm({
   gig,
-  client,
+  // client,
   santas,
   mrsSantas,
   clients,
   clientSuggestions,
+  children,
   ...props
 }: Props) {
   const router = useRouter();
   // const [isPending, startTransition] = useTransition();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [selectedClient, setSelectedClient] = useState<ClientProps | undefined>(
-    client ? client : undefined
-  );
+  // const [selectedClient, ient] = useState<ClientProps | undefined>(
+  //   client ? { ...client } : undefined
+  // );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchClient, setSearchlient] = useState("");
   const [searchClientResults, setSearchClientResults] = useState<
@@ -119,6 +124,8 @@ export default function GigForm({
   >([]);
   const debouncedSearchClient = useDebounce(searchClient, 300);
   const [isPending, startTransition] = useTransition();
+
+  const { client, setClient } = useGigStore();
 
   const {
     id,
@@ -134,7 +141,7 @@ export default function GigForm({
     venueType,
     notesVenue,
     price,
-    client: clientName,
+
     clientId,
     santa,
     mrsSanta,
@@ -178,6 +185,10 @@ export default function GigForm({
   // if (selectedClient && gig.client) {
   //   Object.assign(gig.client, selectedClient);
   // }
+
+  // console.log(gig, client);
+
+  // if (client) setSelectedClient(client);
 
   const { id: santaId, role } = santa ?? {};
   const { id: mrsSantaId, nameFirst } = mrsSanta ?? {};
@@ -225,39 +236,6 @@ export default function GigForm({
       contactPhoneCell: contactPhoneCell ? contactPhoneCell : undefined,
       contactPhoneLand: contactPhoneLand ? contactPhoneLand : undefined,
 
-      // clientId: clientId ? clientId : undefined,
-      // clientName: clientName ? clientName : undefined,
-      // clientType: clientType ? clientType : undefined,
-      // clientContact: clientContact ? clientContact : undefined,
-      // clientSource: clientSource ? clientSource : undefined,
-      // clientPhoneCell: clientPhoneCell ? clientPhoneCell : undefined,
-      // clientPhoneLandline: clientPhoneLandline
-      //   ? clientPhoneLandline
-      //   : undefined,
-      // clientAddressCity: clientAddressCity ? clientAddressCity : undefined,
-      // clientAddressStreet: clientAddressStreet
-      //   ? clientAddressStreet
-      //   : undefined,
-      // clientAddressState: clientAddressState ? clientAddressState : undefined,
-      // clientAddressZip: clientAddressZip ? clientAddressZip : undefined,
-      // clientEmail: clientEmail ? clientEmail : undefined,
-      // clientNotes: clientNotes ? clientNotes : undefined,
-
-      // client: {
-      //   id: clientId ? clientId : undefined,
-      //   client: clientName ? clientName : undefined,
-      //   clientType: clientType ? clientType : undefined,
-      //   contact: contact ? contact : undefined,
-      //   source: clientSource ? clientSource : undefined,
-      //   phoneCell: phoneCell ? phoneCell : undefined,
-      //   phoneLandline: phoneLandline ? phoneLandline : undefined,
-      //   addressCity: addressCity ? addressCity : undefined,
-      //   addressStreet: addressStreet ? addressStreet : undefined,
-      //   addressState: addressState ? addressState : undefined,
-      //   addressZip: addressZip ? addressZip : undefined,
-      //   email: email ? email : undefined,
-      //   notes: notes ? notes : undefined,
-      // },
       santa: {
         id: santaId ? santaId : undefined,
         role: role ? role : undefined,
@@ -276,14 +254,16 @@ export default function GigForm({
   function handleSelectClient(value: string) {
     startTransition(async () => {
       try {
-        const { client } = await update({
+        const res = await update({
           id: gig.id,
           clientId: value,
         });
-        console.log(client);
+        console.log(res);
         setIsOpen(false);
         setSearchClientResults([]);
-        setSelectedClient({ ...client } as ClientProps);
+        // setSelectedClient({ ...client } as ClientProps);
+        // setClient({ ...(client as ClientProps) });
+        // setClient( ClientProps) });
         // revalidatePath("/dashboard/gigs");
         // revalidatePath(`/dashboard/gigs/${gig.id}`);
         // gig.id && router.push(`/dashboard/gigs/${gig.id}`);
@@ -302,7 +282,7 @@ export default function GigForm({
     });
   }
 
-  console.log(selectedClient);
+  // console.log(client);
 
   // async function handleTimeChange(time: Date) {
   //   const dateTime = gig.gigDate && new Date(gig.gigDate.getTime());
@@ -365,9 +345,16 @@ export default function GigForm({
                         selected={field.value}
                         onSelect={(selectedDate) => {
                           field.onChange(selectedDate);
-                          void update({
-                            id: id,
-                            gigDate: selectedDate,
+
+                          startTransition(() => {
+                            try {
+                              void update({
+                                id: id,
+                                gigDate: selectedDate,
+                              });
+                            } catch (err) {
+                              catchError(err);
+                            }
                           });
                         }}
                         // disabled={(date) =>
@@ -419,10 +406,15 @@ export default function GigForm({
 
                           const isoTime = localTime.toISOString();
 
-                          // console.log(isoTime);
-                          void update({
-                            id: id,
-                            timeStart: isoTime,
+                          startTransition(() => {
+                            try {
+                              void update({
+                                id: id,
+                                timeStart: isoTime,
+                              });
+                            } catch (err) {
+                              catchError(err);
+                            }
                           });
                         }
                       }}
@@ -440,6 +432,7 @@ export default function GigForm({
                   <FormControl>
                     <Input
                       type="time"
+                      disabled={gigDate == null}
                       {...field}
                       className="bg-white"
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
@@ -467,10 +460,15 @@ export default function GigForm({
 
                           const isoTime = localTime.toISOString();
 
-                          console.log(isoTime);
-                          void update({
-                            id: id,
-                            timeEnd: isoTime,
+                          startTransition(() => {
+                            try {
+                              void update({
+                                id: id,
+                                timeEnd: isoTime,
+                              });
+                            } catch (err) {
+                              catchError(err);
+                            }
                           });
                         }
                       }}
@@ -498,10 +496,16 @@ export default function GigForm({
                   defaultValue={Number(gig.price)}
                   className="bg-white text-right"
                   onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                    const newPrice = new Prisma.Decimal(e.target.value);
-                    void update({
-                      id: gig.id,
-                      price: newPrice,
+                    startTransition(() => {
+                      try {
+                        const newPrice = new Prisma.Decimal(e.target.value);
+                        void update({
+                          id: gig.id,
+                          price: newPrice,
+                        });
+                      } catch (err) {
+                        catchError(err);
+                      }
                     });
                   }}
                 />
@@ -518,15 +522,19 @@ export default function GigForm({
                   type="number"
                   inputMode="numeric"
                   {...form.register("amountPaid")}
-                  // defaultValue={formatPrice(Number(props.amountPaid))}
                   defaultValue={Number(gig.amountPaid)}
                   className="bg-white text-right"
                   onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                    // console.log(e.target.value);
-                    const newPaid = new Prisma.Decimal(e.target.value);
-                    void update({
-                      id: gig.id,
-                      amountPaid: newPaid,
+                    startTransition(() => {
+                      try {
+                        const newPaid = new Prisma.Decimal(e.target.value);
+                        void update({
+                          id: gig.id,
+                          amountPaid: newPaid,
+                        });
+                      } catch (err) {
+                        catchError(err);
+                      }
                     });
                   }}
                 />
@@ -581,8 +589,6 @@ export default function GigForm({
                     <PopoverContent
                       className=" h-max w-[420px] p-0 "
                       side="right"
-
-                      // align="start"
                     >
                       <Command className="flex  flex-col gap-3 border p-4">
                         {/* <CommandInput placeholder="Search..."  /> */}
@@ -590,12 +596,9 @@ export default function GigForm({
                         <Input
                           onChange={handleClientSearch}
                           placeholder="Type to search..."
-                          // className="p-2"
                         />
-
                         <CommandList>
                           <CommandSeparator />
-
                           <CommandEmpty>No results found.</CommandEmpty>
                           <CommandGroup heading="Results">
                             {searchClientResults &&
@@ -619,7 +622,6 @@ export default function GigForm({
                               ))}
                           </CommandGroup>
                           <CommandSeparator />
-
                           <CommandGroup heading="Suggestions">
                             {clientSuggestions &&
                               clientSuggestions.map((client) => (
@@ -670,9 +672,15 @@ export default function GigForm({
                       value={field.value}
                       onValueChange={(value: typeof field.value) => {
                         field.onChange(value);
-                        void update({
-                          id: gig.id,
-                          santaId: value,
+                        startTransition(() => {
+                          try {
+                            void update({
+                              id: gig.id,
+                              santaId: value,
+                            });
+                          } catch (err) {
+                            catchError(err);
+                          }
                         });
                       }}
                     >
@@ -709,10 +717,15 @@ export default function GigForm({
                       value={field.value}
                       onValueChange={(value: typeof field.value) => {
                         field.onChange(value);
-                        console.log();
-                        void update({
-                          id: gig.id,
-                          mrsSantaId: value,
+                        startTransition(() => {
+                          try {
+                            void update({
+                              id: gig.id,
+                              mrsSantaId: value,
+                            });
+                          } catch (err) {
+                            catchError(err);
+                          }
                         });
                       }}
                     >
@@ -740,7 +753,7 @@ export default function GigForm({
               )}
             />
 
-            <FormField
+            {/* <FormField
               control={form.control}
               name="clientSource"
               render={({ field }) => (
@@ -749,7 +762,6 @@ export default function GigForm({
                   <FormControl>
                     <Input
                       {...field}
-                      // disabled={clientId?.length === 0}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         void update({
@@ -763,17 +775,17 @@ export default function GigForm({
                       }}
                     />
                   </FormControl>
-                  {/* <FormMessage /> */}
                   <UncontrolledFormMessage
                     message={form.formState.errors.client?.source?.message}
                   />
                 </FormItem>
               )}
-            />
+            /> */}
           </CardContent>
         </Card>
+        {children}
 
-        {selectedClient && <ClientForm {...selectedClient} />}
+        {/* {selectedClient && <ClientForm {...selectedClient} />} */}
 
         <Card className="p-4 ">
           <CardHeader className="flex flex-row items-center gap-3 px-0">
@@ -794,9 +806,15 @@ export default function GigForm({
                       {...field}
                       className="bg-white"
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: gig.id,
-                          venueAddressName: e.target.value,
+                        startTransition(() => {
+                          try {
+                            void update({
+                              id: gig.id,
+                              venueAddressName: e.target.value,
+                            });
+                          } catch (err) {
+                            catchError(err);
+                          }
                         });
                       }}
                     />
@@ -819,9 +837,15 @@ export default function GigForm({
                       {...field}
                       className="bg-white"
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: gig.id,
-                          contactName: e.target.value,
+                        startTransition(() => {
+                          try {
+                            void update({
+                              id: gig.id,
+                              contactName: e.target.value,
+                            });
+                          } catch (err) {
+                            catchError(err);
+                          }
                         });
                       }}
                     />
@@ -845,9 +869,15 @@ export default function GigForm({
                       {...field}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: gig.id,
-                          contactPhoneCell: e.target.value,
+                        startTransition(() => {
+                          try {
+                            void update({
+                              id: gig.id,
+                              contactPhoneCell: e.target.value,
+                            });
+                          } catch (err) {
+                            catchError(err);
+                          }
                         });
                       }}
                     />
@@ -870,9 +900,15 @@ export default function GigForm({
                       {...field}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: gig.id,
-                          contactPhoneLand: e.target.value,
+                        startTransition(() => {
+                          try {
+                            void update({
+                              id: gig.id,
+                              contactPhoneLand: e.target.value,
+                            });
+                          } catch (err) {
+                            catchError(err);
+                          }
                         });
                       }}
                     />
@@ -895,9 +931,15 @@ export default function GigForm({
                       value={field.value}
                       onValueChange={(value: VenueType) => {
                         field.onChange(value);
-                        void update({
-                          id: gig.id,
-                          venueType: value,
+                        startTransition(() => {
+                          try {
+                            void update({
+                              id: gig.id,
+                              venueType: value,
+                            });
+                          } catch (err) {
+                            catchError(err);
+                          }
                         });
                       }}
                     >
@@ -935,9 +977,15 @@ export default function GigForm({
                       {...field}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: gig.id,
-                          contactEmail: e.target.value,
+                        startTransition(() => {
+                          try {
+                            void update({
+                              id: gig.id,
+                              contactEmail: e.target.value,
+                            });
+                          } catch (err) {
+                            catchError(err);
+                          }
                         });
                       }}
                     />
@@ -988,9 +1036,15 @@ export default function GigForm({
                       disabled={gig.clientId?.length === 0}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: gig.id,
-                          venueAddressCity: e.target.value,
+                        startTransition(() => {
+                          try {
+                            void update({
+                              id: gig.id,
+                              venueAddressCity: e.target.value,
+                            });
+                          } catch (err) {
+                            catchError(err);
+                          }
                         });
                       }}
                     />
@@ -1013,9 +1067,15 @@ export default function GigForm({
                       {...field}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: gig.id,
-                          venueAddressState: e.target.value,
+                        startTransition(() => {
+                          try {
+                            void update({
+                              id: gig.id,
+                              venueAddressState: e.target.value,
+                            });
+                          } catch (err) {
+                            catchError(err);
+                          }
                         });
                       }}
                     />
@@ -1038,9 +1098,15 @@ export default function GigForm({
                       {...field}
                       className="bg-white "
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: gig.id,
-                          venueAddressZip: e.target.value,
+                        startTransition(() => {
+                          try {
+                            void update({
+                              id: gig.id,
+                              venueAddressZip: e.target.value,
+                            });
+                          } catch (err) {
+                            catchError(err);
+                          }
                         });
                       }}
                     />
@@ -1063,9 +1129,15 @@ export default function GigForm({
                       {...field}
                       className="h-48  bg-white"
                       onBlur={(e: FocusEvent<HTMLTextAreaElement>) => {
-                        void update({
-                          id: gig.id,
-                          notesVenue: e.target.value,
+                        startTransition(() => {
+                          try {
+                            void update({
+                              id: gig.id,
+                              notesVenue: e.target.value,
+                            });
+                          } catch (err) {
+                            catchError(err);
+                          }
                         });
                       }}
                     />

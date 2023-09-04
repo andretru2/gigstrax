@@ -4,7 +4,7 @@ import { type ClientProps, prisma } from "@/server/db";
 import { revalidatePath } from "next/cache";
 import { type Prisma } from "@prisma/client";
 
-export async function getClient(id: string) {
+export async function getClient(id: string): Promise<ClientProps | null> {
   if (id.length === 0) return null;
 
   const data = await prisma.client.findFirst({

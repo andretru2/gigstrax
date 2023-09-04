@@ -1,3 +1,4 @@
+// "use client";
 import { type Metadata } from "next";
 // import { prisma, type GigProps } from "@/server/db";
 import { env } from "@/env.mjs";
@@ -25,6 +26,10 @@ import GigDetailTabs from "@/components/gigs/gig-detail-tabs";
 import { getSantas, getMrsSantas } from "@/app/_actions/source";
 import { getClient, getClients } from "@/app/_actions/client";
 import { notFound } from "next/navigation";
+import { useGigStore } from "@/app/_store/gig";
+import ClientForm from "@/components/clients/client-form";
+import StoreInitializer from "@/components/gigs/store-initializer";
+import { type ClientProps } from "@/server/db";
 
 // import NotFo
 
@@ -34,8 +39,9 @@ export const metadata: Metadata = {
   description: "Manage your gig",
 };
 
-export const revalidate = 30;
+// export const revalidate = 30;
 export const dynamic = "force-dynamic";
+// export const dynamic = true;
 export const cache = "no-store";
 
 interface Props {
@@ -75,7 +81,9 @@ export default async function Page({ params }: Props) {
       }),
     ]);
 
-  if (!gig) return notFound();
+  client && useGigStore.setState({ client });
+
+  console.log(client);
 
   const formattedDate =
     gig?.gigDate && formatDate(gig?.gigDate.getTime(), "friendly");
@@ -181,15 +189,22 @@ export default async function Page({ params }: Props) {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <Separator className="mb-8 " />
+
         <GigDetailTabs gigId={gig.id} />
         <GigForm
           gig={gig}
-          client={client ?? undefined}
           santas={santas}
           mrsSantas={mrsSantas}
           clients={clients}
           clientSuggestions={clientSuggestions}
-        />
+        >
+          {client && (
+            <>
+              <StoreInitializer client={client} />
+              <ClientForm {...client} />
+            </>
+          )}
+        </GigForm>
       </CardContent>
     </Card>
   );

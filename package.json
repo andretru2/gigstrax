@@ -54,6 +54,7 @@
     "clsx": "^1.2.1",
     "cmdk": "^0.2.0",
     "lucide-react": "^0.241.0",
+    "million": "2.6.0-beta.10",
     "next": "^13.4.12",
     "next-themes": "^0.2.1",
     "react": "18.2.0",
@@ -63,7 +64,8 @@
     "superjson": "1.12.2",
     "tailwind-merge": "^1.13.2",
     "tailwindcss-animate": "^1.0.6",
-    "zod": "^3.21.4"
+    "zod": "^3.21.4",
+    "zustand": "^4.4.1"
   },
   "devDependencies": {
     "@tailwindcss/aspect-ratio": "^0.4.2",

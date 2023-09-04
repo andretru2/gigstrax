@@ -6,6 +6,7 @@ import { type z } from "zod";
 // } from "@/lib/validations/cart";
 import { type Icons } from "@/components/icons";
 import { type SourceProps, type ClientProps, type GigProps } from "@/server/db";
+import { type Prisma } from "@prisma/client";
 // import type { Icon } from "@/components/icons";
 
 export interface NavItem {
@@ -103,4 +104,25 @@ export type GigExtendedProps = Partial<GigProps> & {
   client?: Partial<ClientProps>;
   santa?: Pick<SourceProps, "id" | "role">;
   mrsSanta?: Pick<SourceProps, "id" | "nameFirst">;
+};
+
+export type GetGigsProps = {
+  select?: Prisma.GigSelect;
+  whereClause?: Prisma.GigWhereInput;
+  orderBy?: Prisma.GigOrderByWithRelationInput[];
+  limit?: Prisma.GigFindManyArgs["take"];
+};
+
+export type GetClientsProps = {
+  select?: Prisma.ClientSelect;
+  whereClause?: Prisma.ClientWhereInput;
+  orderBy?: Prisma.ClientOrderByWithRelationInput[];
+  limit?: Prisma.ClientFindManyArgs["take"];
+};
+
+export type GetSourcesProps = {
+  select?: Prisma.SourceSelect;
+  whereClause?: Prisma.SourceWhereInput;
+  orderBy?: Prisma.SourceOrderByWithRelationInput[];
+  limit?: Prisma.SourceFindManyArgs["take"];
 };
