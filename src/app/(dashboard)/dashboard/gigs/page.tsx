@@ -45,6 +45,9 @@ export default async function Page({ params, searchParams }: Props) {
     venueAddressName: true,
     venueAddressZip: true,
     venueAddressStreet: true,
+    clientId: true,
+    mrsSantaId: true,
+    santaId: true,
     // createdAt: true,
 
     client: {
@@ -70,6 +73,7 @@ export default async function Page({ params, searchParams }: Props) {
   };
 
   switch (tab) {
+    /** TODO: add to search params instead */
     case "recentlyCreated":
       orderBy = [{ createdAt: "desc" }];
       break;
@@ -82,6 +86,10 @@ export default async function Page({ params, searchParams }: Props) {
     case "past":
       whereClause = { ...whereClause, gigDate: { lte: new Date() } };
       orderBy = [{ gigDate: "desc" }];
+      break;
+
+    case "all":
+      orderBy = [];
       break;
   }
 
@@ -100,7 +108,44 @@ export default async function Page({ params, searchParams }: Props) {
   console.log("column, order", column, order);
 
   if (column && order) {
-    orderBy = [...orderBy, { [column]: order }];
+    switch (column) {
+      /** TODO: add to search params instead */
+      case "clientId":
+        orderBy = [
+          {
+            client: {
+              client: order,
+            },
+          },
+        ];
+        break;
+
+      case "santaId":
+        orderBy = [
+          {
+            santa: {
+              role: order,
+            },
+          },
+        ];
+        break;
+
+      case "mrsSantaId":
+        orderBy = [
+          {
+            mrsSanta: {
+              nameFirst: order,
+            },
+          },
+        ];
+        break;
+
+      default:
+        orderBy && orderBy?.length > 0
+          ? (orderBy = [...orderBy, { [column]: order }])
+          : (orderBy = [{ [column]: order }]);
+        break;
+    }
   }
 
   // orderBy = [{ [column]: order }];

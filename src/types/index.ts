@@ -85,7 +85,7 @@ export interface DataTableFilterableColumn<TData>
 }
 
 export type Tab = "recentlyCreated" | "all" | "createNew";
-export type GigTab = Tab | "upcoming";
+export type GigTab = Tab | "upcoming" | "past" | "all";
 
 export interface Address {
   addressLine1: string;

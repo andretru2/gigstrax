@@ -27,6 +27,11 @@ export default function GigTabs(props: Props) {
       title: "Past",
       href: "/dashboard/gigs?tab=past",
     },
+
+    {
+      title: "All",
+      href: "/dashboard/gigs?tab=all",
+    },
     // {
     //   title: "New Gig",
     //   href: "/dashboard/gigs?tab=createNew",

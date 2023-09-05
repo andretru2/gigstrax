@@ -137,7 +137,7 @@ export default function Datatable({ data, pageCount }: Props) {
         },
       },
       {
-        accessorKey: "santa.role",
+        accessorKey: "santaId",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Santa" />
         ),
@@ -146,7 +146,7 @@ export default function Datatable({ data, pageCount }: Props) {
         },
       },
       {
-        accessorKey: "mrsSanta.nameFirst",
+        accessorKey: "mrsSantaId",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Mrs. Santa" />
         ),
@@ -155,7 +155,7 @@ export default function Datatable({ data, pageCount }: Props) {
         },
       },
       {
-        accessorKey: "client.client",
+        accessorKey: "clientId",
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Client" />
         ),
@@ -294,9 +294,9 @@ export default function Datatable({ data, pageCount }: Props) {
     <DataTable
       columns={columns}
       data={data}
-      onRowClick={(row) => {
-        console.log(row);
-      }}
+      // onRowClick={(row) => {
+      //   console.log(row);
+      // }}
       pageCount={pageCount}
       // filterableColumns={[
       //   {
@@ -310,13 +310,17 @@ export default function Datatable({ data, pageCount }: Props) {
       // ]}
       searchableColumns={[
         {
-          id: "client.client",
+          id: "clientId",
           title: "Client",
         },
         {
-          id: "gigDate",
-          title: "Gig Date",
+          id: "santaId",
+          title: "Santa",
         },
+        // {
+        //   id: "gigDate",
+        //   title: "Gig Date",
+        // },
       ]}
       // newRowLink={`/dashboard/gigs/new`}
       // deleteRowsAction={() => void deleteSelectedRows()}
