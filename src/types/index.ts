@@ -111,6 +111,7 @@ export type GetGigsProps = {
   whereClause?: Prisma.GigWhereInput;
   orderBy?: Prisma.GigOrderByWithRelationInput[];
   limit?: Prisma.GigFindManyArgs["take"];
+  skip?: Prisma.GigFindManyArgs["skip"];
 };
 
 export type GetClientsProps = {
@@ -118,6 +119,7 @@ export type GetClientsProps = {
   whereClause?: Prisma.ClientWhereInput;
   orderBy?: Prisma.ClientOrderByWithRelationInput[];
   limit?: Prisma.ClientFindManyArgs["take"];
+  skip?: Prisma.ClientFindManyArgs["skip"];
 };
 
 export type GetSourcesProps = {
@@ -125,4 +127,5 @@ export type GetSourcesProps = {
   whereClause?: Prisma.SourceWhereInput;
   orderBy?: Prisma.SourceOrderByWithRelationInput[];
   limit?: Prisma.SourceFindManyArgs["take"];
+  skip?: Prisma.SourceFindManyArgs["skip"];
 };

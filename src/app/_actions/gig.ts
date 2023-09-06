@@ -121,38 +121,46 @@ export async function getGigs({
   whereClause = {},
   // orderBy = [{ gigDate: "desc" }],
   orderBy = [],
-
   limit = 10,
+  skip = 0,
 }: GetGigsProps) {
+  const totalCount = await prisma.gig.count({ where: whereClause });
+
   const data = await prisma.gig.findMany({
     select: select,
     where: whereClause,
     orderBy: orderBy,
     take: limit,
+    skip: skip,
   });
 
-  return data.map((gig) => {
-    if (gig.gigDate) {
-      const localGigDate = fromUTC(gig.gigDate);
-      gig.gigDate = localGigDate;
-    }
-    // if (gig.createdAt) {
-    //   const localCreatedAt = fromUTC(gig.createdAt);
-    //   gig.createdAt = localCreatedAt;
-    // }
+  return {
+    data: data.map(mapGig),
+    totalCount,
+  };
+}
 
-    if (gig?.timeStart) {
-      const newTime = fromUTC(gig?.timeStart);
-      gig.timeStart = newTime;
-    }
+function mapGig(gig: GigProps) {
+  if (gig.gigDate) {
+    const localGigDate = fromUTC(gig.gigDate);
+    gig.gigDate = localGigDate;
+  }
+  // if (gig.createdAt) {
+  //   const localCreatedAt = fromUTC(gig.createdAt);
+  //   gig.createdAt = localCreatedAt;
+  // }
 
-    if (gig?.timeEnd) {
-      const newTime = fromUTC(gig?.timeEnd);
-      gig.timeEnd = newTime;
-    }
+  if (gig?.timeStart) {
+    const newTime = fromUTC(gig?.timeStart);
+    gig.timeStart = newTime;
+  }
 
-    return gig;
-  });
+  if (gig?.timeEnd) {
+    const newTime = fromUTC(gig?.timeEnd);
+    gig.timeEnd = newTime;
+  }
+
+  return gig;
 }
 
 export async function create(props?: GigProps) {

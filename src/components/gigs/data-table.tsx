@@ -84,7 +84,8 @@ export default function Datatable({ data, pageCount }: Props) {
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Date" />
         ),
-        cell: ({ cell }) => formatDate(cell.getValue() as Date),
+
+        cell: ({ cell }) => formatDate(cell.getValue() as Date, "friendly"),
         // cell: ({ row }) => {
         //   return (
         //     <span className="w-96">
@@ -107,6 +108,9 @@ export default function Datatable({ data, pageCount }: Props) {
       {
         accessorKey: "timeEnd",
         header: "End",
+        // size: 1200,
+        width: 2000,
+
         cell: ({ row }) => {
           return (
             <span>
@@ -123,9 +127,10 @@ export default function Datatable({ data, pageCount }: Props) {
       {
         accessorKey: "duration",
         header: "Duration",
+
         cell: ({ row }) => {
           return (
-            <span className="w-2 text-center">
+            <span className="w-2 items-center self-center">
               {row.original.timeStart && row.original.timeEnd
                 ? calculateTimeDifference(
                     row.original.timeStart,
@@ -174,6 +179,7 @@ export default function Datatable({ data, pageCount }: Props) {
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Venue" />
         ),
+        width: 300,
         cell: ({ row }) => {
           return (
             <span>

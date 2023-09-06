@@ -24,16 +24,12 @@ export default async function Page({ params, searchParams }: Props) {
     page,
     per_page = PER_PAGE,
     sort,
-    name,
-    category,
+    clientId,
+    santaId,
     tab = "upcoming",
   } = searchParams ?? {};
 
-  console.log("params, searchParams", params, searchParams);
-
   let { whereClause, select, limit, orderBy }: GetGigsProps = {};
-
-  // orderBy: GigOrderByWithRelationInput[] = [];
 
   select = {
     id: true,
@@ -96,6 +92,8 @@ export default async function Page({ params, searchParams }: Props) {
   // Number of items per page
   limit = typeof per_page === "string" ? parseInt(per_page) : PER_PAGE;
 
+  const skip = typeof page === "string" ? (parseInt(page) - 1) * limit : 0;
+
   // Column and order to sort by specified
   const [column, order] =
     typeof sort === "string"
@@ -104,8 +102,6 @@ export default async function Page({ params, searchParams }: Props) {
           "asc" | "desc" | undefined
         ])
       : [];
-
-  console.log("column, order", column, order);
 
   if (column && order) {
     switch (column) {
@@ -148,102 +144,33 @@ export default async function Page({ params, searchParams }: Props) {
     }
   }
 
-  // orderBy = [{ [column]: order }];
+  if (clientId) {
+    whereClause.client = {
+      client: {
+        contains: clientId,
+        mode: "insensitive",
+      },
+    };
+  }
 
-  console.log(
-    "where, limit, orderByx",
-    whereClause,
-    // select,
-    limit,
-    orderBy
-  );
+  if (santaId) {
+    whereClause.santa = {
+      role: {
+        contains: santaId,
+        mode: "insensitive",
+      },
+    };
+  }
 
-  //   orderBy: column && column in gigs
-  //             ? order === "asc"
-  //               ? asc(tasks[column])
-  //               : desc(tasks[column])
-  //             : desc(tasks.id)
-  //         );
-
-  //   where: whereClause,
-  //   select: {
-  //     id: true,
-  //     content: true,
-  //     createdAt: true,
-  //     _count: { select: { likes: true } },
-  //     likes:
-  //       currentUserId == null ? false : { where: { userId: currentUserId } },
-  //     user: {
-  //       select: { name: true, id: true, image: true },
-  //     },
-  //   },
-  // });
-
-  //     const { gigs, totalGigs } = await prisma. (async (tx) => {
-  //       const allTasks = await tx
-  //         .select()
-  //         .from(tasks)
-  //         .limit(limit)
-  //         .offset(offset)
-  //         .where(
-  //           and(
-  //             // Filter tasks by title
-  //             typeof title === "string"
-  //               ? like(tasks.title, `%${title}%`)
-  //               : undefined,
-  //             // Filter tasks by status
-  //             statuses.length > 0 ? inArray(tasks.status, statuses) : undefined,
-  //             // Filter tasks by priority
-  //             priorities.length > 0
-  //               ? inArray(tasks.priority, priorities)
-  //               : undefined
-  //           )
-  //         )
-  //         .orderBy(
-  //           column && column in tasks
-  //             ? order === "asc"
-  //               ? asc(tasks[column])
-  //               : desc(tasks[column])
-  //             : desc(tasks.id)
-  //         );
-
-  //       const totalTasks = await tx
-  //         .select({
-  //           count: sql<number>`count(${tasks.id})`,
-  //         })
-  //         .from(tasks)
-  //         .where(
-  //           and(
-  //             and(
-  //               // Filter tasks by title
-  //               typeof title === "string"
-  //                 ? like(tasks.title, `%${title}%`)
-  //                 : undefined
-  //             )
-  //           )
-  //         );
-
-  //       return {
-  //         allTasks,
-  //         totalTasks: Number(totalTasks[0]?.count) ?? 0,
-  //       };
-  //     });
-
-  // const pageCount = Math.ceil(totalTasks / limit);
-
-  const data = await getGigs({
+  const { data, totalCount } = await getGigs({
     whereClause,
     select,
     limit,
     orderBy,
+    skip,
   });
 
-  // const data =
-  //   tab === "upcoming"
-  //     ? await getUpcoming()
-  //     : tab === "recentlyCreated"
-  //     ? await getRecentlyCreated()
-  //     : await getPast();
+  const pageCount = Math.ceil(totalCount / limit);
 
-  return <DataTable data={data} pageCount={10} />;
+  return <DataTable data={data} pageCount={pageCount} />;
 }
