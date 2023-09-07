@@ -24,7 +24,7 @@ export default function ClientTabs(props: Props) {
   const tabs = [
     {
       title: "All",
-      href: "/dashboard/clients?",
+      href: "/dashboard/clients?tab=all",
     },
     {
       title: "Recently Created",

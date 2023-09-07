@@ -4,6 +4,7 @@ import { prisma, type SourceProps } from "@/server/db";
 import { type z } from "zod";
 import { revalidatePath } from "next/cache";
 import { type Prisma } from "@prisma/client";
+import { type GetSourcesProps } from "@/types/index";
 
 export async function getSource(id: string) {
   if (id.length === 0) return null;
@@ -50,18 +51,22 @@ export async function getSources({
   whereClause = {},
   orderBy = [{ nameLast: "asc" }, { nameFirst: "asc" }],
   limit = 10,
-}: {
-  select?: Prisma.SourceSelect;
-  whereClause?: Prisma.SourceWhereInput;
-  orderBy?: Prisma.SourceOrderByWithRelationInput[];
-  limit?: Prisma.SourceFindManyArgs["take"];
-}) {
-  return await prisma.source.findMany({
+  skip = 0,
+}: GetSourcesProps) {
+  const totalCount = await prisma.source.count({ where: whereClause });
+
+  const data = await prisma.source.findMany({
     select: select,
     where: whereClause,
     orderBy: orderBy,
     take: limit,
+    skip: skip,
   });
+
+  return {
+    data: data,
+    totalCount,
+  };
 }
 
 export async function getSantas() {

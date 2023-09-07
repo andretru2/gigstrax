@@ -20,7 +20,7 @@ export default function SourceTabs(props: Props) {
   const tabs = [
     {
       title: "All",
-      href: "/dashboard/sources?",
+      href: "/dashboard/sources?tab=all",
     },
     {
       title: "Recently Created",

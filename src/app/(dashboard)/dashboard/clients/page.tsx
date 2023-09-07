@@ -21,8 +21,7 @@ export default async function Page({ params, searchParams }: Props) {
     per_page = PER_PAGE,
     sort,
     client,
-    // phoneCell,
-    tab = "recentlyCreated",
+    tab = "all",
   } = searchParams ?? {};
 
   let { whereClause, select, limit, orderBy }: GetClientsProps = {};
