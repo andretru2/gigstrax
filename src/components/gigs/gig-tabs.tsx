@@ -16,6 +16,10 @@ export default function GigTabs(props: Props) {
 
   const tabs = [
     {
+      title: "All",
+      href: "/dashboard/gigs?tab=all",
+    },
+    {
       title: "Upcoming",
       href: "/dashboard/gigs?tab=upcoming",
     },
@@ -28,10 +32,6 @@ export default function GigTabs(props: Props) {
       href: "/dashboard/gigs?tab=past",
     },
 
-    {
-      title: "All",
-      href: "/dashboard/gigs?tab=all",
-    },
     // {
     //   title: "New Gig",
     //   href: "/dashboard/gigs?tab=createNew",

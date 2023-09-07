@@ -1,7 +1,8 @@
 import DataTable from "@/components/clients/data-table";
 import { type Tab } from "@/types/index";
-import { redirect } from "next/navigation";
 import { getClients } from "@/app/_actions/client";
+import { type GetClientsProps } from "@/types/index";
+import { PER_PAGE } from "@/lib/constants";
 
 interface Props {
   params: {
@@ -12,53 +13,85 @@ interface Props {
   };
 }
 
-const TAB_DEFAULT = "all";
-
 export const revalidate = 120;
 
 export default async function Page({ params, searchParams }: Props) {
-  const { tab = TAB_DEFAULT } = searchParams;
+  const {
+    page,
+    per_page = PER_PAGE,
+    sort,
+    client,
+    // phoneCell,
+    tab = "recentlyCreated",
+  } = searchParams ?? {};
 
-  // console.log("revalidate");
-  //entering the following on the url works:
-  //http://localhost:3002/dashboard/gigs?status=CreateNew
+  let { whereClause, select, limit, orderBy }: GetClientsProps = {};
 
-  // if (tab === "createNew") return redirect("/dashboard/gigs/new");
+  select = {
+    id: true,
+    client: true,
+    clientType: true,
+    contact: true,
+    phoneCell: true,
+    email: true,
+    addressCity: true,
+    addressState: true,
+    addressStreet: true,
+    addressZip: true,
+    phoneLandline: true,
+    createdAt: true,
+    status: true,
+    _count: {
+      select: {
+        gigs: true,
+      },
+    },
+  };
 
-  const data =
-    tab === "recentlyCreated"
-      ? await getClients({
-          select: {
-            id: true,
-            client: true,
-            clientType: true,
-            contact: true,
-            phoneCell: true,
-            email: true,
-            addressCity: true,
-            addressState: true,
-            addressStreet: true,
-            addressZip: true,
+  whereClause = {
+    client: { not: undefined },
+  };
 
-            phoneLandline: true,
-            createdAt: true,
+  switch (tab) {
+    /** TODO: add to search params instead */
+    case "recentlyCreated":
+      orderBy = [{ createdAt: "desc" }];
+      break;
 
-            status: true,
-            _count: {
-              select: {
-                gigs: true,
-              },
-            },
-          },
-          whereClause: {
-            createdAt: {
-              not: null,
-            },
-          },
-          orderBy: [{ createdAt: "desc" }, { client: "asc" }],
-          limit: 10,
-        })
-      : await getClients({});
+    case "all":
+      orderBy = [];
+      break;
+  }
 
-  return <DataTable data={data} pageCount={10} />;
+  limit = parseInt(per_page as string) || PER_PAGE;
+  const skip = (parseInt(page as string) - 1) * limit || 0;
+  const [column, order] = (sort as string)?.split(".") || [];
+
+  if (column && order) {
+    orderBy =
+      orderBy && orderBy.length > 0
+        ? [...orderBy, { [column]: order }]
+        : [{ [column]: order }];
+  }
+
+  if (client) {
+    whereClause = {
+      client: {
+        contains: client as string,
+        mode: "insensitive",
+      },
+    };
+  }
+
+  const { data, totalCount } = await getClients({
+    whereClause,
+    select,
+    limit,
+    orderBy,
+    skip,
+  });
+
+  const pageCount = Math.ceil(totalCount / limit);
+
+  return <DataTable data={data} pageCount={pageCount} />;
 }

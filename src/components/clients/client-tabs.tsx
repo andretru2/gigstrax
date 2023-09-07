@@ -39,7 +39,8 @@ export default function ClientTabs(props: Props) {
   return (
     <Tabs
       {...props}
-      className={cn("w-full overflow-x-auto", props.className)}
+      defaultValue="/dashboard/clients?tab=recentlyCreated"
+      className={cn("[&>*]:w-82 w-full overflow-x-auto", props.className)}
       onValueChange={(value) => router.push(value)}
     >
       <TabsList>
@@ -50,7 +51,8 @@ export default function ClientTabs(props: Props) {
             className={cn(
               // pathname === tab.href && "bg-background text-foreground shadow-sm"
               pathname?.includes(tab.href) &&
-                "bg-primary text-foreground shadow-sm"
+                "bg-primary text-foreground shadow-sm",
+              ""
             )}
             onClick={() => router.push(tab.href)}
           >

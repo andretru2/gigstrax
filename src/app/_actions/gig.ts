@@ -119,7 +119,6 @@ export async function getGig(id: string) {
 export async function getGigs({
   select = { id: true },
   whereClause = {},
-  // orderBy = [{ gigDate: "desc" }],
   orderBy = [],
   limit = 10,
   skip = 0,

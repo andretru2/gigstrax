@@ -3,6 +3,7 @@
 import { type ClientProps, prisma } from "@/server/db";
 import { revalidatePath } from "next/cache";
 import { type Prisma } from "@prisma/client";
+import { type GetClientsProps } from "@/types/index";
 
 export async function getClient(id: string): Promise<ClientProps | null> {
   if (id.length === 0) return null;
@@ -47,18 +48,22 @@ export async function getClients({
   whereClause = {},
   orderBy = [{ client: "asc" }],
   limit = 10,
-}: {
-  select?: Prisma.ClientSelect;
-  whereClause?: Prisma.ClientWhereInput;
-  orderBy?: Prisma.ClientOrderByWithRelationInput[];
-  limit?: Prisma.ClientFindManyArgs["take"];
-}) {
-  return await prisma.client.findMany({
+  skip = 0,
+}: GetClientsProps) {
+  const totalCount = await prisma.client.count({ where: whereClause });
+
+  const data = await prisma.client.findMany({
     select: select,
     where: whereClause,
     orderBy: orderBy,
     take: limit,
+    skip: skip,
   });
+
+  return {
+    data: data,
+    totalCount,
+  };
 }
 
 export async function checkIfExists(name: string) {

@@ -137,9 +137,10 @@ export default async function Page({ params, searchParams }: Props) {
         break;
 
       default:
-        orderBy && orderBy?.length > 0
-          ? (orderBy = [...orderBy, { [column]: order }])
-          : (orderBy = [{ [column]: order }]);
+        orderBy =
+          orderBy && orderBy.length > 0
+            ? [...orderBy, { [column]: order }]
+            : [{ [column]: order }];
         break;
     }
   }
@@ -147,7 +148,7 @@ export default async function Page({ params, searchParams }: Props) {
   if (clientId) {
     whereClause.client = {
       client: {
-        contains: clientId,
+        contains: clientId as string,
         mode: "insensitive",
       },
     };
@@ -156,7 +157,7 @@ export default async function Page({ params, searchParams }: Props) {
   if (santaId) {
     whereClause.santa = {
       role: {
-        contains: santaId,
+        contains: santaId as string,
         mode: "insensitive",
       },
     };
