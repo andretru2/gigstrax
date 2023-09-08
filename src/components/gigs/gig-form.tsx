@@ -19,15 +19,7 @@ import {
   calculateTimeDifference,
   formatPhone,
 } from "@/lib/utils";
-import {
-  type FocusEvent,
-  type ReactNode,
-  useState,
-  useEffect,
-  useMemo,
-  useTransition,
-} from "react";
-import { useDebounce } from "@/hooks/use-debounce";
+import { type FocusEvent, type ReactNode, useMemo, useTransition } from "react";
 import { update } from "@/app/_actions/gig";
 import type * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -57,29 +49,17 @@ import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Label } from "../ui/label";
-// import { getSantas } from "@/app/_actions/source";
 import {
   type SantaProps,
   type GigExtendedProps,
   type MrsSantaProps,
   type ClientPickerProps,
 } from "@/types/index";
-import {
-  Command,
-  // CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from "../ui/command";
 
-import ClientCreate from "../clients/client-create";
 import { toast } from "@/hooks/use-toast";
 import ClientForm from "@/components/clients/client-form";
-import { revalidatePath } from "next/cache";
 import { useGigStore } from "@/app/_store/gig";
+import { SelectClient } from "./gig-select-client";
 
 // interface Props {
 //   gig: Partial<GigProps> &
@@ -111,20 +91,6 @@ export default function GigForm({
   children,
   ...props
 }: Props) {
-  const router = useRouter();
-  // const [isPending, startTransition] = useTransition();
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  // const [selectedClient, ient] = useState<ClientProps | undefined>(
-  //   client ? { ...client } : undefined
-  // );
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [searchClient, setSearchlient] = useState("");
-  const [searchClientResults, setSearchClientResults] = useState<
-    ClientPickerProps[]
-  >([]);
-  const debouncedSearchClient = useDebounce(searchClient, 300);
-  const [isPending, startTransition] = useTransition();
-
   const { client, setClient } = useGigStore();
 
   const {
@@ -141,7 +107,6 @@ export default function GigForm({
     venueType,
     notesVenue,
     price,
-
     clientId,
     santa,
     mrsSanta,
@@ -189,6 +154,7 @@ export default function GigForm({
   // console.log(gig, client);
 
   // if (client) setSelectedClient(client);
+  const [isPending, startTransition] = useTransition();
 
   const { id: santaId, role } = santa ?? {};
   const { id: mrsSantaId, nameFirst } = mrsSanta ?? {};
@@ -198,22 +164,6 @@ export default function GigForm({
 
   const balance =
     price && amountPaid ? Number(price) - Number(amountPaid) : null;
-
-  useEffect(() => {
-    const searchClient = () => {
-      setSearchClientResults([]);
-      if (debouncedSearchClient.length > 1 && clients) {
-        setIsLoading(true);
-        const searchClientResults = clients.filter(({ client }) =>
-          client.toLowerCase().includes(debouncedSearchClient)
-        );
-        setSearchClientResults(searchClientResults);
-        setIsLoading(false);
-      }
-    };
-
-    searchClient();
-  }, [debouncedSearchClient, clients]);
 
   const form = useForm<z.infer<typeof gigSchema>>({
     resolver: zodResolver(gigSchema),
@@ -246,41 +196,6 @@ export default function GigForm({
       },
     },
   });
-
-  function handleClientSearch(e: FocusEvent<HTMLInputElement>) {
-    setSearchlient(e.target.value);
-  }
-
-  function handleSelectClient(value: string) {
-    startTransition(async () => {
-      try {
-        const res = await update({
-          id: gig.id,
-          clientId: value,
-        });
-        console.log(res);
-        setIsOpen(false);
-        setSearchClientResults([]);
-        // setSelectedClient({ ...client } as ClientProps);
-        // setClient({ ...(client as ClientProps) });
-        // setClient( ClientProps) });
-        // revalidatePath("/dashboard/gigs");
-        // revalidatePath(`/dashboard/gigs/${gig.id}`);
-        // gig.id && router.push(`/dashboard/gigs/${gig.id}`);
-
-        router.refresh();
-        // void handleRefresh();
-      } catch (error) {
-        error instanceof Error
-          ? toast({
-              description: error.message,
-            })
-          : toast({
-              description: "Something went wrong, please try again.",
-            });
-      }
-    });
-  }
 
   // console.log(client);
 
@@ -557,107 +472,7 @@ export default function GigForm({
               control={form.control}
               name="clientId"
               render={({ field }) => (
-                <FormItem className=" col-span-3 flex flex-col ">
-                  <FormLabel>Client</FormLabel>
-                  <Popover open={isOpen} onOpenChange={setIsOpen}>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className="w-full justify-between"
-                        >
-                          {client?.client ? (
-                            <>{client.client}</>
-                          ) : (
-                            <>Select Client...</>
-                          )}
-                          {isPending ? (
-                            <Icons.spinner className="h-4 w-4 animate-spin text-accent" />
-                          ) : (
-                            <Icons.arrowUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          )}
-                        </Button>
-                        {/* <Input
-                          {...field}
-                          onClick={() => setIsOpen(true)}
-                          placeholder="Type to search..."
-                        /> */}
-                      </FormControl>
-                    </PopoverTrigger>
-
-                    <PopoverContent
-                      className=" h-max w-[420px] p-0 "
-                      side="right"
-                    >
-                      <Command className="flex  flex-col gap-3 border p-4">
-                        {/* <CommandInput placeholder="Search..."  /> */}
-                        <h1>Search Clients</h1>
-                        <Input
-                          onChange={handleClientSearch}
-                          placeholder="Type to search..."
-                        />
-                        <CommandList>
-                          <CommandSeparator />
-                          <CommandEmpty>No results found.</CommandEmpty>
-                          <CommandGroup heading="Results">
-                            {searchClientResults &&
-                              searchClientResults.map((client) => (
-                                <CommandItem
-                                  value={client.client}
-                                  key={client.id}
-                                  onSelect={() => handleSelectClient(client.id)}
-                                >
-                                  {client.client}
-
-                                  <Icons.check
-                                    className={cn(
-                                      "ml-auto h-4 w-4",
-                                      client.client === field.value
-                                        ? "opacity-100"
-                                        : "opacity-0"
-                                    )}
-                                  />
-                                </CommandItem>
-                              ))}
-                          </CommandGroup>
-                          <CommandSeparator />
-                          <CommandGroup heading="Suggestions">
-                            {clientSuggestions &&
-                              clientSuggestions.map((client) => (
-                                <CommandItem
-                                  value={client.client}
-                                  key={client.id}
-                                  onSelect={() => handleSelectClient(client.id)}
-                                >
-                                  {client.client}
-                                  <Icons.check
-                                    className={cn(
-                                      "ml-auto h-4 w-4",
-                                      client.client === field.value
-                                        ? "opacity-100"
-                                        : "opacity-0"
-                                    )}
-                                  />
-                                </CommandItem>
-                              ))}
-                          </CommandGroup>
-                          <CommandSeparator />
-                          <CommandGroup className="" heading="Create new">
-                            <CommandItem className="flex flex-col gap-2 data-[selected]:bg-none">
-                              <ClientCreate
-                                onSuccess={(newClientId) => {
-                                  handleSelectClient(newClientId);
-                                  setIsOpen(false);
-                                }}
-                              />
-                            </CommandItem>
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                </FormItem>
+                <SelectClient control={form.control} name="clientId" />
               )}
             />
 
