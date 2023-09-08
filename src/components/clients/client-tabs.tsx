@@ -39,7 +39,7 @@ export default function ClientTabs(props: Props) {
   return (
     <Tabs
       {...props}
-      defaultValue="/dashboard/clients?tab=recentlyCreated"
+      defaultValue="/dashboard/clients?tab=all"
       className={cn("[&>*]:w-82 w-full overflow-x-auto", props.className)}
       onValueChange={(value) => router.push(value)}
     >

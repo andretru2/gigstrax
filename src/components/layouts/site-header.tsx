@@ -4,7 +4,8 @@ import type { User } from "@clerk/nextjs/dist/types/server";
 
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
-import { CommandMenu } from "@/components/command-menu";
+// import { CommandMenu } from "@/components/command-menu";
+import { Combobox } from "../combobox";
 import { Icons } from "@/components/icons";
 // import { MainNav } from "@/components/main-nav"
 // import { MobileNav } from "@/components/mobile-nav"
@@ -45,7 +46,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
 
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <div className="w-full flex-1 md:w-auto md:flex-none">
-            <CommandMenu />
+            <Combobox />
           </div>
           <nav className="flex items-center gap-2 text-background">
             {/* <Link

@@ -16,6 +16,7 @@ interface Props {
 export const revalidate = 120;
 
 export default async function Page({ params, searchParams }: Props) {
+  // const {  tab = "all"} = params;
   const {
     page,
     per_page = PER_PAGE,
@@ -61,6 +62,8 @@ export default async function Page({ params, searchParams }: Props) {
       orderBy = [];
       break;
   }
+
+  console.log(orderBy, tab);
 
   limit = parseInt(per_page as string) || PER_PAGE;
   const skip = (parseInt(page as string) - 1) * limit || 0;

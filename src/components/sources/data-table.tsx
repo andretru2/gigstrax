@@ -166,12 +166,12 @@ export default function Datatable({ data, pageCount }: Props) {
       // ]}
       searchableColumns={[
         {
-          id: "nameLast",
-          title: "Last Name",
+          id: "nameFirst",
+          title: "First Name",
         },
         {
-          id: "status",
-          title: "Status",
+          id: "nameLast",
+          title: "Last Name",
         },
       ]}
       // newRowLink={`/dashboard/gigs/new`}

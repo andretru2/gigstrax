@@ -83,7 +83,7 @@ export default async function Page({ params }: Props) {
 
   client && useGigStore.setState({ client });
 
-  console.log(client);
+  console.log(clientSuggestions);
 
   const formattedDate =
     gig?.gigDate && formatDate(gig?.gigDate.getTime(), "friendly");
@@ -195,8 +195,8 @@ export default async function Page({ params }: Props) {
           gig={gig}
           santas={santas}
           mrsSantas={mrsSantas}
-          clients={clients}
-          clientSuggestions={clientSuggestions}
+          clients={clients.data}
+          clientSuggestions={clientSuggestions.data}
         >
           {client && (
             <>

@@ -55,7 +55,7 @@ export function CommandMenu({ ...props }: DialogProps) {
       >
         {/* <span className="hidden lg:inline-flex">Search documentation...</span> */}
         <Icons.search className="h-4 w-4 xl:mr-2" aria-hidden="true" />
-        <span className="inline-flex">Search gigs or clients...</span>
+        <span className="inline-flex">Search...</span>
         <kbd className="pointer-events-none absolute right-1.5 top-1.5 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
           <span className=" text-xs">⌘</span>K
         </kbd>

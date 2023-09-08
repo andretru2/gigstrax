@@ -31,6 +31,7 @@ export default function SourceTabs(props: Props) {
   return (
     <Tabs
       {...props}
+      defaultValue="/dashboard/sources?tab=all"
       className={cn("w-full overflow-x-auto", props.className)}
       onValueChange={(value) => router.push(value)}
     >
