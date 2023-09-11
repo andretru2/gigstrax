@@ -5,7 +5,10 @@ import type { ReactNode } from "react";
 import { siteConfig } from "@/config/site";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
-import { ClerkProvider } from "@clerk/nextjs";
+// import { ClerkProvider } from "@clerk/nextjs";
+import SessionProvider from "@/components/session-provider";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]/route";
 
 interface RootLayoutProps {
   children?: ReactNode;
@@ -19,7 +22,9 @@ export const metadata = {
   description: siteConfig.description,
 };
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default async function RootLayout({ children }: RootLayoutProps) {
+  const session = await getServerSession(authOptions);
+  console.log(session);
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
@@ -31,7 +36,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
         )}
       >
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <ClerkProvider>{children}</ClerkProvider>
+          <SessionProvider session={session}>
+            {children}
+            {/* <ClerkProvider></ClerkProvider> */}
+          </SessionProvider>
           <Toaster />
         </ThemeProvider>
       </body>

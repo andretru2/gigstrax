@@ -18,6 +18,21 @@ export const env = createEnv({
     POSTGRES_PASSWORD: z.string(),
     POSTGRES_DATABASE: z.string(),
     CLERK_SECRET_KEY: z.string(),
+
+    GOOGLE_CLIENT_ID: z.string(),
+    GOOGLE_CLIENT_SECRET: z.string(),
+
+    NEXTAUTH_SECRET:
+      process.env.NODE_ENV === "production"
+        ? z.string().min(1)
+        : z.string().min(1).optional(),
+    // NEXTAUTH_URL: z.preprocess(
+    //   // This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
+    //   // Since NextAuth.js automatically uses the VERCEL_URL if present.
+    //   (str) => process.env.VERCEL_URL ?? str,
+    //   // VERCEL_URL doesn't include `https` so it cant be validated as a URL
+    //   process.env.VERCEL ? z.string().min(1) : z.string().url()
+    // ),
   },
 
   /**
@@ -28,6 +43,8 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
     NEXT_PUBLIC_APP_URL: z.string().url(),
+
+    // NEXT_PUBLIC_AUTH_URL: z.string().url(),
   },
 
   /**
@@ -50,6 +67,10 @@ export const env = createEnv({
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
+    // NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

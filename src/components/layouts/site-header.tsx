@@ -1,6 +1,7 @@
 import Link from "next/link";
 
-import type { User } from "@clerk/nextjs/dist/types/server";
+// import type { User } from "@clerk/nextjs/dist/types/server";
+import { type User } from "next-auth";
 
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
@@ -25,19 +26,19 @@ import {
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
-const user = "atb";
-
 interface SiteHeaderProps {
   user: User | null;
 }
 
 export function SiteHeader({ user }: SiteHeaderProps) {
-  const initials = `${user?.firstName?.charAt(0) ?? ""} ${
-    user?.lastName?.charAt(0) ?? ""
+  // console.log(user?.name);
+  const initials = `${user?.name?.charAt(0) ?? ""} ${
+    user?.name?.charAt(0) ?? ""
   }`;
-  const email =
-    user?.emailAddresses?.find((e) => e.id === user.primaryEmailAddressId)
-      ?.emailAddress ?? "";
+
+  // const email =
+  //   user?.?.find((e) => e.id === user.primaryEmailAddressId)
+  //     ?.emailAddress ?? "";
   return (
     <header className="supports-backdrop-blur:bg-background/60 to- sticky top-0 z-40 w-full  rounded-b-3xl bg-gradient-to-tl from-primary to-[#FF331A] backdrop-blur">
       <div className="container flex h-16 w-full items-center gap-3 overflow-visible ">
@@ -103,10 +104,10 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">
-                        {user.firstName} {user.lastName}
+                        {user.name}
                       </p>
                       <p className="text-xs leading-none text-muted-foreground">
-                        {email}
+                        {user.email}
                       </p>
                     </div>
                   </DropdownMenuLabel>

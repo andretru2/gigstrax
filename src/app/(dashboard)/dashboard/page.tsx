@@ -1,3 +1,4 @@
+"use client";
 import { prisma } from "@/server/db";
 // import Sources from "../lib/sources.json";
 // import Clients from "../lib/clients.json";
@@ -6,10 +7,13 @@ import { prisma } from "@/server/db";
 import Header from "@/components/header";
 import { Separator } from "@/components/ui/separator";
 import { redirect } from "next/navigation";
+import { useSession } from "next-auth/react";
 
-export default function prismaExample() {
-  return false;
-  // if (false) {
+export default function Page() {
+  const { data } = useSession();
+  return <>Hello {data?.user?.name} </>;
+
+  //if (false) {
   //   const res = await prisma.gig.create({
   //     data: {
   //       clientId: "A4370F67-BCF6-457A-BDCB-F91E4CC4FA44",
