@@ -74,7 +74,7 @@ export function SelectClient({
 
   const handlePopoverOpen = () => {
     void getClientSuggestions();
-    setIsOpen(true);
+    setIsOpen(!isOpen);
   };
 
   function handleSelectClient(value: string) {
@@ -85,8 +85,9 @@ export function SelectClient({
           update({ id: gigId, clientId: value }),
           getClient(value),
         ]);
+        console.log("updated, client", updateGig, clientUpdate);
         setIsOpen(false);
-        setClient(clientUpdate as ClientProps);
+        setClient(clientUpdate);
         router.refresh();
       } catch (error) {
         error instanceof Error
@@ -147,9 +148,12 @@ export function SelectClient({
   //   searchClient();
   // }, [debouncedSearchClient, clients]);
 
+  console.log(clients);
+
   return (
     <FormItem className=" col-span-3 flex flex-col ">
       <FormLabel>Client</FormLabel>
+      {/* <Popover open={isOpen} onOpenChange={setIsOpen}> */}
       <Popover open={isOpen} onOpenChange={handlePopoverOpen}>
         <PopoverTrigger asChild>
           <FormControl>
@@ -168,7 +172,7 @@ export function SelectClient({
           </FormControl>
         </PopoverTrigger>
 
-        <PopoverContent className=" h-max w-[420px] p-0 " side="right">
+        <PopoverContent className=" h-[600px] w-[500px] p-2 " side="right">
           <Command className="flex  flex-col gap-3 border p-4">
             {/* <CommandInput placeholder="Search..."  /> */}
             <h1>Search Clients</h1>
@@ -181,10 +185,10 @@ export function SelectClient({
               onChange={handleClientSearch}
               placeholder="Type to search..."
             /> */}
-            <CommandList>
+            <CommandList className="max-h-[500px]">
               <CommandSeparator />
               <CommandEmpty>No results found.</CommandEmpty>
-              <CommandGroup heading="Results">
+              <CommandGroup heading={client ? "Results" : ""}>
                 {clients &&
                   clients.map((client) => (
                     <CommandItem
@@ -228,11 +232,10 @@ export function SelectClient({
               </CommandGroup>
               <CommandSeparator />
               <CommandGroup className="" heading="Create new">
-                <CommandItem className="flex flex-col gap-2 data-[selected]:bg-none">
+                <CommandItem className="flex flex-col gap-2 self-end data-[selected]:bg-none">
                   <ClientCreate
                     onSuccess={(newClientId) => {
                       handleSelectClient(newClientId);
-                      setIsOpen(false);
                     }}
                   />
                 </CommandItem>

@@ -54,7 +54,10 @@ import { update } from "@/app/_actions/client";
 import { useGigStore } from "@/app/_store/gig";
 
 export default function ClientForm(props?: ClientProps) {
-  const { client } = useGigStore();
+  const { client, setClient } = useGigStore();
+
+  // if (props) setClient(props);
+
   const router = useRouter();
 
   // if (!client) return <>Please select a client</>;
@@ -78,67 +81,51 @@ export default function ClientForm(props?: ClientProps) {
     createdBy,
     updatedBy,
     status,
-  } = client as ClientProps;
+  } = (client as ClientProps) || {};
 
-  console.log(client);
+  const defaultValues = {
+    addressCity: addressCity || undefined,
+    addressState: addressState || undefined,
+    addressStreet: addressStreet || undefined,
+    addressZip: addressZip || undefined,
+    client: clientName || undefined,
+    clientType: clientType || undefined,
+    contact: contact || undefined,
+    email: email || undefined,
+    id: id || undefined,
+    notes: notes || undefined,
+    phoneCell: phoneCell || undefined,
+    phoneLandline: phoneLandline || undefined,
+    source: source || undefined,
+    createdAt: createdAt || undefined,
+    updatedAt: updatedAt || undefined,
+    createdBy: createdBy || undefined,
+    updatedBy: updatedBy || undefined,
+    status: status || undefined,
+  };
 
-  useEffect(() => {
-    console.log("client", client);
-    form.reset({
-      addressCity: addressCity ? addressCity : undefined,
-      addressState: addressState ? addressState : undefined,
-      addressStreet: addressStreet ? addressStreet : undefined,
-      addressZip: addressZip ? addressZip : undefined,
-      client: clientName ? clientName : undefined,
-      clientType: clientType ? clientType : undefined,
-      contact: contact ? contact : undefined,
-
-      email: email ? email : undefined,
-      id: id ? id : undefined,
-      notes: notes ? notes : undefined,
-      phoneCell: phoneCell ? phoneCell : undefined,
-      phoneLandline: phoneLandline ? phoneLandline : undefined,
-      source: source ? source : undefined,
-      createdAt: createdAt ? createdAt : undefined,
-      updatedAt: updatedAt ? updatedAt : undefined,
-      createdBy: createdBy ? createdBy : undefined,
-      updatedBy: updatedBy ? updatedBy : undefined,
-      status: status ? status : undefined,
-    });
-    router.refresh();
-  }, [client]);
-
-  // console.log("client", props);
+  // Remove properties with null or undefined values from the `defaultValues` object
+  const cleanedDefaultValues = Object.fromEntries(
+    Object.entries(defaultValues).filter(
+      ([_, value]) => value !== null && value !== undefined
+    )
+  );
 
   const [isPending, startTransition] = useTransition();
 
+  useEffect(() => {
+    console.log("client form", client);
+    form.reset(defaultValues);
+    router.refresh();
+    // props && setClient(props);
+  }, [client]);
+
   const form = useForm<z.infer<typeof clientSchema>>({
     resolver: zodResolver(clientSchema),
-    progressive: true,
+    // progressive: true,
     mode: "onBlur",
-    defaultValues: {
-      addressCity: addressCity ? addressCity : undefined,
-      addressState: addressState ? addressState : undefined,
-      addressStreet: addressStreet ? addressStreet : undefined,
-      addressZip: addressZip ? addressZip : undefined,
-      client: clientName ? clientName : undefined,
-      clientType: clientType ? clientType : undefined,
-      contact: contact ? contact : undefined,
-      email: email ? email : undefined,
-      id: id ? id : undefined,
-      notes: notes ? notes : undefined,
-      phoneCell: phoneCell ? phoneCell : undefined,
-      phoneLandline: phoneLandline ? phoneLandline : undefined,
-      source: source ? source : undefined,
-      createdAt: createdAt ? createdAt : undefined,
-      updatedAt: updatedAt ? updatedAt : undefined,
-      createdBy: createdBy ? createdBy : undefined,
-      updatedBy: updatedBy ? updatedBy : undefined,
-      status: status ? status : undefined,
-    },
+    defaultValues: cleanedDefaultValues,
   });
-
-  console.log(clientName);
 
   return (
     <Form {...form}>

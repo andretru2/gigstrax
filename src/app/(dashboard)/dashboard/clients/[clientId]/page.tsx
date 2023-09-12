@@ -41,7 +41,7 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const id = params.clientId;
-  console.log(params);
+  // console.log(params);
   if (!id) return <h1>Please select a client. </h1>;
 
   // const today = new Date();

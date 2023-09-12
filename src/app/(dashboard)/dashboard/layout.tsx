@@ -40,7 +40,7 @@ export default async function DashboardLayout({
   // const user = await currentUser();
 
   const session = await getServerSession(authOptions);
-  console.log(session);
+  // console.log(session);
   if (!session || !session.user) {
     redirect("/api/auth/signin");
   }

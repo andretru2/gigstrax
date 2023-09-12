@@ -203,12 +203,12 @@ export async function update(
     where: { id: props.id },
     include: include ? include : undefined,
   })) as GigExtendedProps;
-  console.log(res);
+  // console.log(res);
 
   props.id && revalidatePath(`/dashboard/gigs/${props.id}`);
   revalidatePath(`/dashboard/gigs/`);
   // props.id && redirect(`/dashboard/gigs/${props.id}`);
-  console.log("here", res);
+  // console.log("here", res);
 
   return res;
 }

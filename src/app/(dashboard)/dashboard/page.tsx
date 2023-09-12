@@ -11,7 +11,9 @@ import { useSession } from "next-auth/react";
 
 export default function Page() {
   const { data } = useSession();
-  return <>Hello {data?.user?.name} </>;
+  return (
+    <>Hello {data?.user?.name}. Dashboard will be developed on next phase. </>
+  );
 
   //if (false) {
   //   const res = await prisma.gig.create({
