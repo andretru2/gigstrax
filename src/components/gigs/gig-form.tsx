@@ -19,7 +19,13 @@ import {
   calculateTimeDifference,
   formatPhone,
 } from "@/lib/utils";
-import { type FocusEvent, type ReactNode, useMemo, useTransition } from "react";
+import {
+  type FocusEvent,
+  type ReactNode,
+  useMemo,
+  useTransition,
+  useEffect,
+} from "react";
 import { update } from "@/app/_actions/gig";
 import type * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -86,8 +92,8 @@ export default function GigForm({
   // client,
   santas,
   mrsSantas,
-  clients,
-  clientSuggestions,
+  // clients,
+  // clientSuggestions,
   children,
   ...props
 }: Props) {
@@ -154,6 +160,15 @@ export default function GigForm({
   // console.log(gig, client);
 
   // if (client) setSelectedClient(client);
+
+  // useEffect(() => {
+  //   if (clientId) {
+  //     useGigStore.setState({ client });
+  //   }
+  // }, [clientId]);
+
+  console.log(client);
+
   const [isPending, startTransition] = useTransition();
 
   const { id: santaId, role } = santa ?? {};
@@ -472,7 +487,11 @@ export default function GigForm({
               control={form.control}
               name="clientId"
               render={({ field }) => (
-                <SelectClient control={form.control} name="clientId" />
+                <SelectClient
+                  gigId={id ?? ""}
+                  control={form.control}
+                  name="clientId"
+                />
               )}
             />
 

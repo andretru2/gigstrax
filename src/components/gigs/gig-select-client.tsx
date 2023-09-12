@@ -36,7 +36,7 @@ import { type ClientPickerProps } from "@/types/index";
 import { type ClientProps } from "@/server/db";
 import { useGigStore } from "@/app/_store/gig";
 
-export async function SelectClient({
+export function SelectClient({
   gigId,
   control,
   name,
@@ -46,59 +46,48 @@ export async function SelectClient({
   name: string;
 }) {
   const { field } = useController({ control, name });
-
   const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  // const [client, setClient] = useState<ClientProps | undefined>(
-  //   field.value as ClientProps
-  // );
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  // const [searchClient, setSearchlient] = useState("");
-  // const [searchClientResults, setSearchClientResults] = useState<
-  //   ClientPickerProps[]
-  // >([]);
-  // const debouncedSearchClient = useDebounce(searchClient, 300);
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 300);
   const [clients, setClients] = useState<ClientPickerProps[] | null>(null);
-
+  const [clientSuggestions, setClientSuggestions] = useState<
+    ClientPickerProps[] | null
+  >(null);
   const [isPending, startTransition] = useTransition();
   const { client, setClient } = useGigStore();
 
-  field.value && setClient(field.value as ClientProps);
-
-  console.log(client);
-
-  const { data: clientSuggestions } = await getClients({
-    whereClause: {
-      client: {
-        not: {
-          equals: "",
+  const getClientSuggestions = async () => {
+    const { data } = await getClients({
+      whereClause: {
+        client: {
+          not: {
+            equals: "",
+          },
         },
       },
-    },
-    orderBy: [{ createdAt: "desc" }, { client: "asc" }],
-    limit: 5,
-  });
+      orderBy: [{ createdAt: "desc" }, { client: "asc" }],
+      limit: 5,
+    });
+    setClientSuggestions(data);
+  };
 
-  // function handleClientSearch(e: FocusEvent<HTMLInputElement>) {
-  //   setSearchClient(e.target.value);
-  // }
-
-  // const handleSelect = useCallback((callback: () => unknown) => {
-  //   setIsOpen(false);
-  //   callback();
-  // }, []);
+  const handlePopoverOpen = () => {
+    void getClientSuggestions();
+    setIsOpen(true);
+  };
 
   function handleSelectClient(value: string) {
     startTransition(async () => {
       try {
-        const [updateGig, client] = await Promise.all([
+        console.log(value, gigId);
+        const [updateGig, clientUpdate] = await Promise.all([
           update({ id: gigId, clientId: value }),
           getClient(value),
         ]);
         setIsOpen(false);
-        setClient(client as ClientProps);
+        setClient(clientUpdate as ClientProps);
+        router.refresh();
       } catch (error) {
         error instanceof Error
           ? toast({
@@ -161,7 +150,7 @@ export async function SelectClient({
   return (
     <FormItem className=" col-span-3 flex flex-col ">
       <FormLabel>Client</FormLabel>
-      <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <Popover open={isOpen} onOpenChange={handlePopoverOpen}>
         <PopoverTrigger asChild>
           <FormControl>
             <Button

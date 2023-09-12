@@ -19,7 +19,7 @@ import {
   calculateTimeDifference,
   formatPhone,
 } from "@/lib/utils";
-import { type FocusEvent, useState, useTransition } from "react";
+import { type FocusEvent, useState, useTransition, useEffect } from "react";
 
 import type * as z from "zod";
 
@@ -51,14 +51,20 @@ import { Icons } from "@/components/icons";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 import { update } from "@/app/_actions/client";
+import { useGigStore } from "@/app/_store/gig";
 
-export default function ClientForm(props: ClientProps) {
+export default function ClientForm(props?: ClientProps) {
+  const { client } = useGigStore();
+  const router = useRouter();
+
+  // if (!client) return <>Please select a client</>;
+
   const {
     addressCity,
     addressState,
     addressStreet,
     addressZip,
-    client,
+    client: clientName,
     clientType,
     contact,
     email,
@@ -72,19 +78,50 @@ export default function ClientForm(props: ClientProps) {
     createdBy,
     updatedBy,
     status,
-  } = props;
+  } = client as ClientProps;
+
+  console.log(client);
+
+  useEffect(() => {
+    console.log("client", client);
+    form.reset({
+      addressCity: addressCity ? addressCity : undefined,
+      addressState: addressState ? addressState : undefined,
+      addressStreet: addressStreet ? addressStreet : undefined,
+      addressZip: addressZip ? addressZip : undefined,
+      client: clientName ? clientName : undefined,
+      clientType: clientType ? clientType : undefined,
+      contact: contact ? contact : undefined,
+
+      email: email ? email : undefined,
+      id: id ? id : undefined,
+      notes: notes ? notes : undefined,
+      phoneCell: phoneCell ? phoneCell : undefined,
+      phoneLandline: phoneLandline ? phoneLandline : undefined,
+      source: source ? source : undefined,
+      createdAt: createdAt ? createdAt : undefined,
+      updatedAt: updatedAt ? updatedAt : undefined,
+      createdBy: createdBy ? createdBy : undefined,
+      updatedBy: updatedBy ? updatedBy : undefined,
+      status: status ? status : undefined,
+    });
+    router.refresh();
+  }, [client]);
+
+  // console.log("client", props);
 
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof clientSchema>>({
     resolver: zodResolver(clientSchema),
+    progressive: true,
     mode: "onBlur",
     defaultValues: {
       addressCity: addressCity ? addressCity : undefined,
       addressState: addressState ? addressState : undefined,
       addressStreet: addressStreet ? addressStreet : undefined,
       addressZip: addressZip ? addressZip : undefined,
-      client: client ? client : undefined,
+      client: clientName ? clientName : undefined,
       clientType: clientType ? clientType : undefined,
       contact: contact ? contact : undefined,
       email: email ? email : undefined,
@@ -100,6 +137,8 @@ export default function ClientForm(props: ClientProps) {
       status: status ? status : undefined,
     },
   });
+
+  console.log(clientName);
 
   return (
     <Form {...form}>

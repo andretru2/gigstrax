@@ -24,10 +24,10 @@ export default function SignIn() {
           // setIsLoading(true);
 
           void signIn("google", {
-            // callbackUrl: `http://${
-            //   process.env.NEXT_PUBLIC_APP_URL || "localhost:3000"
-            // }/dashboard`,
-            callbackUrl: "http://localhost:3000/dashboard",
+            callbackUrl: `http://${
+              process.env.NEXT_PUBLIC_APP_URL || "localhost:3000"
+            }/dashboard`,
+            // callbackUrl: "http://localhost:3000/dashboard",
           });
           // await login();
           // setIsLoading(false);

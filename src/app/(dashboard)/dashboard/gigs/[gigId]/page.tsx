@@ -30,6 +30,7 @@ import { useGigStore } from "@/app/_store/gig";
 import ClientForm from "@/components/clients/client-form";
 import StoreInitializer from "@/components/gigs/store-initializer";
 import { type ClientProps } from "@/server/db";
+import { useEffect } from "react";
 
 // import NotFo
 
@@ -61,29 +62,16 @@ export default async function Page({ params }: Props) {
   // const fiveDaysAgo = new Date();
   // fiveDaysAgo.setDate(today.getDate() - 400);
 
-  const [client, santas, mrsSantas, clients, clientSuggestions] =
-    await Promise.all([
-      // getGig(gigId),
-      gig.clientId ? getClient(gig.clientId) : undefined,
-      getSantas(),
-      getMrsSantas(),
-      getClients({ limit: 1000 }),
-      getClients({
-        whereClause: {
-          client: {
-            not: {
-              equals: "",
-            },
-          },
-        },
-        orderBy: [{ createdAt: "desc" }, { client: "asc" }],
-        limit: 5,
-      }),
-    ]);
+  const [client, santas, mrsSantas] = await Promise.all([
+    // getGig(gigId),
+    gig.clientId ? getClient(gig.clientId) : undefined,
+    getSantas(),
+    getMrsSantas(),
+  ]);
 
   client && useGigStore.setState({ client });
 
-  console.log(clientSuggestions);
+  console.log(client);
 
   const formattedDate =
     gig?.gigDate && formatDate(gig?.gigDate.getTime(), "friendly");
@@ -189,14 +177,15 @@ export default async function Page({ params }: Props) {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <Separator className="mb-8 " />
+        {/* {client ? <StoreInitializer client={client} /> : null} */}
 
         <GigDetailTabs gigId={gig.id} />
         <GigForm
           gig={gig}
           santas={santas}
           mrsSantas={mrsSantas}
-          clients={clients.data}
-          clientSuggestions={clientSuggestions.data}
+          // clients={clients.data}
+          // clientSuggestions={clientSuggestions.data}
         >
           {client && (
             <>

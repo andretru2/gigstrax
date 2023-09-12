@@ -79,31 +79,32 @@ export const authOptions: NextAuthOptions = {
 
     // return token;
     // },
-    // signIn: ({ user, account, profile }) => {
-    //   console.log(user, account, profile);
-    //   if (!user.email) {
-    //     return false;
-    //   }
+    signIn: async ({ user, account, profile }) => {
+      console.log(user, account, profile);
+      if (!user.email) {
+        return false;
+      }
 
-    // const userExists = await prisma.user.findUnique({
-    //   where: { email: user.email },
-    //   select: { name: true },
-    // });
-    // // if the user already exists via email,
-    // // update the user with their name and image from Google
-    // if (userExists && !userExists.name) {
-    //   await prisma.user.update({
-    //     where: { email: user.email },
-    //     data: {
-    //       name: profile?.name,
-    //       // @ts-ignore - this is a bug in the types, `picture` is a valid on the `Profile` type
-    //       image: profile?.picture,
-    //     },
-    //   });
-    // }
+      const userExists = await prisma.user.findUnique({
+        where: { email: user.email },
+        select: { name: true },
+      });
 
-    // return true;
-    // },
+      if (!userExists) return false;
+      // if the user already exists via email,
+      // update the user with their name and image from Google
+
+      await prisma.user.update({
+        where: { email: user.email },
+        data: {
+          name: profile?.name,
+          // @ts-ignore - this is a bug in the types, `picture` is a valid on the `Profile` type
+          image: profile?.picture,
+        },
+      });
+
+      return true;
+    },
   },
 };
 
