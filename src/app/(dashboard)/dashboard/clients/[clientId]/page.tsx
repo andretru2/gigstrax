@@ -24,6 +24,8 @@ import { Button } from "@/components/ui/button";
 import { getClient } from "@/app/_actions/client";
 import { Separator } from "@/components/ui/separator";
 import { notFound } from "next/navigation";
+import SectionHeaderInfo from "@/components/ui/section-header-info";
+
 // import { useGigStore } from "@/app/_store/gig";
 
 // import NotFo
@@ -73,38 +75,33 @@ export default async function Page({ params }: Props) {
   return (
     <Card className="border-0 bg-background [&>*]:px-0 ">
       <CardHeader className="space-y-1">
-        <div className="flex items-start justify-between space-x-2 ">
-          <CardTitle className=" flex flex-col gap-2 text-xl font-medium">
-            <>
+        <Card className="flex items-start justify-between space-x-2 border-b-2 border-b-primary bg-card p-2 shadow-md ">
+          <CardTitle className=" flex flex-col gap-10 text-xl font-medium">
+            <div className="flex flex-col gap-2">
               <div className="flex flex-row items-center gap-2">
-                <Icons.user className="h-4 w-4 text-primary/60" />
-                {!clientName ? (
-                  <div className="italic text-destructive/60">incomplete </div>
-                ) : (
-                  <div>{clientName}</div>
-                )}
+                <SectionHeaderInfo
+                  icon="user"
+                  data={clientName ? clientName : "incomplete"}
+                />
               </div>
-            </>
-            <>
-              <div className="flex flex-row items-center gap-2">
-                <Icons.map className="h-4 w-4 text-primary/60" />
-                {!addressFull ? (
-                  <div className="italic text-destructive/60">incomplete </div>
-                ) : (
-                  <div>{addressFull}</div>
-                )}
+
+              <div>
+                <div className="flex flex-row items-center gap-2">
+                  <SectionHeaderInfo
+                    icon="phone"
+                    data={phoneCell ? formatPhone(phoneCell) : "incomplete"}
+                  />
+                </div>
               </div>
-            </>
-            <>
-              <div className="flex flex-row items-center gap-2">
-                <Icons.phone className="h-4 w-4 text-primary/60" />
-                {!phoneCell ? (
-                  <div className="italic text-destructive/60">incomplete </div>
-                ) : (
-                  <div>{formatPhone(phoneCell)}</div>
-                )}
+              <div className="flex flex-col gap-2">
+                <div className="flex flex-row items-center gap-2">
+                  <SectionHeaderInfo
+                    icon="map"
+                    data={addressFull ? addressFull : "incomplete"}
+                  />
+                </div>
               </div>
-            </>
+            </div>
           </CardTitle>
           {/* <div className="flex flex-row gap-2">
             <Button
@@ -130,7 +127,7 @@ export default async function Page({ params }: Props) {
               Invoice
             </Button>
           </div> */}
-        </div>
+        </Card>
         <CardDescription className=" mt-12">
           {/* <div className="border-4"> </div> */}
           {/* <Separator /> */}

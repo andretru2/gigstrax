@@ -29,6 +29,7 @@ import { notFound } from "next/navigation";
 import { useGigStore } from "@/app/_store/gig";
 import ClientForm from "@/components/clients/client-form";
 import StoreInitializer from "@/components/gigs/store-initializer";
+import SectionHeaderInfo from "@/components/ui/section-header-info";
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -62,8 +63,6 @@ export default async function Page({ params }: Props) {
 
   client && useGigStore.setState({ client });
 
-  console.log(client);
-
   const formattedDate =
     gig?.gigDate && formatDate(gig?.gigDate.getTime(), "friendly");
   const startTime = gig.timeStart && formatTime(gig?.timeStart);
@@ -86,55 +85,49 @@ export default async function Page({ params }: Props) {
       ? calculateTimeDifference(gig.timeStart, gig.timeEnd)
       : null;
 
+  let timeFormat;
+  if (startTime && endTime) {
+    timeFormat = `${startTime} - ${endTime}`;
+    if (durationHours) {
+      timeFormat += ` (${durationHours} hours)`;
+    }
+  } else {
+    timeFormat = "incomplete";
+  }
+
   return (
     <Card className="border-0 bg-background [&>*]:px-0 ">
       <CardHeader className="space-y-1">
-        <div className="flex items-start justify-between space-x-2 ">
-          <CardTitle className=" flex flex-col gap-2 text-xl font-medium">
-            <>
+        <Card className="flex items-start justify-between space-x-2 border-b-2  border-b-primary p-2 shadow-md">
+          <CardTitle className=" flex flex-row gap-12 text-xl font-medium">
+            <div className="flex flex-col gap-2">
               {/* <h1>Create New Gig</h1> */}
               <div className="flex flex-row items-center gap-2">
-                <Icons.calendar className="h-4 w-4 text-primary/60" />
-                {!formattedDate ? (
-                  <div className="italic text-destructive/60">incomplete </div>
-                ) : (
-                  <div>{formattedDate}</div>
-                )}
+                <SectionHeaderInfo
+                  icon="calendar"
+                  data={formattedDate ? formattedDate : "incomplete"}
+                />
               </div>
-            </>
-            <>
+
               <div className="flex flex-row items-center gap-2">
-                <Icons.clock className="h-4 w-4 text-primary/60" />
-                {!startTime || !endTime ? (
-                  <div className="italic text-destructive/60">incomplete </div>
-                ) : (
-                  <div>
-                    {startTime} - {endTime}{" "}
-                    {durationHours && ` (${durationHours} hours)`}
-                  </div>
-                )}
+                <SectionHeaderInfo icon="clock" data={timeFormat} />
               </div>
-            </>
-            <>
+            </div>
+            <div className="flex flex-col gap-2">
               <div className="flex flex-row items-center gap-2">
-                <Icons.user className="h-4 w-4 text-primary/60" />
-                {!client ? (
-                  <div className="italic text-destructive/60">incomplete </div>
-                ) : (
-                  <div>{clientName}</div>
-                )}
+                <SectionHeaderInfo
+                  icon="user"
+                  data={client ? clientName : "incomplete"}
+                />
               </div>
-            </>
-            <>
+
               <div className="flex flex-row items-center gap-2">
-                <Icons.map className="h-4 w-4 text-primary/60" />
-                {!addressFull ? (
-                  <div className="italic text-destructive/60">incomplete </div>
-                ) : (
-                  <div>{addressFull}</div>
-                )}
+                <SectionHeaderInfo
+                  icon="map"
+                  data={addressFull ? addressFull : "incomplete"}
+                />
               </div>
-            </>
+            </div>
           </CardTitle>
           {/* <div className="flex flex-row gap-2">
             <Button
@@ -160,14 +153,14 @@ export default async function Page({ params }: Props) {
               Invoice
             </Button>
           </div> */}
-        </div>
+        </Card>
         <CardDescription className=" mt-12">
           {/* <div className="border-4"> </div> */}
           {/* <Separator /> */}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <Separator className="mb-8 " />
+        <Separator className="mb-4 " />
         {/* {client ? <StoreInitializer client={client} /> : null} */}
 
         <GigDetailTabs gigId={gig.id} />
