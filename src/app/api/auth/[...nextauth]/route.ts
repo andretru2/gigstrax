@@ -99,8 +99,7 @@ export const authOptions: NextAuthOptions = {
         where: { email: user.email },
         data: {
           name: profile?.name,
-          // @ts-ignore - this is a bug in the types, `picture` is a valid on the `Profile` type
-          image: profile?.picture,
+          // image: profile?.picture,
         },
       });
 
@@ -109,6 +108,6 @@ export const authOptions: NextAuthOptions = {
   },
 };
 
-export const handler = NextAuth(authOptions);
+export const handler = NextAuth(authOptions) as NextAuthOptions;
 
 export { handler as GET, handler as POST };
