@@ -4,13 +4,13 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 180 7.7% 97.5%;
     --foreground: 222.2 47.4% 11.2%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --popover: 0 0% 100%;
+    --popover: 250 250% 250%;
     --popover-foreground: 222.2 47.4% 11.2%;
 
     --border: 214.3 31.8% 91.4%;
@@ -19,19 +19,34 @@
     --card: 0 0% 100%;
     --card-foreground: 222.2 47.4% 11.2%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 6.6 95.8% 62.5%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%; */
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 7% 16%;
+    /* --secondary-foreground: 222.2 47.4% 11.2%;  original from taxonomy - more blue, convert the rest eventually...*/
+    --secondary-50: 0 0% 98%;
+    --secondary-100: 240 5% 96%;
+    --secondary-200: 240 13% 89%;
+    --secondary-300: 240 17% 83%;
+    --secondary-400: 240 7% 64%;
+    --secondary-500: 240 7% 45%;
+    --secondary-600: 240 6% 34%;
+    --secondary-700: 240 9% 25%;
+    --secondary-800: 240 7% 16%;
+    --secondary-900: 240 8% 10%;
 
-    --accent: 210 40% 96.1%;
+    /* --accent: 180, 62.5%, 50%; //aquamarine */
+    --accent: 35, 95.8%, 62.5%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 100% 50%;
     --destructive-foreground: 210 40% 98%;
 
-    --ring: 215 20.2% 65.1%;
+    /* --ring: 215 20.2% 65.1%; */
+    --ring: 35, 95.8%, 62.5%;
 
     --radius: 0.5rem;
   }

@@ -1,12 +1,14 @@
 import "@/styles/globals.css";
-import { Oswald as FontSans, Lato as FontHeading } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { fontSans, fontHeading } from "@/lib/fonts";
 import type { ReactNode } from "react";
-import { siteConfig } from "@/config/site"
-import { ThemeProvider } from "@/components/theme-provider"
-import { Toaster } from "@/components/ui/toaster"
-
-// import { ClerkProvider } from "@clerk/nextjs/app-beta";
+import { siteConfig } from "@/config/site";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
+// import { ClerkProvider } from "@clerk/nextjs";
+import SessionProvider from "@/components/session-provider";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]/route";
 
 interface RootLayoutProps {
   children?: ReactNode;
@@ -18,27 +20,11 @@ export const metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
-}
+};
 
-
-const fontSans = FontSans({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  style: ["normal"],
-  weight: ["400", "500", "600", "700", ],
-  display: "block",
-});
-
-const fontHeading = FontHeading({
-  variable: "--font-heading",
-  subsets: ["latin"],
-  style: ["normal"],
-  weight: ["400"],
-  display: "block",
-});
-
-
-export default function RootLayout({ children }: RootLayoutProps) {
+export default async function RootLayout({ children }: RootLayoutProps) {
+  const session = await getServerSession(authOptions);
+  // console.log(session);
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
@@ -49,11 +35,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
           fontHeading.variable
         )}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <SessionProvider session={session}>
+            {children}
+            {/* <ClerkProvider></ClerkProvider> */}
+          </SessionProvider>
           <Toaster />
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }

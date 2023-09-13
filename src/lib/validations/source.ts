@@ -1,0 +1,31 @@
+import * as z from "zod";
+import { SourceStatus, Gender } from "@prisma/client";
+
+export const sourceSchema = z.object({
+  id: z.string().optional(),
+  nameFirst: z.string(),
+  nameLast: z.string().optional(),
+  addressCity: z.string().optional(),
+  addressState: z.string().optional(),
+  addressStreet: z.string().optional(),
+  addressZip: z.string().optional(),
+  costume: z.string().optional(),
+  dob: z.date().nullable().optional(),
+  email: z.string().optional(),
+  entity: z.string().optional(),
+  gender: z.nativeEnum(Gender).optional(),
+  gigMastersAccount: z.string().optional(),
+  calendarId: z.string().optional(),
+  notes: z.string().optional(),
+  phone: z.string().optional(),
+  resource: z.string().optional(),
+  role: z.string().optional(),
+  ssn: z.string().optional(),
+  status: z.nativeEnum(SourceStatus).optional(),
+  videoUrl: z.string().optional(),
+  website: z.string().optional(),
+  createdAt: z.date().optional(),
+  createdBy: z.string().optional(),
+  updatedAt: z.date().optional(),
+  updatedBy: z.string().optional(),
+});
