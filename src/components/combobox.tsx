@@ -129,11 +129,13 @@ export function Combobox() {
                   key={gig.id}
                   onSelect={() =>
                     gig.id &&
-                    handleSelect(() => router.push(`/dashboard/gigs/${gig.id}`))
+                    handleSelect(
+                      () => gig.id && router.push(`/dashboard/gigs/${gig.id}`)
+                    )
                   }
                 >
                   {gig.gigDate && formatDate(gig.gigDate, "formal")} |{" "}
-                  {gig.client.client}
+                  {/* {gig.client.client} */}
                 </CommandItem>
               ))}
             </CommandGroup>

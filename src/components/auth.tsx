@@ -22,12 +22,14 @@ export default function SignIn() {
         isLoading={isPending}
         onClick={() => {
           // setIsLoading(true);
+          const appUrl =
+            process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
           void signIn("google", {
             // callbackUrl: `http://${
             //   process.env.NEXT_PUBLIC_APP_URL || "localhost:3000"
             // }/dashboard`,
-            callbackUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
+            callbackUrl: `${appUrl}/dashboard`,
             // callbackUrl: "http://localhost:3000/dashboard",
           });
           // await login();
