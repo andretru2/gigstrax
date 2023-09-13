@@ -87,9 +87,8 @@ export function SelectClient({
           update({ id: gigId, clientId: value }),
           getClient(value),
         ]);
-        console.log("updated, client", updateGig, clientUpdate);
         setIsOpen(false);
-        setClient(clientUpdate);
+        clientUpdate && setClient(clientUpdate);
         router.refresh();
       } catch (error) {
         error instanceof Error
@@ -134,28 +133,9 @@ export function SelectClient({
     }
   }, [isOpen]);
 
-  // useEffect(() => {
-  //   const searchClient = () => {
-  //     setSearchClientResults([]);
-  //     if (debouncedSearchClient.length > 1 && clients) {
-  //       setIsLoading(true);
-  //       const searchClientResults = clients.filter(({ client }) =>
-  //         client.toLowerCase().includes(debouncedSearchClient)
-  //       );
-  //       setSearchClientResults(searchClientResults);
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   searchClient();
-  // }, [debouncedSearchClient, clients]);
-
-  console.log(clients);
-
   return (
     <FormItem className=" col-span-3 flex flex-col ">
       <FormLabel>Client</FormLabel>
-      {/* <Popover open={isOpen} onOpenChange={setIsOpen}> */}
       <Popover open={isOpen} onOpenChange={handlePopoverOpen}>
         <PopoverTrigger asChild>
           <FormControl>
@@ -176,7 +156,6 @@ export function SelectClient({
 
         <PopoverContent className=" h-[600px] w-[500px] p-2 " side="right">
           <Command className="flex  flex-col gap-3 border p-4">
-            {/* <CommandInput placeholder="Search..."  /> */}
             <h1>Search Clients</h1>
             <CommandInput
               placeholder="Type to search..."

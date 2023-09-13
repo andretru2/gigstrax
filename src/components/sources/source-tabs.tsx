@@ -41,6 +41,8 @@ export default function SourceTabs(props: Props) {
             key={tab.title}
             value={tab.href}
             className={cn(
+              "grid  w-32 grid-cols-2 self-center rounded-md border-2 border-secondary-200 text-foreground",
+
               // pathname === tab.href && "bg-background text-foreground shadow-sm"
               pathname?.includes(tab.href) &&
                 "bg-primary text-foreground shadow-sm"
@@ -54,6 +56,8 @@ export default function SourceTabs(props: Props) {
           key="createNew"
           value=""
           className={cn(
+            "grid  w-32 grid-cols-1 self-center rounded-md border-2 border-secondary-200 text-foreground",
+
             pathname?.includes("createNew") &&
               "bg-background text-foreground shadow-sm"
           )}
@@ -61,7 +65,7 @@ export default function SourceTabs(props: Props) {
         >
           <Popover>
             <PopoverTrigger>
-              <div className="flex flex-row items-center gap-1 border-l-2 border-primary px-2 text-primary">
+              <div className=" flex flex-row items-center gap-1 rounded-md border-2 border-primary px-2 py-1 text-foreground">
                 <Icons.add className="h-5 w-5" />
                 New Source
               </div>

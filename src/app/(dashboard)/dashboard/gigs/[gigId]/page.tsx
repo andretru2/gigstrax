@@ -24,15 +24,11 @@ import { getGig } from "@/app/_actions/gig";
 import { Separator } from "@/components/ui/separator";
 import GigDetailTabs from "@/components/gigs/gig-detail-tabs";
 import { getSantas, getMrsSantas } from "@/app/_actions/source";
-import { getClient, getClients } from "@/app/_actions/client";
+import { getClient } from "@/app/_actions/client";
 import { notFound } from "next/navigation";
 import { useGigStore } from "@/app/_store/gig";
 import ClientForm from "@/components/clients/client-form";
 import StoreInitializer from "@/components/gigs/store-initializer";
-import { type ClientProps } from "@/server/db";
-import { useEffect } from "react";
-
-// import NotFo
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -58,12 +54,7 @@ export default async function Page({ params }: Props) {
   const gig = await getGig(gigId);
   if (!gig) return notFound();
 
-  // const today = new Date();
-  // const fiveDaysAgo = new Date();
-  // fiveDaysAgo.setDate(today.getDate() - 400);
-
   const [client, santas, mrsSantas] = await Promise.all([
-    // getGig(gigId),
     gig.clientId ? getClient(gig.clientId) : undefined,
     getSantas(),
     getMrsSantas(),
