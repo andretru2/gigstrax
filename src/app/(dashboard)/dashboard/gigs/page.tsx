@@ -71,7 +71,9 @@ export default async function Page({ params, searchParams }: Props) {
   switch (tab) {
     /** TODO: add to search params instead */
     case "recentlyCreated":
-      orderBy = [{ createdAt: "desc" }];
+      // orderBy = [{ createdAt: "desc" }];
+      orderBy = [{ updatedAt: { sort: "desc", nulls: "last" } }];
+
       break;
 
     case "upcoming":

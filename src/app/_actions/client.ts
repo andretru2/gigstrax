@@ -4,6 +4,7 @@ import { type ClientProps, prisma } from "@/server/db";
 import { revalidatePath } from "next/cache";
 import { type Prisma } from "@prisma/client";
 import { type GetClientsProps } from "@/types/index";
+import { fromUTC } from "@/lib/utils";
 
 export async function getClient(id: string): Promise<ClientProps | null> {
   if (id.length === 0) return null;
@@ -46,7 +47,8 @@ export async function getClient(id: string): Promise<ClientProps | null> {
 export async function getClients({
   select = { id: true, client: true },
   whereClause = {},
-  orderBy = [{ client: "asc" }],
+  // orderBy = [{ client: "asc" }],
+  orderBy = [],
   limit = 10,
   skip = 0,
 }: GetClientsProps) {
@@ -61,9 +63,19 @@ export async function getClients({
   });
 
   return {
-    data: data,
+    data: data.map(mapClient),
     totalCount,
   };
+}
+
+function mapClient(client: ClientProps) {
+  if (client.createdAt) {
+    const localCreatedAt = fromUTC(client.createdAt);
+    client.createdAt = localCreatedAt;
+    console.log(localCreatedAt);
+  }
+
+  return client;
 }
 
 export async function checkIfExists(name: string) {

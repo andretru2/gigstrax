@@ -81,7 +81,7 @@ export default function ClientForm(props?: ClientProps) {
     createdBy,
     updatedBy,
     status,
-  } = (client as ClientProps) || {};
+  } = (client as ClientProps) || props || {};
 
   const defaultValues = {
     addressCity: addressCity || undefined,
@@ -104,12 +104,12 @@ export default function ClientForm(props?: ClientProps) {
     status: status || undefined,
   };
 
-  // Remove properties with null or undefined values from the `defaultValues` object
-  const cleanedDefaultValues = Object.fromEntries(
-    Object.entries(defaultValues).filter(
-      ([_, value]) => value !== null && value !== undefined
-    )
-  );
+  // // Remove properties with null or undefined values from the `defaultValues` object
+  // const cleanedDefaultValues = Object.fromEntries(
+  //   Object.entries(defaultValues).filter(
+  //     ([_, value]) => value !== null && value !== undefined
+  //   )
+  // );
 
   const [isPending, startTransition] = useTransition();
 
@@ -124,7 +124,7 @@ export default function ClientForm(props?: ClientProps) {
     resolver: zodResolver(clientSchema),
     // progressive: true,
     mode: "onBlur",
-    defaultValues: cleanedDefaultValues,
+    defaultValues: defaultValues,
   });
 
   return (

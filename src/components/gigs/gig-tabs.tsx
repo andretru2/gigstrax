@@ -24,7 +24,7 @@ export default function GigTabs(props: Props) {
       href: "/dashboard/gigs?tab=upcoming",
     },
     {
-      title: "Recently Created",
+      title: "Recent",
       href: "/dashboard/gigs?tab=recentlyCreated",
     },
     {

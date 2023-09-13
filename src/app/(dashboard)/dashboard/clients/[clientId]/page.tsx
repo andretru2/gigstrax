@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { getClient } from "@/app/_actions/client";
 import { Separator } from "@/components/ui/separator";
 import { notFound } from "next/navigation";
+// import { useGigStore } from "@/app/_store/gig";
 
 // import NotFo
 
@@ -41,18 +42,15 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const id = params.clientId;
-  // console.log(params);
   if (!id) return <h1>Please select a client. </h1>;
-
-  // const today = new Date();
-  // const fiveDaysAgo = new Date();
-  // fiveDaysAgo.setDate(today.getDate() - 400);
 
   const [client] = await Promise.all([getClient(id)]);
 
   if (!client) return notFound();
+  // const [setClient] = useGigStore()
+  // useGigStore.setState({ client: client });
 
-  console.log(client);
+  // setClient({ ...client })
 
   const {
     addressCity,
@@ -60,7 +58,6 @@ export default async function Page({ params }: Props) {
     addressStreet,
     addressZip,
     client: clientName,
-
     phoneCell,
   } = client;
 
@@ -109,7 +106,7 @@ export default async function Page({ params }: Props) {
               </div>
             </>
           </CardTitle>
-          <div className="flex flex-row gap-2">
+          {/* <div className="flex flex-row gap-2">
             <Button
               variant="secondary"
               className="flex flex-row items-center gap-1"
@@ -132,7 +129,7 @@ export default async function Page({ params }: Props) {
               <Icons.billing className="h-4 w-4" />
               Invoice
             </Button>
-          </div>
+          </div> */}
         </div>
         <CardDescription className=" mt-12">
           {/* <div className="border-4"> </div> */}

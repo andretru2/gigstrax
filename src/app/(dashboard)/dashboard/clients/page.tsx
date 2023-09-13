@@ -41,11 +41,11 @@ export default async function Page({ params, searchParams }: Props) {
     phoneLandline: true,
     createdAt: true,
     status: true,
-    _count: {
-      select: {
-        gigs: true,
-      },
-    },
+    // _count: {
+    //   select: {
+    //     gigs: true,
+    //   },
+    // },
   };
 
   whereClause = {
@@ -55,7 +55,9 @@ export default async function Page({ params, searchParams }: Props) {
   switch (tab) {
     /** TODO: add to search params instead */
     case "recentlyCreated":
-      orderBy = [{ createdAt: "desc" }];
+      // orderBy = [{ createdAt: "desc" }];
+      orderBy = [{ updatedAt: { sort: "desc", nulls: "last" } }];
+
       break;
 
     case "all":

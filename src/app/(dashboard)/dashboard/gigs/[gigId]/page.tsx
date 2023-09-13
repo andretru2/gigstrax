@@ -145,7 +145,7 @@ export default async function Page({ params }: Props) {
               </div>
             </>
           </CardTitle>
-          <div className="flex flex-row gap-2">
+          {/* <div className="flex flex-row gap-2">
             <Button
               variant="secondary"
               className="flex flex-row items-center gap-1"
@@ -168,7 +168,7 @@ export default async function Page({ params }: Props) {
               <Icons.billing className="h-4 w-4" />
               Invoice
             </Button>
-          </div>
+          </div> */}
         </div>
         <CardDescription className=" mt-12">
           {/* <div className="border-4"> </div> */}

@@ -49,7 +49,8 @@ export async function getSource(id: string) {
 export async function getSources({
   select = { id: true, nameFirst: true, nameLast: true },
   whereClause = {},
-  orderBy = [{ nameLast: "asc" }, { nameFirst: "asc" }],
+  // orderBy = [{ nameLast: "asc" }, { nameFirst: "asc" }],
+  orderBy = [],
   limit = 10,
   skip = 0,
 }: GetSourcesProps) {

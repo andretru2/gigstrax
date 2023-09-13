@@ -23,7 +23,7 @@ export default function SourceTabs(props: Props) {
       href: "/dashboard/sources?tab=all",
     },
     {
-      title: "Recently Created",
+      title: "Recent",
       href: "/dashboard/sources?tab=recentlyCreated",
     },
   ];

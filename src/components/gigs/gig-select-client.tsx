@@ -59,14 +59,16 @@ export function SelectClient({
 
   const getClientSuggestions = async () => {
     const { data } = await getClients({
-      whereClause: {
-        client: {
-          not: {
-            equals: "",
-          },
-        },
-      },
-      orderBy: [{ createdAt: "desc" }, { client: "asc" }],
+      // whereClause: {
+      //   client: {
+      //     not: {
+      //       equals: "",
+      //     },
+      //   },
+      // },
+      // orderBy: [{ createdAt: "desc" }, { client: "asc" }],
+      orderBy: [{ updatedAt: { sort: "desc", nulls: "last" } }],
+
       limit: 5,
     });
     setClientSuggestions(data);
@@ -232,7 +234,7 @@ export function SelectClient({
               </CommandGroup>
               <CommandSeparator />
               <CommandGroup className="" heading="Create new">
-                <CommandItem className="flex flex-col gap-2 self-end data-[selected]:bg-none">
+                <CommandItem className="flex flex-col gap-2 self-end bg-none data-[selected]:bg-none">
                   <ClientCreate
                     onSuccess={(newClientId) => {
                       handleSelectClient(newClientId);
