@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { getSource } from "@/app/_actions/source";
 import { Separator } from "@/components/ui/separator";
 import { notFound } from "next/navigation";
+import SectionHeaderInfo from "@/components/ui/section-header-info";
 
 // import NotFo
 
@@ -74,77 +75,32 @@ export default async function Page({ params }: Props) {
   return (
     <Card className="border-0 bg-background [&>*]:px-0 ">
       <CardHeader className="space-y-1">
-        <div className="flex items-start justify-between space-x-2 ">
-          <CardTitle className=" flex flex-col gap-2 text-xl font-medium">
-            <>
-              <div className="flex flex-row items-center gap-2">
-                <Icons.user className="h-4 w-4 text-primary/60" />
-                {!nameFirst ? (
-                  <div className="italic text-destructive/60">incomplete </div>
-                ) : (
-                  <div>
-                    {nameFirst}
-                    {nameLast}
-                  </div>
-                )}
-              </div>
-            </>
-            <>
-              <div className="flex flex-row items-center gap-2">
-                <Icons.phone className="h-4 w-4 text-primary/60" />
-                {!phone ? (
-                  <div className="italic text-destructive/60">incomplete </div>
-                ) : (
-                  <div>{formatPhone(phone)}</div>
-                )}
-              </div>
-            </>
-            <>
-              <div className="flex flex-row items-center gap-2">
-                <Icons.email className="h-4 w-4 text-primary/60" />
-                {!email ? (
-                  <div className="italic text-destructive/60">incomplete </div>
-                ) : (
-                  <div>{email}</div>
-                )}
-              </div>
-            </>
-            <>
-              <div className="flex flex-row items-center gap-2">
-                <Icons.map className="h-4 w-4 text-primary/60" />
-                {!addressFull ? (
-                  <div className="italic text-destructive/60">incomplete </div>
-                ) : (
-                  <div>{addressFull}</div>
-                )}
-              </div>
-            </>
+        <Card className="flex items-start justify-between space-x-2 border-b-2 border-b-primary bg-card p-2 shadow-md">
+          <CardTitle className="flex flex-row gap-10 text-xl font-medium">
+            <div className="flex flex-col gap-2">
+              <SectionHeaderInfo
+                icon="user"
+                data={
+                  nameFirst && nameLast
+                    ? `${nameFirst} ${nameLast}`
+                    : "incomplete"
+                }
+              />
+              <SectionHeaderInfo
+                icon="phone"
+                data={phone ? formatPhone(phone) : "incomplete"}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <SectionHeaderInfo icon="email" data={email || "incomplete"} />
+              <SectionHeaderInfo
+                icon="map"
+                data={addressFull || "incomplete"}
+              />
+            </div>
           </CardTitle>
-          {/* <div className="flex flex-row gap-2">
-            <Button
-              variant="secondary"
-              className="flex flex-row items-center gap-1"
-            >
-              <Icons.copy className="h-4 w-4" />
-              Copy
-            </Button>
-
-            <Button
-              variant="secondary"
-              className="flex flex-row items-center gap-1"
-            >
-              <Icons.report className="h-4 w-4" />
-              PDF
-            </Button>
-            <Button
-              variant="secondary"
-              className="flex flex-row items-center gap-1"
-            >
-              <Icons.billing className="h-4 w-4" />
-              Invoice
-            </Button>
-          </div> */}
-        </div>
+          {/* Additional buttons go here */}
+        </Card>
         <CardDescription className=" mt-12">
           {/* <div className="border-4"> </div> */}
           {/* <Separator /> */}

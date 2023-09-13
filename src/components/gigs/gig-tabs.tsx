@@ -51,9 +51,11 @@ export default function GigTabs(props: Props) {
             key={tab.title}
             value={tab.href}
             className={cn(
+              "grid  w-32 grid-cols-4 self-center rounded-md border-2 border-secondary-200 text-foreground",
+
               // pathname === tab.href && "bg-background text-foreground shadow-sm"
               pathname?.includes(tab.href) &&
-                "bg-primary text-foreground shadow-sm"
+                "bg-primary text-foreground shadow-sm "
             )}
             onClick={() => router.push(tab.href)}
           >
@@ -64,6 +66,8 @@ export default function GigTabs(props: Props) {
           key="createNew"
           value=""
           className={cn(
+            "grid   grid-cols-1 self-center rounded-md border-2 border-secondary-200 text-foreground",
+
             pathname?.includes("createNew") &&
               "bg-background text-foreground shadow-sm"
           )}

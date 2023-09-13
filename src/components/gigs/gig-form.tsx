@@ -200,6 +200,7 @@ export default function GigForm({
       contactName: contactName ? contactName : undefined,
       contactPhoneCell: contactPhoneCell ? contactPhoneCell : undefined,
       contactPhoneLand: contactPhoneLand ? contactPhoneLand : undefined,
+      clientId: clientId ? clientId : undefined,
 
       santa: {
         id: santaId ? santaId : undefined,

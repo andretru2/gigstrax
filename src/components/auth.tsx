@@ -21,19 +21,11 @@ export default function SignIn() {
         size="lg"
         isLoading={isPending}
         onClick={() => {
-          // setIsLoading(true);
           const appUrl =
             process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-
           void signIn("google", {
-            // callbackUrl: `http://${
-            //   process.env.NEXT_PUBLIC_APP_URL || "localhost:3000"
-            // }/dashboard`,
             callbackUrl: `${appUrl}/dashboard`,
-            // callbackUrl: "http://localhost:3000/dashboard",
           });
-          // await login();
-          // setIsLoading(false);
         }}
         className=" align-center flex w-full flex-row items-center gap-1"
       >

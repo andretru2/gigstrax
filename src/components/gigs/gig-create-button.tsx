@@ -2,12 +2,10 @@
 
 import { Button } from "../ui/button";
 import { create } from "@/app/_actions/gig";
-
 import { useTransition, useState } from "react";
-// import { useRouter } from "next/navigation";
-import { redirect } from "next/navigation";
 import { Icons } from "../icons";
 import { useRouter } from "next/navigation";
+import { useGigStore } from "@/app/_store/gig";
 
 export default function GigCreateButton() {
   const [isPending, startTransition] = useTransition();
@@ -18,16 +16,11 @@ export default function GigCreateButton() {
     startTransition(async () => {
       try {
         const id = await create();
+        useGigStore.setState({ client: undefined });
         router.push(`/dashboard/gigs/${id}`);
       } catch (error) {
         console.error("Error creating gig:", error);
       }
-
-      //   const idx = await create();
-      //   //   void router.push(`/dashboard/gigs/${id}`);
-      //   console.log("create", idx);
-      //   void redirect(`/dashboard/gigs/${idx}`);
-      //   setIsLoading(false);
     });
   };
 
@@ -35,7 +28,7 @@ export default function GigCreateButton() {
     <Button
       variant="ghost"
       onClick={handleClick}
-      className="rounded-none border-l-2 border-primary text-primary"
+      className=" rounded-md border-2 border-primary py-1 text-foreground"
       disabled={isPending}
       isLoading={isPending}
       content="flex flex-row items-center gap-2"
