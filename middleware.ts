@@ -1,9 +1,14 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export default function middleware(req: NextRequest) {
-  const pathname = req.nextUrl.pathname;
-  console.log(pathname, "x");
-  if (pathname === "/") {
-    return NextResponse.redirect(new URL("/signin", req.url));
-  }
+export function middleware(request: NextRequest) {
+  console.log(request);
+
+  const pathname = request.nextUrl.pathname;
+  if (pathname === "/")
+    return NextResponse.redirect(new URL("/signin", request.url));
 }
+
+export const config = {
+  matcher: ["/", "/signin", "/dashboard/:path*"],
+};
