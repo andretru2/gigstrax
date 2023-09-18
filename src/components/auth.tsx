@@ -23,6 +23,8 @@ export default function SignIn() {
         onClick={() => {
           const appUrl =
             process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+          console.log(appUrl);
           void signIn("google", {
             callbackUrl: `${appUrl}/dashboard`,
           });
