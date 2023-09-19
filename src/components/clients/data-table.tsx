@@ -40,19 +40,27 @@ export default function Datatable({ data, pageCount }: Props) {
       {
         accessorKey: "client",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Client" />
+          <DataTableColumnHeader
+            column={column}
+            title="Client"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+          />
         ),
         cell: ({ row }) => {
-          return <span className="w-96">{row.original.client}</span>;
+          return <div className="px-2 text-left">{row.original.client}</div>;
         },
       },
       {
         accessorKey: "contact",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Contact" />
+          <DataTableColumnHeader
+            column={column}
+            title="Contact"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+          />
         ),
         cell: ({ row }) => {
-          return <span>{row.original.contact}</span>;
+          return <div className="px-2 text-left">{row.original.contact}</div>;
         },
       },
       {
@@ -62,9 +70,9 @@ export default function Datatable({ data, pageCount }: Props) {
         ),
         cell: ({ row }) => {
           return (
-            <span>
+            <div className="">
               {row.original.phoneCell && formatPhone(row.original.phoneCell)}
-            </span>
+            </div>
           );
         },
       },
@@ -74,29 +82,33 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Email"
-            className="text-center"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
-          return <span className="">{row.original.email}</span>;
+          return <div className="px-2 text-left">{row.original.email}</div>;
         },
       },
 
       {
         accessorKey: "addressStreet",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Address" />
+          <DataTableColumnHeader
+            column={column}
+            title="Address"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+          />
         ),
         cell: ({ row }) => {
           return (
-            <span>
+            <div className="px-2 text-left">
               {formatAddress({
                 addressLine1: row.original.addressStreet ?? "",
                 city: row.original.addressCity ?? "",
                 state: row.original.addressState ?? "",
                 zip: row.original.addressZip ?? "",
               })}
-            </span>
+            </div>
           );
         },
       },

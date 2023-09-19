@@ -40,19 +40,27 @@ export default function Datatable({ data, pageCount }: Props) {
       {
         accessorKey: "nameFirst",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="First Name" />
+          <DataTableColumnHeader
+            column={column}
+            title="First Name"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+          />
         ),
         cell: ({ row }) => {
-          return <span className="w-96">{row.original.nameFirst}</span>;
+          return <div className="px-2 text-left">{row.original.nameFirst}</div>;
         },
       },
       {
         accessorKey: "nameLast",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Last Name" />
+          <DataTableColumnHeader
+            column={column}
+            title="Last Name"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+          />
         ),
         cell: ({ row }) => {
-          return <span>{row.original.nameLast}</span>;
+          return <div className="px-2 text-left">{row.original.nameLast}</div>;
         },
       },
       {
@@ -81,10 +89,14 @@ export default function Datatable({ data, pageCount }: Props) {
       {
         accessorKey: "email",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Email" />
+          <DataTableColumnHeader
+            column={column}
+            title="Email"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+          />
         ),
         cell: ({ row }) => {
-          return <span className="">{row.original.email}</span>;
+          return <div className="px-2 text-left">{row.original.email}</div>;
         },
       },
 

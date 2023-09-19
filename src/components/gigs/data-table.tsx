@@ -82,10 +82,18 @@ export default function Datatable({ data, pageCount }: Props) {
       {
         accessorKey: "gigDate",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Date" />
+          <DataTableColumnHeader
+            column={column}
+            title="Date"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+          />
         ),
 
-        cell: ({ cell }) => formatDate(cell.getValue() as Date, "friendly"),
+        cell: ({ cell }) => (
+          <div className="px-2 text-left">
+            {formatDate(cell.getValue() as Date, "friendly")}
+          </div>
+        ),
         // cell: ({ row }) => {
         //   return (
         //     <span className="w-96">
@@ -99,55 +107,60 @@ export default function Datatable({ data, pageCount }: Props) {
         header: "Start",
         cell: ({ row }) => {
           return (
-            <span>
+            <div className="w-24">
               {row.original.timeStart ? formatTime(row.original.timeStart) : ""}
-            </span>
+            </div>
           );
         },
       },
       {
         accessorKey: "timeEnd",
         header: "End",
-        // size: 1200,
-        width: 2000,
 
         cell: ({ row }) => {
           return (
-            <span>
+            <div className="w-24">
               {row.original.timeEnd
                 ? row.original.timeEnd.toLocaleTimeString("en-US", {
                     hour: "numeric",
                     minute: "2-digit",
                   })
                 : ""}
-            </span>
+            </div>
           );
         },
       },
       {
         accessorKey: "duration",
-        header: "Duration",
+        // header: "Duration",
+        header: () => <div className="text-center">Duration</div>,
 
         cell: ({ row }) => {
           return (
-            <span className="w-2 items-center self-center">
+            <div className="w-18 text-center">
               {row.original.timeStart && row.original.timeEnd
                 ? calculateTimeDifference(
                     row.original.timeStart,
                     row.original.timeEnd
                   )
                 : 0}
-            </span>
+            </div>
           );
         },
       },
       {
         accessorKey: "santaId",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Santa" />
+          <DataTableColumnHeader
+            column={column}
+            title="Santa"
+            className="w-42"
+          />
         ),
         cell: ({ row }) => {
-          return <span>{row.original.santa?.role}</span>;
+          return (
+            <span className="text-center">{row.original.santa?.role}</span>
+          );
         },
       },
       {
@@ -156,20 +169,28 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader column={column} title="Mrs. Santa" />
         ),
         cell: ({ row }) => {
-          return <span>{row.original?.mrsSanta?.nameFirst}</span>;
+          return (
+            <span className="text-center">
+              {row.original?.mrsSanta?.nameFirst}
+            </span>
+          );
         },
       },
       {
         accessorKey: "clientId",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Client" />
+          <DataTableColumnHeader
+            column={column}
+            title="Client"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+          />
         ),
         cell: ({ row }) => {
           return (
-            <span>
+            <div className="px-2 text-left">
               {row.original?.client?.client &&
                 toTitleCase(row.original?.client?.client)}
-            </span>
+            </div>
           );
         },
       },
@@ -177,12 +198,16 @@ export default function Datatable({ data, pageCount }: Props) {
       {
         accessorKey: "venueAddressName",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Venue" />
+          <DataTableColumnHeader
+            column={column}
+            title="Venue"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+          />
         ),
         width: 300,
         cell: ({ row }) => {
           return (
-            <span>
+            <div className="px-2 text-left">
               {formatAddress({
                 name: row.original.venueAddressName ?? "",
                 addressLine1: row.original.venueAddressStreet ?? "",
@@ -191,7 +216,7 @@ export default function Datatable({ data, pageCount }: Props) {
                 state: row.original.venueAddressState ?? "",
                 zip: row.original.venueAddressZip ?? "",
               })}
-            </span>
+            </div>
           );
         },
       },
