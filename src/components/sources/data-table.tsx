@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { type ColumnDef } from "@tanstack/react-table";
 import { toast } from "@/hooks/use-toast";
-
+import { useRouter } from "next/navigation";
 import { formatAddress, formatPhone } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,7 @@ interface Props {
 export default function Datatable({ data, pageCount }: Props) {
   const [isPending, startTransition] = React.useTransition();
   const [selectedRowIds, setSelectedRowIds] = React.useState<number[]>([]);
+  const router = useRouter();
 
   // Memoize the columns so they don't re-render on every render
   const columns = React.useMemo<ColumnDef<SourceProps, unknown>[]>(
@@ -162,8 +163,9 @@ export default function Datatable({ data, pageCount }: Props) {
     <DataTable
       columns={columns}
       data={data}
-      onRowClick={(row) => {
-        console.log(row);
+      onRowClick={(e, row) => {
+        e.preventDefault();
+        router.push(`/dashboard/sources/${row.original.id}`);
       }}
       pageCount={pageCount}
       // filterableColumns={[
