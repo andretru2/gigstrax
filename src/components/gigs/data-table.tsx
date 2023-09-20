@@ -6,6 +6,7 @@ import Link from "next/link";
 import { type ColumnDef } from "@tanstack/react-table";
 // import { toast } from "sonner"
 import { toast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 import {
   catchError,
@@ -34,6 +35,8 @@ import { DataTableColumnHeader } from "../data-table/data-table-column-header";
 import { Icons } from "../icons";
 import { type ClientProps, type GigProps } from "@/server/db";
 import { type GigExtendedProps } from "@/types/index";
+import { redirect } from "next/navigation";
+import { type } from "os";
 
 interface Props {
   // data: GigProps & { clients: Partial<ClientProps> };
@@ -44,6 +47,7 @@ interface Props {
 export default function Datatable({ data, pageCount }: Props) {
   const [isPending, startTransition] = React.useTransition();
   const [selectedRowIds, setSelectedRowIds] = React.useState<number[]>([]);
+  const router = useRouter();
 
   // Memoize the columns so they don't re-render on every render
   const columns = React.useMemo<ColumnDef<GigExtendedProps, unknown>[]>(
@@ -90,7 +94,7 @@ export default function Datatable({ data, pageCount }: Props) {
         ),
 
         cell: ({ cell }) => (
-          <div className="px-2 text-left">
+          <div className="w-72 px-2 text-left">
             {formatDate(cell.getValue() as Date, "friendly")}
           </div>
         ),
@@ -325,9 +329,10 @@ export default function Datatable({ data, pageCount }: Props) {
     <DataTable
       columns={columns}
       data={data}
-      // onRowClick={(row) => {
-      //   console.log(row);
-      // }}
+      onRowClick={(e, row) => {
+        e.preventDefault();
+        router.push(`/dashboard/gigs/${row.original.id}`);
+      }}
       pageCount={pageCount}
       // filterableColumns={[
       //   {

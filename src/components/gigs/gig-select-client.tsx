@@ -142,7 +142,7 @@ export function SelectClient({
             <Button
               variant="outline"
               role="combobox"
-              className="w-full justify-between"
+              className="w-full justify-between bg-white"
             >
               {client?.client ? <>{client.client}</> : <>Select Client...</>}
               {isPending ? (

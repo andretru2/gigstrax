@@ -98,7 +98,7 @@ export default async function Page({ params }: Props) {
   return (
     <Card className="border-0 bg-background [&>*]:px-0 ">
       <CardHeader className="space-y-1">
-        <Card className="flex  flex-col  border-b-2  border-b-primary p-4 shadow-md ">
+        <Card className="flex  flex-col  border-b-2   border-b-primary p-4 shadow-md ">
           <CardHeader className="px-0">
             <CardTitle>Summary</CardTitle>
           </CardHeader>
@@ -135,7 +135,7 @@ export default async function Page({ params }: Props) {
       </CardHeader>
 
       <CardContent className="flex flex-col gap-4">
-        <Separator className="mb-4 " />
+        {/* <Separator className="mb-4 " /> */}
         {/* {client ? <StoreInitializer client={client} /> : null} */}
 
         <GigDetailTabs gigId={gig.id} />

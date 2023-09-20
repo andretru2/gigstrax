@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/table";
 import { DataTablePagination } from "@/components/data-table/data-table-pagination";
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
+import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -39,7 +40,12 @@ interface DataTableProps<TData, TValue> {
   filterableColumns?: DataTableFilterableColumn<TData>[];
   searchableColumns?: DataTableSearchableColumn<TData>[];
   newRowLink?: string;
-  onRowClick?: () => void;
+  // onRowClick?: () => void;
+  onRowClick?: (
+    e: React.MouseEvent<HTMLTableRowElement, MouseEvent>,
+    row: TData
+  ) => void;
+
   deleteRowsAction?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
@@ -278,8 +284,8 @@ export function DataTable<TData, TValue>({
         deleteRowsAction={deleteRowsAction}
       />
       <div className="rounded-md border">
-        <Table>
-          <TableHeader>
+        <Table className="relative">
+          <TableHeader className="sticky top-0">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -303,6 +309,8 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  onClick={(e) => onRowClick && onRowClick(e, row)}
+                  className={cn(onRowClick && "cursor-pointer")}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>

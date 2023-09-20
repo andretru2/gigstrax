@@ -107,7 +107,7 @@ export default async function Page({ params }: Props) {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <Separator className="mb-8 " />
+        {/* <Separator className="mb-8 " /> */}
         <SourceDetailTabs id={id} />
         <SourceForm {...source} />
       </CardContent>
