@@ -108,10 +108,10 @@ export default function Datatable({ data, pageCount }: Props) {
       },
       {
         accessorKey: "timeStart",
-        header: "Start",
+        header: () => <div className="w-24 text-center">Start</div>,
         cell: ({ row }) => {
           return (
-            <div className="w-24">
+            <div className="w-24 text-center">
               {row.original.timeStart ? formatTime(row.original.timeStart) : ""}
             </div>
           );
@@ -119,11 +119,11 @@ export default function Datatable({ data, pageCount }: Props) {
       },
       {
         accessorKey: "timeEnd",
-        header: "End",
+        header: () => <div className="w-24 text-center">End</div>,
 
         cell: ({ row }) => {
           return (
-            <div className="w-24">
+            <div className="w-24 text-center">
               {row.original.timeEnd
                 ? row.original.timeEnd.toLocaleTimeString("en-US", {
                     hour: "numeric",
