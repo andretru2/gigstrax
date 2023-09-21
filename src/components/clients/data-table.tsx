@@ -169,7 +169,9 @@ export default function Datatable({ data, pageCount }: Props) {
       data={data}
       onRowClick={(e, row) => {
         e.preventDefault();
-        router.push(`/dashboard/clients/${row.original.id}`);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        const id = row.original.id as number;
+        id && router.push(`/dashboard/clients/${id}`);
       }}
       pageCount={pageCount}
       // filterableColumns={[
