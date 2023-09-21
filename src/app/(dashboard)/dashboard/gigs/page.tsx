@@ -1,8 +1,6 @@
 import DataTable from "@/components/gigs/data-table";
 import { type GigTab } from "@/types/index";
-import { redirect } from "next/navigation";
 import type { GigProps } from "@/server/db";
-import { type Prisma } from "@prisma/client";
 import type { GetGigsProps } from "@/types/index";
 import { PER_PAGE } from "@/lib/constants";
 

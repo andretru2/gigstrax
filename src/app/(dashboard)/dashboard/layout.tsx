@@ -52,7 +52,7 @@ export default async function DashboardLayout({
     <div className="flex min-h-screen flex-col gap-8 ">
       <SiteHeader user={session.user} />
       {/* <SidebarNav items={dashboardConfig.sidebarNav} /> */}
-      <ScrollArea className="container">
+      <ScrollArea className="container ">
         <main className="flex w-full flex-col gap-10 overflow-hidden ">
           {children}
         </main>

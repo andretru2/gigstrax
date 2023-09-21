@@ -5,6 +5,7 @@ import Link from "next/link";
 // import { products, type Product } from "@/db/schema"
 import { type ColumnDef } from "@tanstack/react-table";
 import { toast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 import { formatAddress, formatPhone } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -33,6 +34,7 @@ interface Props {
 export default function Datatable({ data, pageCount }: Props) {
   const [isPending, startTransition] = React.useTransition();
   const [selectedRowIds, setSelectedRowIds] = React.useState<number[]>([]);
+  const router = useRouter();
 
   // Memoize the columns so they don't re-render on every render
   const columns = React.useMemo<ColumnDef<ClientProps, unknown>[]>(
@@ -40,19 +42,27 @@ export default function Datatable({ data, pageCount }: Props) {
       {
         accessorKey: "client",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Client" />
+          <DataTableColumnHeader
+            column={column}
+            title="Client"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+          />
         ),
         cell: ({ row }) => {
-          return <span className="w-96">{row.original.client}</span>;
+          return <div className="px-2 text-left">{row.original.client}</div>;
         },
       },
       {
         accessorKey: "contact",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Contact" />
+          <DataTableColumnHeader
+            column={column}
+            title="Contact"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+          />
         ),
         cell: ({ row }) => {
-          return <span>{row.original.contact}</span>;
+          return <div className="px-2 text-left">{row.original.contact}</div>;
         },
       },
       {
@@ -62,9 +72,9 @@ export default function Datatable({ data, pageCount }: Props) {
         ),
         cell: ({ row }) => {
           return (
-            <span>
+            <div className="">
               {row.original.phoneCell && formatPhone(row.original.phoneCell)}
-            </span>
+            </div>
           );
         },
       },
@@ -74,29 +84,33 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Email"
-            className="text-center"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
-          return <span className="">{row.original.email}</span>;
+          return <div className="px-2 text-left">{row.original.email}</div>;
         },
       },
 
       {
         accessorKey: "addressStreet",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Address" />
+          <DataTableColumnHeader
+            column={column}
+            title="Address"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+          />
         ),
         cell: ({ row }) => {
           return (
-            <span>
+            <div className="px-2 text-left">
               {formatAddress({
                 addressLine1: row.original.addressStreet ?? "",
                 city: row.original.addressCity ?? "",
                 state: row.original.addressState ?? "",
                 zip: row.original.addressZip ?? "",
               })}
-            </span>
+            </div>
           );
         },
       },
@@ -153,8 +167,11 @@ export default function Datatable({ data, pageCount }: Props) {
     <DataTable
       columns={columns}
       data={data}
-      onRowClick={(row) => {
-        console.log(row);
+      onRowClick={(e, row) => {
+        e.preventDefault();
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        const id = row.original.id as number;
+        id && router.push(`/dashboard/clients/${id}`);
       }}
       pageCount={pageCount}
       // filterableColumns={[

@@ -500,7 +500,7 @@ export default function GigForm({
               control={form.control}
               name="santa.id"
               render={({ field }) => (
-                <FormItem className="col-span-2 w-full ">
+                <FormItem className="col-span-3 w-full ">
                   <FormLabel>Santa</FormLabel>
                   <FormControl>
                     <Select
@@ -623,11 +623,16 @@ export default function GigForm({
         {/* {selectedClient && <ClientForm {...selectedClient} />} */}
 
         <Card className="p-4 ">
-          <CardHeader className="flex flex-row items-center gap-3 px-0">
-            <CardTitle>Venue Details</CardTitle>
-            <Button variant="link" className=" self-center text-left">
-              Same as client?
-            </Button>
+          <CardHeader className="flex flex-row items-center space-y-0 px-0">
+            <CardTitle className="relative">
+              Venue Details
+              <Button
+                variant="link"
+                className=" absolute left-40 w-32  self-center text-left"
+              >
+                Same as client?
+              </Button>
+            </CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-6 items-end gap-4 px-0">
             <FormField

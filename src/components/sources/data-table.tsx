@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { type ColumnDef } from "@tanstack/react-table";
 import { toast } from "@/hooks/use-toast";
-
+import { useRouter } from "next/navigation";
 import { formatAddress, formatPhone } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,7 @@ interface Props {
 export default function Datatable({ data, pageCount }: Props) {
   const [isPending, startTransition] = React.useTransition();
   const [selectedRowIds, setSelectedRowIds] = React.useState<number[]>([]);
+  const router = useRouter();
 
   // Memoize the columns so they don't re-render on every render
   const columns = React.useMemo<ColumnDef<SourceProps, unknown>[]>(
@@ -40,19 +41,27 @@ export default function Datatable({ data, pageCount }: Props) {
       {
         accessorKey: "nameFirst",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="First Name" />
+          <DataTableColumnHeader
+            column={column}
+            title="First Name"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+          />
         ),
         cell: ({ row }) => {
-          return <span className="w-96">{row.original.nameFirst}</span>;
+          return <div className="px-2 text-left">{row.original.nameFirst}</div>;
         },
       },
       {
         accessorKey: "nameLast",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Last Name" />
+          <DataTableColumnHeader
+            column={column}
+            title="Last Name"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+          />
         ),
         cell: ({ row }) => {
-          return <span>{row.original.nameLast}</span>;
+          return <div className="px-2 text-left">{row.original.nameLast}</div>;
         },
       },
       {
@@ -81,10 +90,14 @@ export default function Datatable({ data, pageCount }: Props) {
       {
         accessorKey: "email",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Email" />
+          <DataTableColumnHeader
+            column={column}
+            title="Email"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+          />
         ),
         cell: ({ row }) => {
-          return <span className="">{row.original.email}</span>;
+          return <div className="px-2 text-left">{row.original.email}</div>;
         },
       },
 
@@ -150,8 +163,12 @@ export default function Datatable({ data, pageCount }: Props) {
     <DataTable
       columns={columns}
       data={data}
-      onRowClick={(row) => {
-        console.log(row);
+      onRowClick={(e, row) => {
+        e.preventDefault();
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        const id = row.original.id as number;
+
+        id && router.push(`/dashboard/sources/${id}`);
       }}
       pageCount={pageCount}
       // filterableColumns={[

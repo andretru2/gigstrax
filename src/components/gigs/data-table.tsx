@@ -6,6 +6,7 @@ import Link from "next/link";
 import { type ColumnDef } from "@tanstack/react-table";
 // import { toast } from "sonner"
 import { toast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 import {
   catchError,
@@ -34,6 +35,8 @@ import { DataTableColumnHeader } from "../data-table/data-table-column-header";
 import { Icons } from "../icons";
 import { type ClientProps, type GigProps } from "@/server/db";
 import { type GigExtendedProps } from "@/types/index";
+import { redirect } from "next/navigation";
+import { type } from "os";
 
 interface Props {
   // data: GigProps & { clients: Partial<ClientProps> };
@@ -44,6 +47,7 @@ interface Props {
 export default function Datatable({ data, pageCount }: Props) {
   const [isPending, startTransition] = React.useTransition();
   const [selectedRowIds, setSelectedRowIds] = React.useState<number[]>([]);
+  const router = useRouter();
 
   // Memoize the columns so they don't re-render on every render
   const columns = React.useMemo<ColumnDef<GigExtendedProps, unknown>[]>(
@@ -82,10 +86,18 @@ export default function Datatable({ data, pageCount }: Props) {
       {
         accessorKey: "gigDate",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Date" />
+          <DataTableColumnHeader
+            column={column}
+            title="Date"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+          />
         ),
 
-        cell: ({ cell }) => formatDate(cell.getValue() as Date, "friendly"),
+        cell: ({ cell }) => (
+          <div className="w-72 px-2 text-left">
+            {formatDate(cell.getValue() as Date, "friendly")}
+          </div>
+        ),
         // cell: ({ row }) => {
         //   return (
         //     <span className="w-96">
@@ -96,58 +108,63 @@ export default function Datatable({ data, pageCount }: Props) {
       },
       {
         accessorKey: "timeStart",
-        header: "Start",
+        header: () => <div className="w-24 text-center">Start</div>,
         cell: ({ row }) => {
           return (
-            <span>
+            <div className="w-24 text-center">
               {row.original.timeStart ? formatTime(row.original.timeStart) : ""}
-            </span>
+            </div>
           );
         },
       },
       {
         accessorKey: "timeEnd",
-        header: "End",
-        // size: 1200,
-        width: 2000,
+        header: () => <div className="w-24 text-center">End</div>,
 
         cell: ({ row }) => {
           return (
-            <span>
+            <div className="w-24 text-center">
               {row.original.timeEnd
                 ? row.original.timeEnd.toLocaleTimeString("en-US", {
                     hour: "numeric",
                     minute: "2-digit",
                   })
                 : ""}
-            </span>
+            </div>
           );
         },
       },
       {
         accessorKey: "duration",
-        header: "Duration",
+        // header: "Duration",
+        header: () => <div className="text-center">Duration</div>,
 
         cell: ({ row }) => {
           return (
-            <span className="w-2 items-center self-center">
+            <div className="w-18 text-center">
               {row.original.timeStart && row.original.timeEnd
                 ? calculateTimeDifference(
                     row.original.timeStart,
                     row.original.timeEnd
                   )
                 : 0}
-            </span>
+            </div>
           );
         },
       },
       {
         accessorKey: "santaId",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Santa" />
+          <DataTableColumnHeader
+            column={column}
+            title="Santa"
+            className="w-42"
+          />
         ),
         cell: ({ row }) => {
-          return <span>{row.original.santa?.role}</span>;
+          return (
+            <span className="text-center">{row.original.santa?.role}</span>
+          );
         },
       },
       {
@@ -156,20 +173,28 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader column={column} title="Mrs. Santa" />
         ),
         cell: ({ row }) => {
-          return <span>{row.original?.mrsSanta?.nameFirst}</span>;
+          return (
+            <span className="text-center">
+              {row.original?.mrsSanta?.nameFirst}
+            </span>
+          );
         },
       },
       {
         accessorKey: "clientId",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Client" />
+          <DataTableColumnHeader
+            column={column}
+            title="Client"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+          />
         ),
         cell: ({ row }) => {
           return (
-            <span>
+            <div className="px-2 text-left">
               {row.original?.client?.client &&
                 toTitleCase(row.original?.client?.client)}
-            </span>
+            </div>
           );
         },
       },
@@ -177,12 +202,16 @@ export default function Datatable({ data, pageCount }: Props) {
       {
         accessorKey: "venueAddressName",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Venue" />
+          <DataTableColumnHeader
+            column={column}
+            title="Venue"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+          />
         ),
         width: 300,
         cell: ({ row }) => {
           return (
-            <span>
+            <div className="px-2 text-left">
               {formatAddress({
                 name: row.original.venueAddressName ?? "",
                 addressLine1: row.original.venueAddressStreet ?? "",
@@ -191,7 +220,7 @@ export default function Datatable({ data, pageCount }: Props) {
                 state: row.original.venueAddressState ?? "",
                 zip: row.original.venueAddressZip ?? "",
               })}
-            </span>
+            </div>
           );
         },
       },
@@ -300,9 +329,12 @@ export default function Datatable({ data, pageCount }: Props) {
     <DataTable
       columns={columns}
       data={data}
-      // onRowClick={(row) => {
-      //   console.log(row);
-      // }}
+      onRowClick={(e, row) => {
+        e.preventDefault();
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        const id = row.original.id as number;
+        id && router.push(`/dashboard/gigs/${id}`);
+      }}
       pageCount={pageCount}
       // filterableColumns={[
       //   {

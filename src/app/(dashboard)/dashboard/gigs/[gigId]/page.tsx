@@ -98,11 +98,13 @@ export default async function Page({ params }: Props) {
   return (
     <Card className="border-0 bg-background [&>*]:px-0 ">
       <CardHeader className="space-y-1">
-        <Card className="flex items-start justify-between space-x-2 border-b-2  border-b-primary p-2 shadow-md">
-          <CardTitle className=" flex flex-row gap-12 text-xl font-medium">
+        <Card className="flex  flex-col  border-b-2   border-b-primary p-4 shadow-md ">
+          <CardHeader className="px-0">
+            <CardTitle>Summary</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-row gap-12 px-0 text-lg font-bold">
             <div className="flex flex-col gap-2">
-              {/* <h1>Create New Gig</h1> */}
-              <div className="flex flex-row items-center gap-2">
+              <div className="flex flex-row items-center gap-2 ">
                 <SectionHeaderInfo
                   icon="calendar"
                   data={formattedDate ? formattedDate : "incomplete"}
@@ -128,39 +130,12 @@ export default async function Page({ params }: Props) {
                 />
               </div>
             </div>
-          </CardTitle>
-          {/* <div className="flex flex-row gap-2">
-            <Button
-              variant="secondary"
-              className="flex flex-row items-center gap-1"
-            >
-              <Icons.copy className="h-4 w-4" />
-              Copy
-            </Button>
-
-            <Button
-              variant="secondary"
-              className="flex flex-row items-center gap-1"
-            >
-              <Icons.report className="h-4 w-4" />
-              PDF
-            </Button>
-            <Button
-              variant="secondary"
-              className="flex flex-row items-center gap-1"
-            >
-              <Icons.billing className="h-4 w-4" />
-              Invoice
-            </Button>
-          </div> */}
+          </CardContent>
         </Card>
-        <CardDescription className=" mt-12">
-          {/* <div className="border-4"> </div> */}
-          {/* <Separator /> */}
-        </CardDescription>
       </CardHeader>
+
       <CardContent className="flex flex-col gap-4">
-        <Separator className="mb-4 " />
+        {/* <Separator className="mb-4 " /> */}
         {/* {client ? <StoreInitializer client={client} /> : null} */}
 
         <GigDetailTabs gigId={gig.id} />

@@ -8,7 +8,7 @@ interface Props {
 export default function SectionHeaderInfo({ icon, data }: Props) {
   const Icon = Icons[icon];
   return (
-    <div className="flex flex-row items-center gap-2">
+    <div className="flex flex-row items-center gap-2 ">
       <Icon className={`h-4 w-4 text-primary/60`} />
       <div
         className={data === "incomplete" ? "italic text-destructive/60" : ""}
