@@ -56,23 +56,23 @@ export default async function Page() {
   //   });
   // }
 
-  if (false) {
-    const formattedSources = Sources.map((source) => ({
-      ...source,
-      dob: source.dob ? new Date(source.dob) : null,
-      createdAt: source.createdAt ? new Date(source.createdAt) : null,
-      updatedAt: source.updatedAt ? new Date(source.updatedAt) : null,
-      gender: source.gender == null ? null : (source.gender as Gender),
-    }));
+  // if (false) {
+  //   const formattedSources = Sources.map((source) => ({
+  //     ...source,
+  //     dob: source.dob ? new Date(source.dob) : null,
+  //     createdAt: source.createdAt ? new Date(source.createdAt) : null,
+  //     updatedAt: source.updatedAt ? new Date(source.updatedAt) : null,
+  //     gender: source.gender == null ? null : (source.gender as Gender),
+  //   }));
 
-    // console.log(formattedSources);
+  //   // console.log(formattedSources);
 
-    const res = await prisma.source.createMany({
-      data: formattedSources,
-    });
+  //   const res = await prisma.source.createMany({
+  //     data: formattedSources,
+  //   });
 
-    console.log(res);
-  }
+  //   console.log(res);
+  // }
 
   // const res = await prisma.source.create({
   //   data: Sources,
@@ -155,7 +155,7 @@ export default async function Page() {
     });
   }
 
-  if (true) {
+  if (false) {
     //   // await prisma.gig.deleteMany();
     //   // await prisma.client.deleteMany();
 

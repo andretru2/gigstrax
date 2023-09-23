@@ -13,6 +13,7 @@ import { getSantas } from "./source";
 import { type Prisma } from "@prisma/client";
 import { type GetGigsProps, type GigExtendedProps } from "@/types/index";
 import { redirect } from "next/navigation";
+import { getClient } from "./client";
 
 // import * as z from "zod";
 
@@ -177,7 +178,7 @@ export async function create(props?: GigProps) {
 export async function update(
   props: Partial<GigProps> & { client?: { update: Partial<ClientProps> } }
 ) {
-  console.log(props);
+  // console.log(props);
   const data = { ...props };
   const include: Prisma.GigInclude = {};
 
@@ -279,4 +280,47 @@ export async function getAvailableSantas(id: string) {
   });
 
   return data;
+}
+
+export async function copyFromClient(id: string) {
+  const gig = await prisma.gig.findFirst({
+    where: { id: id },
+  });
+
+  if (!gig?.clientId) {
+    throw new Error("Gig not found.");
+  }
+
+  const client = await getClient(gig.clientId);
+
+  if (!client) {
+    throw new Error("Client not found.");
+  }
+
+  const {
+    addressCity,
+    addressState,
+    addressStreet,
+    addressZip,
+    clientType,
+    contact,
+    source,
+    phoneCell,
+    phoneLandline,
+    email,
+    notes,
+  } = client;
+
+  return update({
+    id: id,
+    venueAddressCity: addressCity,
+    venueAddressState: addressState,
+    venueAddressStreet: addressStreet,
+    venueAddressZip: addressZip,
+    contactName: contact,
+    contactPhoneCell: phoneCell,
+    contactPhoneLand: phoneLandline,
+    contactEmail: email,
+    notesVenue: notes,
+  });
 }

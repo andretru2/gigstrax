@@ -27,7 +27,7 @@ export default function SignIn() {
           // console.log(appUrl);
           void signIn("google", {
             // callbackUrl: `${appUrl}/dashboard`,
-            callbackUrl: "https://gigstrax.vercel.app/dashboard",
+            callbackUrl: "https://gigstrax.vercel.app/dashboard/gigs",
           });
         }}
         className=" align-center flex w-full flex-row items-center gap-1"
