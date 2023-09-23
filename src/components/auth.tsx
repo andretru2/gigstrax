@@ -21,10 +21,10 @@ export default function SignIn() {
         size="lg"
         isLoading={isPending}
         onClick={() => {
-          const appUrl =
-            process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+          // const appUrl =
+          // process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
-          console.log(appUrl);
+          // console.log(appUrl);
           void signIn("google", {
             // callbackUrl: `${appUrl}/dashboard`,
             callbackUrl: "https://gigstrax.vercel.app/dashboard",

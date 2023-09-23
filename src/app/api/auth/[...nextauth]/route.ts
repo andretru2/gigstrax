@@ -95,6 +95,8 @@ export const authOptions: NextAuthOptions = {
       // if the user already exists via email,
       // update the user with their name and image from Google
 
+      console.log("login success", user, account, profile);
+
       await prisma.user.update({
         where: { email: user.email },
         data: {

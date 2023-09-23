@@ -67,7 +67,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                 <span className="sr-only">User</span>
               </div>
             </Link> */}
-            <Link
+            {/* <Link
               href="/dashboard/settings"
               // target="_blank"
               // rel="noreferrer"
@@ -83,7 +83,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                 <Icons.settings className="h-5 w-5 fill-current" />
                 <span className="sr-only">Settings</span>
               </div>
-            </Link>
+            </Link> */}
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
