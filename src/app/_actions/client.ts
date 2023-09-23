@@ -72,7 +72,7 @@ function mapClient(client: ClientProps) {
   if (client.createdAt) {
     const localCreatedAt = fromUTC(client.createdAt);
     client.createdAt = localCreatedAt;
-    console.log(localCreatedAt);
+    // console.log(localCreatedAt);
   }
 
   return client;

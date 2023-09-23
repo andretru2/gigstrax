@@ -182,6 +182,7 @@ enum Gender {
 enum SourceStatus {
   Active
   Driver
+  Pending
   Inactive
   Independent
   Reference
@@ -192,6 +193,7 @@ enum SourceStatus {
 enum VenueType {
   Bar
   Event_Space
+  Retail_Space
   Home
   Office
   Other

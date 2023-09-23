@@ -138,10 +138,10 @@ export async function create(data: SourceProps) {
   // if (exists) {
   //   throw new Error("Source name already exists.");
   // }
-  console.log(data);
+  // console.log(data);
   const newRecord = await prisma.source.create({ data: data });
   revalidatePath(`/dashboard/sources/`);
-  console.log(newRecord);
+  // console.log(newRecord);
   return newRecord.id;
 }
 

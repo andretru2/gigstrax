@@ -81,28 +81,35 @@ export const authOptions: NextAuthOptions = {
     // return token;
     // },
     signIn: async ({ user, account, profile }) => {
-      console.log(user, account, profile);
-      if (!user.email) {
-        return false;
+      // console.log(user, account, profile);
+
+      if (false) {
+        if (!user.email) {
+          return false;
+        }
+
+        const userExists = await prisma.user.findUnique({
+          where: { email: user.email },
+          select: { name: true },
+        });
+
+        if (!userExists) return false;
+        // if the user already exists via email,
+        // update the user with their name and image from Google
+
+        console.log("login success", user, account, profile);
+
+        await prisma.user.update({
+          where: { email: user.email },
+          data: {
+            name: profile?.name,
+
+            // image: profile?.picture,
+          },
+        });
+
+        return true;
       }
-
-      const userExists = await prisma.user.findUnique({
-        where: { email: user.email },
-        select: { name: true },
-      });
-
-      if (!userExists) return false;
-      // if the user already exists via email,
-      // update the user with their name and image from Google
-
-      await prisma.user.update({
-        where: { email: user.email },
-        data: {
-          name: profile?.name,
-          // image: profile?.picture,
-        },
-      });
-
       return true;
     },
   },

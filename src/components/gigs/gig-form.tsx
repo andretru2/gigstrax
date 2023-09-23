@@ -19,14 +19,8 @@ import {
   calculateTimeDifference,
   formatPhone,
 } from "@/lib/utils";
-import {
-  type FocusEvent,
-  type ReactNode,
-  useMemo,
-  useTransition,
-  useEffect,
-} from "react";
-import { update } from "@/app/_actions/gig";
+import { type FocusEvent, type ReactNode, useMemo, useTransition } from "react";
+import { copyFromClient, update } from "@/app/_actions/gig";
 import type * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -167,7 +161,7 @@ export default function GigForm({
   //   }
   // }, [clientId]);
 
-  console.log(client);
+  // console.log(client);
 
   const [isPending, startTransition] = useTransition();
 
@@ -629,6 +623,16 @@ export default function GigForm({
               <Button
                 variant="link"
                 className=" absolute left-40 w-32  self-center text-left"
+                isLoading={isPending}
+                onClick={() => {
+                  startTransition(() => {
+                    try {
+                      void copyFromClient(id);
+                    } catch (err) {
+                      catchError(err);
+                    }
+                  });
+                }}
               >
                 Same as client?
               </Button>

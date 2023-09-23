@@ -1,19 +1,22 @@
-"use client";
+// "use client";
 import { prisma } from "@/server/db";
 // import Sources from "../lib/sources.json";
 // import Clients from "../lib/clients.json";
-// import Gigs from "../lib/gigs.json";
+import Gigs from "../../../lib/fmData/gigs.json";
+import Clients from "../../../lib/fmData/clients.json";
+// import Sources from "../../../lib/fmData/sources.json";
 // import { parse } from "date-fns";
 import Header from "@/components/header";
 import { Separator } from "@/components/ui/separator";
 import { redirect } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { type Gender } from "@prisma/client";
+// import { useSession } from "next-auth/react";
 
-export default function Page() {
-  const { data } = useSession();
-  return (
-    <>Hello {data?.user?.name}. Dashboard will be developed on next phase. </>
-  );
+export default async function Page() {
+  // const { data } = useSession();
+  // return (
+  //   <>Hello {data?.user?.name}. Dashboard will be developed on next phase. </>
+  // );
 
   //if (false) {
   //   const res = await prisma.gig.create({
@@ -54,35 +57,27 @@ export default function Page() {
   // }
 
   // if (false) {
-  //   const res = await prisma.source.create({
-  //     data: {
-  //       id: "EDA3FF75-2A87-4A81-BEFD-A20F18D4DAF4",
-  //       addressCity: "Jersey City",
-  //       addressState: "NJ",
-  //       addressStreet: "2595 John F Kennedy Bld (E-46)",
-  //       addressZip: "07306",
-  //       costume: "",
-  //       dob: new Date("03/30/1933"),
-  //       email: "harkins.joe@gmail.com",
-  //       entity: "",
-  //       gender: "M",
-  //       gigMastersAccount: "GM #138885 joe@realbeardsantajoe.com",
-  //       calendarId: "s1ut4hq3qr3is27pm6jbn4je9c@group.calendar.google.com",
-  //       nameFirst: "Joe",
-  //       nameLast: "Harkins",
-  //       notes: "prospect 2021",
-  //       phone: "201-238-3343",
-  //       resource: "",
-  //       role: "RBS Joe",
-  //       ssn: "110-24-2230",
+  //   const formattedSources = Sources.map((source) => ({
+  //     ...source,
+  //     dob: source.dob ? new Date(source.dob) : null,
+  //     createdAt: source.createdAt ? new Date(source.createdAt) : null,
+  //     updatedAt: source.updatedAt ? new Date(source.updatedAt) : null,
+  //     gender: source.gender == null ? null : (source.gender as Gender),
+  //   }));
 
-  //       status: "Active",
+  //   // console.log(formattedSources);
 
-  //       videoUrl: "",
-  //       website: "RealBeardSantaJoe.com",
-  //     },
+  //   const res = await prisma.source.createMany({
+  //     data: formattedSources,
   //   });
+
+  //   console.log(res);
   // }
+
+  // const res = await prisma.source.create({
+  //   data: Sources,
+  // });
+  // console.log(res);
 
   // if (false) {
   //   const res = await prisma.client.create({
@@ -127,153 +122,186 @@ export default function Page() {
   //   });
   // }
 
-  // if (false) {
-  //   // await prisma.gig.deleteMany();
-  //   // await prisma.client.deleteMany();
+  if (false) {
+    // await prisma.gig.deleteMany();
+    // await prisma.client.deleteMany();
 
-  //   const formattedClients = Clients.map((client) => ({
-  //     ...client,
-  //     addressZip: client?.addressZip?.toString(),
-  //     clientType:
-  //       client?.clientType === "Event/Party Planner"
-  //         ? "Event_Party_Planner"
-  //         : client?.clientType === "agency"
-  //         ? "Agency"
-  //         : client?.clientType === "Country Club"
-  //         ? "Country_Club"
-  //         : client?.clientType === "fundraiser"
-  //         ? "Fundraiser"
-  //         : client?.clientType === "other"
-  //         ? "Other"
-  //         : client?.clientType,
-  //     createdAt: client.createdAt ? new Date(client.createdAt) : null,
-  //     updatedAt: client.updatedAt ? new Date(client.updatedAt) : null,
-  //     notes: Buffer.from(client.notes, "binary").toString("utf8"),
-  //   })).slice(200, 220);
+    console.log(Clients[0]);
 
-  //   console.log(formattedClients);
+    const formattedClients = Clients.map((client) => ({
+      ...client,
+      addressZip: client?.addressZip?.toString(),
+      clientType:
+        client?.clientType === "Event/Party Planner"
+          ? "Event_Party_Planner"
+          : client?.clientType === "agency"
+          ? "Agency"
+          : client?.clientType === "Country Club"
+          ? "Country_Club"
+          : client?.clientType === "fundraiser"
+          ? "Fundraiser"
+          : client?.clientType === "other"
+          ? "Other"
+          : client?.clientType,
+      createdAt: client.createdAt ? new Date(client.createdAt) : null,
+      updatedAt: client.updatedAt ? new Date(client.updatedAt) : null,
+      notes: Buffer.from(client.notes, "binary").toString("utf8"),
+    })).slice(5, 10);
 
-  //   const res = await prisma.client.createMany({
-  //     data: formattedClients,
-  //   });
-  // }
+    console.log(formattedClients);
 
-  // if (false) {
-  //   // await prisma.gig.deleteMany();
-  //   // await prisma.client.deleteMany();
+    const res = await prisma.client.createMany({
+      data: formattedClients,
+    });
+  }
 
-  //   // await prisma.client.create({
-  //   //   data: {
-  //   //     id: "694E7E83-90F4-594D-8ED9-32E65F5A1268",
-  //   //     addressCity: "New York",
-  //   //     addressState: "NY",
-  //   //     addressStreet: "725 Fifth Ave",
-  //   //     addressZip: "10022",
-  //   //     client: "Trump Organization",
-  //   //     clientType: "Corporation",
-  //   //     contact: "Diana Taddoni",
-  //   //     email: "dtaddoni@trumporg.com",
-  //   //     notes:
-  //   //       "Joseph Quinto\riParty Pix\r80 Main Street\rFreehold, NJ 07728\rOff: 855-399-4749 (IPIX)                                                                                           \rCell: 973-710-6737\rwww.ipartypix.com\r\r ",
-  //   //     phoneCell: "917-440-7185",
-  //   //     phoneLandline: "212-715-7267",
-  //   //     source: "iParty Pix",
-  //   //     status: "",
-  //   //     createdAt: new Date("11/27/2019 02:12:19"),
-  //   //     createdBy: "JoeHark",
-  //   //     updatedAt: new Date("09/21/2022 12:59:03"),
-  //   //     updatedBy: "harkins.joe@gmail.com",
-  //   //   },
-  //   // });
+  if (false) {
+    //   // await prisma.gig.deleteMany();
+    //   // await prisma.client.deleteMany();
 
-  //   const formattedGigs = Gigs.map((gig, index) => {
-  //     try {
-  //       return {
-  //         ...gig,
-  //         venueAddressZip: gig?.venueAddressZip?.toString(),
-  //         serial: parseInt(gig?.serial),
-  //         venueType:
-  //           gig?.venueType === "Event Space"
-  //             ? "Event_Space"
-  //             : gig?.venueType === "other"
-  //             ? "Other"
-  //             : gig?.venueType === "Photo Studio"
-  //             ? "PhotoStudio"
-  //             : gig?.venueType === "pre-school"
-  //             ? "Preschool"
-  //             : gig?.venueType === "Private Club"
-  //             ? "PrivateClub"
-  //             : gig?.venueType === "Public Space"
-  //             ? "PublicSpace"
-  //             : gig?.venueType === "TV Studio"
-  //             ? "TV_Studio"
-  //             : gig?.venueType,
-  //         gigDate: gig.gigDate ? new Date(gig.gigDate) : null,
-  //         timeStart:
-  //           gig.gigDate && gig.timeStart
-  //             ? new Date(`${gig.gigDate} ${gig.timeStart}`)
-  //             : null,
-  //         timeEnd:
-  //           gig.gigDate && gig.timeEnd
-  //             ? new Date(`${gig.gigDate} ${gig.timeEnd}`)
-  //             : null,
-  //         createdAt: gig.createdAt ? new Date(gig.createdAt) : null,
-  //         updatedAt: gig.updatedAt ? new Date(gig.updatedAt) : null,
-  //         notesVenue: Buffer.from(gig.notesVenue, "binary").toString("utf8"),
-  //         notesGig: Buffer.from(gig.notesGig, "binary").toString("utf8"),
-  //       };
-  //     } catch (error) {
-  //       console.error(`Error creating gig at row ${index + 1}:`, error);
-  //       return null; // Skip the row
-  //     }
-  //   })
-  //     .slice(350, 389)
-  //     .filter(Boolean); // Remove any null/undefined values
+    //   // await prisma.client.create({
+    //   //   data: {
+    //   //     id: "694E7E83-90F4-594D-8ED9-32E65F5A1268",
+    //   //     addressCity: "New York",
+    //   //     addressState: "NY",
+    //   //     addressStreet: "725 Fifth Ave",
+    //   //     addressZip: "10022",
+    //   //     client: "Trump Organization",
+    //   //     clientType: "Corporation",
+    //   //     contact: "Diana Taddoni",
+    //   //     email: "dtaddoni@trumporg.com",
+    //   //     notes:
+    //   //       "Joseph Quinto\riParty Pix\r80 Main Street\rFreehold, NJ 07728\rOff: 855-399-4749 (IPIX)                                                                                           \rCell: 973-710-6737\rwww.ipartypix.com\r\r ",
+    //   //     phoneCell: "917-440-7185",
+    //   //     phoneLandline: "212-715-7267",
+    //   //     source: "iParty Pix",
+    //   //     status: "",
+    //   //     createdAt: new Date("11/27/2019 02:12:19"),
+    //   //     createdBy: "JoeHark",
+    //   //     updatedAt: new Date("09/21/2022 12:59:03"),
+    //   //     updatedBy: "harkins.joe@gmail.com",
+    //   //   },
+    //   // });
 
-  //   if (false) {
-  //     const formattedGigs = Gigs.map((gig) => ({
-  //       ...gig,
-  //       venueAddressZip: gig?.venueAddressZip?.toString(),
-  //       serial: parseInt(gig?.serial),
-  //       venueType:
-  //         gig?.venueType === "Event Space"
-  //           ? "Event_Space"
-  //           : gig?.venueType === "other"
-  //           ? "Other"
-  //           : gig?.venueType === "Photo Studio"
-  //           ? "PhotoStudio"
-  //           : gig?.venueType === "pre-school"
-  //           ? "Preschool"
-  //           : gig?.venueType === "Private Club"
-  //           ? "PrivateClub"
-  //           : gig?.venueType === "Public Space"
-  //           ? "PublicSpace"
-  //           : gig?.venueType === "TV Studio"
-  //           ? "TV_Studio"
-  //           : gig?.venueType,
-  //       gigDate: gig.gigDate ? new Date(gig.gigDate) : null,
-  //       timeStart:
-  //         gig.gigDate && gig.timeStart
-  //           ? new Date(`${gig.gigDate} ${gig.timeStart}`)
-  //           : null,
-  //       timeEnd:
-  //         gig.gigDate && gig.timeEnd
-  //           ? new Date(`${gig.gigDate} ${gig.timeEnd}`)
-  //           : null,
+    const formattedGigs = Gigs.map((gig, index) => {
+      try {
+        return {
+          ...gig,
+          venueAddressZip: gig?.venueAddressZip?.toString(),
+          serial: parseInt(gig?.serial),
+          venueType:
+            gig?.venueType === "Event Space"
+              ? "Event_Space"
+              : gig?.venueType === "other"
+              ? "Other"
+              : gig?.venueType === "Retail Space"
+              ? "Retail_Space"
+              : gig?.venueType === "Photo Studio"
+              ? "PhotoStudio"
+              : gig?.venueType === "pre-school"
+              ? "Preschool"
+              : gig?.venueType === "Private Club"
+              ? "PrivateClub"
+              : gig?.venueType === "Public Space"
+              ? "PublicSpace"
+              : gig?.venueType === "TV Studio"
+              ? "TV_Studio"
+              : gig?.venueType,
+          gigDate: gig.gigDate ? new Date(gig.gigDate) : null,
+          timeStart:
+            gig.gigDate && gig.timeStart
+              ? new Date(`${gig.gigDate} ${gig.timeStart}`)
+              : null,
+          timeEnd:
+            gig.gigDate && gig.timeEnd
+              ? new Date(`${gig.gigDate} ${gig.timeEnd}`)
+              : null,
+          createdAt: gig.createdAt ? new Date(gig.createdAt) : null,
+          updatedAt: gig.updatedAt ? new Date(gig.updatedAt) : null,
+          notesVenue: Buffer.from(gig.notesVenue, "binary").toString("utf8"),
+          notesGig: Buffer.from(gig.notesGig, "binary").toString("utf8"),
+        };
+      } catch (error) {
+        console.error(`Error creating gig at row ${index + 1}:`, error);
+        return null; // Skip the row
+      }
+    })
+      .slice(0, 100)
+      .filter(Boolean); // Remove any null/undefined values
 
-  //       createdAt: gig.createdAt ? new Date(gig.createdAt) : null,
-  //       updatedAt: gig.updatedAt ? new Date(gig.updatedAt) : null,
-  //       notesVenue: Buffer.from(gig.notesVenue, "binary").toString("utf8"),
-  //       notesGig: Buffer.from(gig.notesGig, "binary").toString("utf8"),
-  //     })).slice(1, 100);
-  //   }
+    console.log(formattedGigs);
 
-  //   console.log(formattedGigs);
+    const res = await prisma.gig
+      .createMany({
+        data: formattedGigs,
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 
-  //   const res = await prisma.gig.createMany({
-  //     data: formattedGigs,
-  //   });
-  // }
+  if (false) {
+    // console.log(Gigs[0]);
+    const formattedGigs = Promise.all(
+      Gigs.map(async (gig) => {
+        console.log("gig", gig);
+        const exists = await prisma.gig.findFirst({
+          where: {
+            id: gig.id,
+          },
+        });
+
+        console.log("exists", exists, gig.id);
+
+        // const exists = false;
+        if (!exists?.id) {
+          return {
+            ...gig,
+            venueAddressZip: gig?.venueAddressZip?.toString(),
+            serial: parseInt(gig?.serial),
+            venueType:
+              gig?.venueType === "Event Space"
+                ? "Event_Space"
+                : gig?.venueType === "other"
+                ? "Other"
+                : gig?.venueType === "Retail Space"
+                ? "Retail_Space"
+                : gig?.venueType === "Photo Studio"
+                ? "PhotoStudio"
+                : gig?.venueType === "pre-school"
+                ? "Preschool"
+                : gig?.venueType === "Private Club"
+                ? "PrivateClub"
+                : gig?.venueType === "Public Space"
+                ? "PublicSpace"
+                : gig?.venueType === "TV Studio"
+                ? "TV_Studio"
+                : gig?.venueType,
+            gigDate: gig.gigDate ? new Date(gig.gigDate) : null,
+            timeStart:
+              gig.gigDate && gig.timeStart
+                ? new Date(`${gig.gigDate} ${gig.timeStart}`)
+                : null,
+            timeEnd:
+              gig.gigDate && gig.timeEnd
+                ? new Date(`${gig.gigDate} ${gig.timeEnd}`)
+                : null,
+
+            createdAt: gig.createdAt ? new Date(gig.createdAt) : null,
+            updatedAt: gig.updatedAt ? new Date(gig.updatedAt) : null,
+            notesVenue: Buffer.from(gig.notesVenue, "binary").toString("utf8"),
+            notesGig: Buffer.from(gig.notesGig, "binary").toString("utf8"),
+          };
+
+          console.log(formattedGigs);
+
+          const res = await prisma.gig.createMany({
+            data: formattedGigs,
+          });
+        }
+      })
+    );
+  }
 
   // // console.log(Sources);
   // // console.log(res);
@@ -294,4 +322,5 @@ export default function Page() {
   // //     {/* {JSON.stringify(sources)} */}
   // //   </h1>
   // // </>
+  return null;
 }
