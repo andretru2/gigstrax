@@ -30,6 +30,8 @@ import { useGigStore } from "@/app/_store/gig";
 import ClientForm from "@/components/clients/client-form";
 import StoreInitializer from "@/components/gigs/store-initializer";
 import SectionHeaderInfo from "@/components/ui/section-header-info";
+import MultiEventCreate from "@/components/gigs/mulit-event";
+// import dynamic from "next/dynamic";
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -41,6 +43,10 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 // export const dynamic = true;
 export const cache = "no-store";
+
+// const MultiEvent = await import("@/components/gigs/multi-event");
+
+// const MultiEvent = dynamic(() => import("@/components/gigs/multi-event"));
 
 interface Props {
   params: {
@@ -153,6 +159,7 @@ export default async function Page({ params }: Props) {
             </>
           )}
         </GigForm>
+        <MultiEventCreate {...gig} />
       </CardContent>
     </Card>
   );

@@ -78,4 +78,26 @@ export const gigSchema = z
   );
 //satisfies z.ZodType<GigProps>;
 
-// export type GigSchemaType = z.infer<typeof gigSchema>;
+// export const gigMultiEventSchema = gigSchema.pick({
+//   gigDate: true,
+//   timeStart: true,
+//   timeEnd: true,
+// });
+
+// type gigMultiEventSchema = z.infer<typeof gigMultiEventSchema>;
+
+export const gigMultiEventSchema = z.object({
+  gigDate1: z.date().refine(
+    (date) => {
+      if (!isValidDate(date)) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Must be a valid date",
+    }
+  ),
+  timeStart: timeSchema,
+  timeEnd: timeSchema,
+});
