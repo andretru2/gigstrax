@@ -20,7 +20,7 @@ import {
 } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { getGig } from "@/app/_actions/gig";
+import { getGig, getGigs } from "@/app/_actions/gig";
 import { Separator } from "@/components/ui/separator";
 import GigDetailTabs from "@/components/gigs/gig-detail-tabs";
 import { getSantas, getMrsSantas } from "@/app/_actions/source";
@@ -31,6 +31,7 @@ import ClientForm from "@/components/clients/client-form";
 import StoreInitializer from "@/components/gigs/store-initializer";
 import SectionHeaderInfo from "@/components/ui/section-header-info";
 import MultiEventCreate from "@/components/gigs/mulit-event";
+import { type GetGigsProps } from "@/types/index";
 // import dynamic from "next/dynamic";
 
 export const metadata: Metadata = {
@@ -58,8 +59,27 @@ export default async function Page({ params }: Props) {
   const gigId = params.gigId;
   if (!gigId) return <h1>Please select a gig. </h1>;
 
-  const gig = await getGig(gigId);
-  if (!gig) return notFound();
+  const { data } = await getGigs({
+    whereClause: { id: gigId },
+    select: { clientId: true, timeStart: true, timeEnd: true, gigDate: true },
+  });
+
+  console.log(data);
+  if (!data) return notFound();
+
+  console.log(data);
+
+  // const { clientId, timeStart, timeEnd, gigDate } = data;
+  const gig = data[0];
+
+  if (!gig) return;
+
+  console.log(
+    gig.clientId,
+    formatTime(gig.timeStart),
+    gig.timeEnd,
+    gig.gigDate
+  );
 
   const [client, santas, mrsSantas] = await Promise.all([
     gig.clientId ? getClient(gig.clientId) : undefined,
@@ -69,32 +89,31 @@ export default async function Page({ params }: Props) {
 
   client && useGigStore.setState({ client });
 
-  const formattedDate =
-    gig?.gigDate && formatDate(gig?.gigDate.getTime(), "friendly");
+  const formattedDate = gig.gigDate && formatDate(gig.gigDate, "friendly");
 
-  const startTime = gig.timeStart && gig.timeStart.toLocaleTimeString("en-US");
-  const endTime = gig?.timeEnd && formatTime(gig?.timeEnd);
+  // const startTime = timeStart && timeStart.toLocaleTimeString("en-US");
+  // const endTime = gig?.timeEnd && formatTime(gig?.timeEnd);
 
   const clientName = client?.client ?? "";
-  const addressFull =
-    gig?.venueAddressName &&
-    formatAddress({
-      name: gig?.venueAddressName,
-      addressLine1: gig?.venueAddressStreet ?? "",
-      addressLine2: gig?.venueAddressStreet2 ?? "",
-      city: gig?.venueAddressCity ?? "",
-      state: gig?.venueAddressState ?? "",
-      zip: gig?.venueAddressZip ?? "",
-    });
+  // const addressFull =
+  //   gig?.venueAddressName &&
+  //   formatAddress({
+  //     name: gig?.venueAddressName,
+  //     addressLine1: gig?.venueAddressStreet ?? "",
+  //     addressLine2: gig?.venueAddressStreet2 ?? "",
+  //     city: gig?.venueAddressCity ?? "",
+  //     state: gig?.venueAddressState ?? "",
+  //     zip: gig?.venueAddressZip ?? "",
+  //   });
 
   const durationHours =
-    gig?.timeStart && gig?.timeEnd
+    gig.timeStart && gig.timeEnd
       ? calculateTimeDifference(gig.timeStart, gig.timeEnd)
       : null;
 
   let timeFormat;
-  if (startTime && endTime) {
-    timeFormat = `${startTime} - ${endTime}`;
+  if (gig.timeStart && gig.timeEnd) {
+    timeFormat = `${formatTime(gig.timeStart)} - ${formatTime(gig.timeEnd)}`;
     if (durationHours) {
       timeFormat += ` (${durationHours} hours)`;
     }
@@ -131,10 +150,10 @@ export default async function Page({ params }: Props) {
               </div>
 
               <div className="flex flex-row items-center gap-2">
-                <SectionHeaderInfo
+                {/* <SectionHeaderInfo
                   icon="map"
                   data={addressFull ? addressFull : "incomplete"}
-                />
+                /> */}
               </div>
             </div>
           </CardContent>
