@@ -72,10 +72,8 @@ export default async function Page({ params }: Props) {
   const formattedDate =
     gig?.gigDate && formatDate(gig?.gigDate.getTime(), "friendly");
 
-  const startTime = gig.timeStart && formatTime(fromUTC(gig?.timeStart));
-  // const startTime = gig.timeStart && formatTime(gig.get("")timeStart);
-  // const endTime = gig?.timeEnd && formatTime(gig?.timeEnd);
-  const endTime = gig?.timeEnd && formatTime(fromUTC(gig?.timeEnd));
+  const startTime = gig.timeStart && formatTime(gig.timeStart);
+  const endTime = gig?.timeEnd && formatTime(gig?.timeEnd);
 
   const clientName = client?.client ?? "";
   const addressFull =
