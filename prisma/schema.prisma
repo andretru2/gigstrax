@@ -26,8 +26,8 @@ model Account {
   oauth_token_secret String?
   oauth_token        String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt @db.Timestamptz()
   user      User     @relation(fields: [userId], references: [id])
 
   @@unique([provider, providerAccountId])
@@ -49,8 +49,8 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime  @default(now()) @db.Timestamptz()
+  updatedAt     DateTime  @updatedAt @db.Timestamptz()
 }
 
 model VerificationToken {
@@ -77,14 +77,14 @@ model Gig {
   contactName         String?
   contactPhoneCell    String?
   contactPhoneLand    String?
-  gigDate             DateTime?  @db.Date()
+  gigDate             DateTime?  @db.Timestamptz()
   invoiceNumber       String?
   notesGig            String?
   notesVenue          String?
   amountPaid          Decimal?   @db.Money
   price               Decimal?   @db.Money
-  timeEnd             DateTime?  @db.Time()
-  timeStart           DateTime?  @db.Time()
+  timeEnd             DateTime?  @db.Timestamptz()
+  timeStart           DateTime?  @db.Timestamptz()
   travelType          String?
   venueAddressCity    String?
   venueAddressName    String?
@@ -94,9 +94,9 @@ model Gig {
   venueAddressZip     String?
   venueType           VenueType?
   isSoftHold          Boolean?
-  createdAt           DateTime?  @default(now())
+  createdAt           DateTime?  @default(now()) @db.Timestamptz()
   createdBy           String?
-  updatedAt           DateTime?  @updatedAt
+  updatedAt           DateTime?  @updatedAt @db.Timestamptz()
   updatedBy           String?
 }
 
@@ -115,9 +115,9 @@ model Client {
   phoneLandline String?
   source        String?
   status        String?
-  createdAt     DateTime?   @default(now())
+  createdAt     DateTime?   @default(now()) @db.Timestamptz()
   createdBy     String?
-  updatedAt     DateTime?   @updatedAt()
+  updatedAt     DateTime?   @updatedAt() @db.Timestamptz()
   updatedBy     String?
   gigs          Gig[]
 }
@@ -148,9 +148,9 @@ model Source {
   gigsDriver        Gig[]         @relation("sourceOfDriver")
   gigsMrsSanta      Gig[]         @relation("sourceOfMrsSanta")
   gigsSanta         Gig[]         @relation("sourceOfSanta")
-  createdAt         DateTime?     @default(now())
+  createdAt         DateTime?     @default(now()) @db.Timestamptz()
   createdBy         String?
-  updatedAt         DateTime?     @updatedAt()
+  updatedAt         DateTime?     @updatedAt() @db.Timestamptz()
   updatedBy         String?
 }
 

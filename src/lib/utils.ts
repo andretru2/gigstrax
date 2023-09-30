@@ -232,6 +232,29 @@ export function toUTC(dateTimeString: string): Date {
   return utc;
 }
 
+export function convertTimeToISOString(selectedTime: string) {
+  const [hours, minutes] = selectedTime.split(":");
+  const currentDate = new Date();
+  const utcOffset = currentDate.getTimezoneOffset(); // Get the UTC offset in minutes
+
+  const localTime = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    currentDate.getDate(),
+    Number(hours),
+    Number(minutes),
+    0,
+    0
+  );
+
+  // Adjust the local time by subtracting the UTC offset
+  localTime.setMinutes(localTime.getMinutes() - utcOffset);
+
+  const isoTime = localTime.toISOString();
+
+  return isoTime;
+}
+
 // Convert UTC date to local time
 // export function convertUTCtoLocalTime(utcTime: Date): Date {
 //   const utcDate = new Date(utcTime);
