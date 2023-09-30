@@ -57,6 +57,14 @@ export default function MultiEventCreate(props: Partial<GigProps>) {
     resolver: zodResolver(gigMultiEventSchema),
   });
 
+  const generateFieldNames = (prefix: string) => {
+    return Array.from({ length: SLOTS_PER_TAB }, (_, i) => `${prefix}${i}`);
+  };
+
+  const gigDateFieldNames = generateFieldNames("gigDate");
+  const timeStartFieldNames = generateFieldNames("timeStart");
+  const timeEndFieldNames = generateFieldNames("timeEnd");
+
   return (
     <Card className="h-full w-full p-4">
       <CardHeader className="px-0">
@@ -90,9 +98,7 @@ export default function MultiEventCreate(props: Partial<GigProps>) {
                     <div key={i} className="grid grid-cols-4 gap-3">
                       <FormField
                         control={form.control}
-                        name={`gigDate${i}`}
-                        // name={`gigDate1`}
-                        // name={`gigDate`}
+                        name={gigDateFieldNames[i]}
                         render={({ field }) => (
                           <FormItem className="col-span-2 flex flex-col">
                             {/* <FormLabel>Gig Date</FormLabel> */}
@@ -123,6 +129,9 @@ export default function MultiEventCreate(props: Partial<GigProps>) {
                                   mode="single"
                                   selected={field.value}
                                   initialFocus
+                                  onSelect={(selectedDate) => {
+                                    field.onChange(selectedDate);
+                                  }}
                                 />
                               </PopoverContent>
                             </Popover>
@@ -134,7 +143,8 @@ export default function MultiEventCreate(props: Partial<GigProps>) {
                       <FormField
                         control={form.control}
                         // name="timeStart"
-                        name={`timeStart-${i}`}
+                        // name={`timeStart-${i}`}
+                        name={timeStartFieldNames[i]}
                         render={({ field }) => (
                           <FormItem className="flex flex-col">
                             {/* <FormLabel>Start Time</FormLabel> */}
@@ -150,7 +160,8 @@ export default function MultiEventCreate(props: Partial<GigProps>) {
                       />
                       <FormField
                         control={form.control}
-                        name="timeEnd"
+                        // name="timeEnd"
+                        name={timeEndFieldNames[i]}
                         render={({ field }) => (
                           <FormItem className="flex flex-col">
                             <FormControl>

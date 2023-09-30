@@ -87,7 +87,7 @@ export const gigSchema = z
 // type gigMultiEventSchema = z.infer<typeof gigMultiEventSchema>;
 
 export const gigMultiEventSchema = z.object({
-  gigDate1: z.date().refine(
+  gigDate: z.date().refine(
     (date) => {
       if (!isValidDate(date)) {
         return false;
