@@ -72,7 +72,7 @@ export default async function Page({ params }: Props) {
   const formattedDate =
     gig?.gigDate && formatDate(gig?.gigDate.getTime(), "friendly");
 
-  const startTime = gig.timeStart && formatTime(fromUTC(gig.timeStart));
+  const startTime = gig.timeStart && gig.timeStart.toLocaleTimeString("en-US");
   const endTime = gig?.timeEnd && formatTime(gig?.timeEnd);
 
   const clientName = client?.client ?? "";
