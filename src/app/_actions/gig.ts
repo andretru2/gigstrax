@@ -104,10 +104,10 @@ export async function getGig(id: string) {
   //   data.gigDate = localGigDate;
   // }
 
-  // if (data?.timeStart) {
-  //   const newTime = fromUTC(data?.timeStart);
-  //   data.timeStart = newTime;
-  // }
+  if (data?.timeStart) {
+    const newTime = fromUTC(data?.timeStart);
+    data.timeStart = newTime;
+  }
 
   // if (data?.timeEnd) {
   //   const newTime = fromUTC(data?.timeEnd);
