@@ -217,12 +217,24 @@ export function formatTime(time: Date) {
 //   return diffHrs;
 // }
 
-export function fromUTC(dateTimeString: string | Date): Date {
-  const utc = new Date(dateTimeString);
-  const offset = utc.getTimezoneOffset();
-  const local = new Date(utc.getTime() + offset * 60000);
+// export function fromUTC(dateTimeString: string | Date): Date {
+//   const utc = new Date(dateTimeString);
+//   const offset = utc.getTimezoneOffset();
+//   const local = new Date(utc.getTime() + offset * 60000);
 
-  return local;
+//   return local;
+// }
+
+export function fromUTC(utcTimestamp: Date): string {
+  const options: Intl.DateTimeFormatOptions = {
+    timeZone: "UTC",
+    hour12: true,
+    hour: "numeric",
+    minute: "2-digit",
+  };
+
+  const utcDate = new Date(utcTimestamp);
+  return utcDate.toLocaleString("en-US", options);
 }
 export function toUTC(dateTimeString: string): Date {
   const local = new Date(dateTimeString);
