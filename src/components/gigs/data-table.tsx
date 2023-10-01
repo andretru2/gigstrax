@@ -16,6 +16,7 @@ import {
   calculateTimeDifference,
   toTitleCase,
   formatTime,
+  fromUTC,
 } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -112,7 +113,7 @@ export default function Datatable({ data, pageCount }: Props) {
         cell: ({ row }) => {
           return (
             <div className="w-24 text-center">
-              {row.original.timeStart ? formatTime(row.original.timeStart) : ""}
+              {row.original.timeStart ? fromUTC(row.original.timeStart) : ""}
             </div>
           );
         },
@@ -124,12 +125,7 @@ export default function Datatable({ data, pageCount }: Props) {
         cell: ({ row }) => {
           return (
             <div className="w-24 text-center">
-              {row.original.timeEnd
-                ? row.original.timeEnd.toLocaleTimeString("en-US", {
-                    hour: "numeric",
-                    minute: "2-digit",
-                  })
-                : ""}
+              {row.original.timeEnd ? fromUTC(row.original.timeEnd) : ""}
             </div>
           );
         },

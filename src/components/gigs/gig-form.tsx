@@ -174,13 +174,26 @@ export default function GigForm({
   const balance =
     price && amountPaid ? Number(price) - Number(amountPaid) : null;
 
+  console.log(
+    "time",
+    timeStart,
+    timeStart.toLocaleString(),
+    fromUTC(timeStart),
+    fromUTC(timeEnd),
+    fromUTC(gigDate),
+    timeStart.toISOString().slice(11, 16)
+  );
+
   const form = useForm<z.infer<typeof gigSchema>>({
     resolver: zodResolver(gigSchema),
     mode: "onBlur",
     defaultValues: {
       gigDate: gigDate ? gigDate : undefined,
-      timeStart: timeStart ? timeStart?.toTimeString().slice(0, 5) : undefined,
-      timeEnd: timeEnd ? timeEnd?.toTimeString().slice(0, 5) : undefined,
+      // timeStart: timeStart ? timeStart?.toTimeString().slice(0, 5) : undefined,
+      timeStart: timeStart ? timeStart.toISOString().slice(11, 16) : undefined,
+      timeEnd: timeEnd ? timeEnd.toISOString().slice(11, 16) : undefined,
+      // timeEnd: timeEnd ? timeEnd?.toTimeString().slice(0, 5) : undefined,
+      // timeEnd: timeEnd ? fromUTC(timeEnd) : undefined,
       venueAddressCity: venueAddressCity ? venueAddressCity : undefined,
       venueAddressState: venueAddressState ? venueAddressState : undefined,
       venueAddressStreet: venueAddressStreet ? venueAddressStreet : undefined,
@@ -269,6 +282,7 @@ export default function GigForm({
                         mode="single"
                         selected={field.value}
                         onSelect={(selectedDate) => {
+                          // console.log(selectedDate, selectedDate?.setHours(0));
                           field.onChange(selectedDate);
 
                           startTransition(() => {

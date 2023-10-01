@@ -61,6 +61,22 @@ export default async function Page({ params }: Props) {
 
   const gig = await getGig(gigId);
 
+  const utcTimestamp = gig?.timeStart; // UTC timestamp
+  console.log(fromUTC(utcTimestamp));
+  // if (utcTimestamp) {
+  //   const options: Intl.DateTimeFormatOptions = {
+  //     timeZone: "UTC",
+  //     hour12: true,
+  //     hour: "numeric",
+  //     minute: "2-digit",
+  //   };
+
+  //   const utcDate = new Date(utcTimestamp);
+  //   const localTime = utcDate.toLocaleString("en-US", options);
+
+  //   console.log(localTime);
+  // }
+
   // if (false) {
   //   const { data } = await getGigs({
   //     whereClause: { id: gigId },
