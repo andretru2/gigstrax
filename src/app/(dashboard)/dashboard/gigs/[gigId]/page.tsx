@@ -76,7 +76,7 @@ export default async function Page({ params }: Props) {
 
   console.log(
     gig.clientId,
-    formatTime(gig.timeStart),
+    // formatTime(gig?.timeStart),
     gig.timeEnd,
     gig.gigDate
   );
@@ -113,7 +113,9 @@ export default async function Page({ params }: Props) {
 
   let timeFormat;
   if (gig.timeStart && gig.timeEnd) {
-    timeFormat = `${formatTime(gig.timeStart)} - ${formatTime(gig.timeEnd)}`;
+    timeFormat = `${formatTime(
+      fromUTC(gig.timeStart)
+    )} - ${gig.timeEnd.toLocaleTimeString("en-us")}`;
     if (durationHours) {
       timeFormat += ` (${durationHours} hours)`;
     }
