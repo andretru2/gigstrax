@@ -323,33 +323,29 @@ export default function GigForm({
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         const selectedTime = e.target.value;
 
-                        if (selectedTime) {
+                        if (selectedTime && gig.gigDate) {
                           const [hours, minutes] = selectedTime.split(":");
-                          const currentDate = new Date();
-                          const utcOffset = currentDate.getTimezoneOffset(); // Get the UTC offset in minutes
+                          const gigDateObj = new Date(gig.gigDate);
 
-                          const localTime = new Date(
-                            currentDate.getFullYear(),
-                            currentDate.getMonth(),
-                            currentDate.getDate(),
-                            Number(hours),
-                            Number(minutes),
-                            0,
-                            0
+                          const offsetHours =
+                            new Date().getTimezoneOffset() / 60;
+
+                          const utcHours = Number(hours) - offsetHours;
+
+                          // Create a new Date object by combining gigDate and selectedTime
+                          const updatedTimeStart = new Date(
+                            gigDateObj.getFullYear(),
+                            gigDateObj.getMonth(),
+                            gigDateObj.getDate(),
+                            utcHours,
+                            Number(minutes)
                           );
-
-                          // Adjust the local time by subtracting the UTC offset
-                          localTime.setMinutes(
-                            localTime.getMinutes() - utcOffset
-                          );
-
-                          const isoTime = localTime.toISOString();
 
                           startTransition(() => {
                             try {
                               void update({
                                 id: id,
-                                timeStart: isoTime,
+                                timeStart: updatedTimeStart.toISOString(),
                               });
                             } catch (err) {
                               catchError(err);
@@ -377,33 +373,37 @@ export default function GigForm({
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         const selectedTime = e.target.value;
 
-                        if (selectedTime) {
+                        console.log("timeend orig", selectedTime);
+
+                        if (selectedTime && gig.gigDate) {
                           const [hours, minutes] = selectedTime.split(":");
-                          const currentDate = new Date();
-                          const utcOffset = currentDate.getTimezoneOffset(); // Get the UTC offset in minutes
+                          const gigDateObj = new Date(gig.gigDate);
 
-                          const localTime = new Date(
-                            currentDate.getFullYear(),
-                            currentDate.getMonth(),
-                            currentDate.getDate(),
-                            Number(hours),
-                            Number(minutes),
-                            0,
-                            0
+                          const offsetHours =
+                            new Date().getTimezoneOffset() / 60;
+
+                          const utcHours = Number(hours) - offsetHours;
+
+                          // Create a new Date object by combining gigDate and selectedTime
+                          const updatedTimeEnd = new Date(
+                            gigDateObj.getFullYear(),
+                            gigDateObj.getMonth(),
+                            gigDateObj.getDate(),
+                            utcHours,
+                            Number(minutes)
                           );
 
-                          // Adjust the local time by subtracting the UTC offset
-                          localTime.setMinutes(
-                            localTime.getMinutes() - utcOffset
+                          console.log(
+                            "timeend",
+                            updatedTimeEnd,
+                            updatedTimeEnd.toISOString()
                           );
-
-                          const isoTime = localTime.toISOString();
 
                           startTransition(() => {
                             try {
                               void update({
                                 id: id,
-                                timeEnd: isoTime,
+                                timeEnd: updatedTimeEnd.toISOString(),
                               });
                             } catch (err) {
                               catchError(err);
