@@ -59,27 +59,30 @@ export default async function Page({ params }: Props) {
   const gigId = params.gigId;
   if (!gigId) return <h1>Please select a gig. </h1>;
 
-  const { data } = await getGigs({
-    whereClause: { id: gigId },
-    select: { clientId: true, timeStart: true, timeEnd: true, gigDate: true },
-  });
+  const gig = await getGig(gigId);
 
-  console.log(data);
-  if (!data) return notFound();
+  // if (false) {
+  //   const { data } = await getGigs({
+  //     whereClause: { id: gigId },
+  //     select: { clientId: true, timeStart: true, timeEnd: true, gigDate: true },
+  //   });
 
-  console.log(data);
+  // console.log(data);
+  // if (!data) return notFound();
 
-  // const { clientId, timeStart, timeEnd, gigDate } = data;
-  const gig = data[0];
+  // console.log(data);
+
+  // // const { clientId, timeStart, timeEnd, gigDate } = data;
+  // const gig = data[0];
 
   if (!gig) return;
 
-  console.log(
-    gig.clientId,
-    // formatTime(gig?.timeStart),
-    gig.timeEnd,
-    gig.gigDate
-  );
+  // console.log(
+  //   gig.clientId,
+  //   // formatTime(gig?.timeStart),
+  //   gig.timeEnd,
+  //   gig.gigDate
+  // );
 
   const [client, santas, mrsSantas] = await Promise.all([
     gig.clientId ? getClient(gig.clientId) : undefined,
@@ -87,14 +90,14 @@ export default async function Page({ params }: Props) {
     getMrsSantas(),
   ]);
 
-  client && useGigStore.setState({ client });
+  // client && useGigStore.setState({ client });
 
-  const formattedDate = gig.gigDate && formatDate(gig.gigDate, "friendly");
+  // const formattedDate = gig.gigDate && formatDate(gig.gigDate, "friendly");
 
   // const startTime = timeStart && timeStart.toLocaleTimeString("en-US");
   // const endTime = gig?.timeEnd && formatTime(gig?.timeEnd);
 
-  const clientName = client?.client ?? "";
+  // const clientName = client?.client ?? "";
   // const addressFull =
   //   gig?.venueAddressName &&
   //   formatAddress({
@@ -106,27 +109,28 @@ export default async function Page({ params }: Props) {
   //     zip: gig?.venueAddressZip ?? "",
   //   });
 
-  const durationHours =
-    gig.timeStart && gig.timeEnd
-      ? calculateTimeDifference(gig.timeStart, gig.timeEnd)
-      : null;
+  //   const durationHours =
+  //     gig.timeStart && gig.timeEnd
+  //       ? calculateTimeDifference(gig.timeStart, gig.timeEnd)
+  //       : null;
 
-  let timeFormat;
-  if (gig.timeStart && gig.timeEnd) {
-    timeFormat = `${formatTime(
-      fromUTC(gig.timeStart)
-    )} - ${gig.timeEnd.toLocaleTimeString("en-us")}`;
-    if (durationHours) {
-      timeFormat += ` (${durationHours} hours)`;
-    }
-  } else {
-    timeFormat = "incomplete";
-  }
+  //   let timeFormat;
+  //   if (gig.timeStart && gig.timeEnd) {
+  //     timeFormat = `${formatTime(
+  //       fromUTC(gig.timeStart)
+  //     )} - ${gig.timeEnd.toLocaleTimeString("en-us")}`;
+  //     if (durationHours) {
+  //       timeFormat += ` (${durationHours} hours)`;
+  //     }
+  //   } else {
+  //     timeFormat = "incomplete";
+  //   }
+  // }
 
   return (
     <Card className="border-0 bg-background [&>*]:px-0 ">
       <CardHeader className="space-y-1">
-        <Card className="flex  flex-col  border-b-2   border-b-primary p-4 shadow-md ">
+        {/* <Card className="flex  flex-col  border-b-2   border-b-primary p-4 shadow-md ">
           <CardHeader className="px-0">
             <CardTitle>Summary</CardTitle>
           </CardHeader>
@@ -152,14 +156,14 @@ export default async function Page({ params }: Props) {
               </div>
 
               <div className="flex flex-row items-center gap-2">
-                {/* <SectionHeaderInfo
+                <SectionHeaderInfo
                   icon="map"
                   data={addressFull ? addressFull : "incomplete"}
-                /> */}
+                />
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </CardHeader>
 
       <CardContent className="flex flex-col gap-4">
@@ -181,7 +185,7 @@ export default async function Page({ params }: Props) {
             </>
           )}
         </GigForm>
-        <MultiEventCreate {...gig} />
+        {/* <MultiEventCreate {...gig} /> */}
       </CardContent>
     </Card>
   );
