@@ -225,17 +225,56 @@ export function formatTime(time: Date) {
 //   return local;
 // }
 
-export function fromUTC(utcTimestamp: Date): string {
-  const options: Intl.DateTimeFormatOptions = {
-    timeZone: "UTC",
-    hour12: true,
-    hour: "numeric",
-    minute: "2-digit",
-  };
+export function getTimeFromDate(dateTime: Date, friendly?: boolean): string {
+  const hours = dateTime.getHours();
+  const minutes = dateTime.getMinutes();
 
-  const utcDate = new Date(utcTimestamp);
-  return utcDate.toLocaleString("en-US", options);
+  if (friendly) {
+    const ampm = hours >= 12 ? "pm" : "am";
+    const formattedHours = hours % 12 || 12;
+    return `${formattedHours}:${minutes.toString().padStart(2, "0")}${ampm}`;
+  } else {
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}`;
+  }
 }
+
+export function fromUTC(dateTimeString: string | Date): Date {
+  const utcDate = new Date(dateTimeString);
+  const localDate = new Date(
+    utcDate.getTime() - utcDate.getTimezoneOffset() * 60000
+  );
+
+  // console.log("from utc local", localDate);
+  return localDate;
+
+  // const offset = utcDate.getTimezoneOffset();
+
+  // utcDate.setHours(utcDate.getHours() + offset);
+
+  // const local = utcDate.toLocaleString("en-US", {
+  //   timeZone: "America/New_York",
+  // });
+
+  // return local
+
+  // const local = new Date(utc.getTime() + offset * 60000);
+
+  // return local;
+}
+
+// export function fromUTC(utcTimestamp: Date): string {
+//   const options: Intl.DateTimeFormatOptions = {
+//     timeZone: "UTC",
+//     hour12: true,
+//     hour: "numeric",
+//     minute: "2-digit",
+//   };
+
+//   const utcDate = new Date(utcTimestamp);
+//   return utcDate.toLocaleString("en-US", options);
+// }
 export function toUTC(dateTimeString: string): Date {
   const local = new Date(dateTimeString);
   const offset = local.getTimezoneOffset();

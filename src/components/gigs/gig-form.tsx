@@ -18,6 +18,7 @@ import {
   formatPrice,
   calculateTimeDifference,
   formatPhone,
+  getTimeFromDate,
 } from "@/lib/utils";
 import { type FocusEvent, type ReactNode, useMemo, useTransition } from "react";
 import { copyFromClient, update } from "@/app/_actions/gig";
@@ -174,26 +175,13 @@ export default function GigForm({
   const balance =
     price && amountPaid ? Number(price) - Number(amountPaid) : null;
 
-  console.log(
-    "time",
-    timeStart,
-    timeStart.toLocaleString(),
-    fromUTC(timeStart),
-    fromUTC(timeEnd),
-    fromUTC(gigDate),
-    timeStart.toISOString().slice(11, 16)
-  );
-
   const form = useForm<z.infer<typeof gigSchema>>({
     resolver: zodResolver(gigSchema),
     mode: "onBlur",
     defaultValues: {
       gigDate: gigDate ? gigDate : undefined,
-      // timeStart: timeStart ? timeStart?.toTimeString().slice(0, 5) : undefined,
-      timeStart: timeStart ? timeStart.toISOString().slice(11, 16) : undefined,
-      timeEnd: timeEnd ? timeEnd.toISOString().slice(11, 16) : undefined,
-      // timeEnd: timeEnd ? timeEnd?.toTimeString().slice(0, 5) : undefined,
-      // timeEnd: timeEnd ? fromUTC(timeEnd) : undefined,
+      timeStart: timeStart ? getTimeFromDate(timeStart) : undefined,
+      timeEnd: timeEnd ? getTimeFromDate(timeEnd) : undefined,
       venueAddressCity: venueAddressCity ? venueAddressCity : undefined,
       venueAddressState: venueAddressState ? venueAddressState : undefined,
       venueAddressStreet: venueAddressStreet ? venueAddressStreet : undefined,
@@ -219,24 +207,6 @@ export default function GigForm({
       },
     },
   });
-
-  // console.log(client);
-
-  // async function handleTimeChange(time: Date) {
-  //   const dateTime = gig.gigDate && new Date(gig.gigDate.getTime());
-  //   time &&
-  //     dateTime &&
-  //     dateTime.setHours(time.getHours(), time.getMinutes(), time.getSeconds());
-
-  //   // dateTime && ;
-  //   console.log("time", time, dateTime, dateTime.toUTCString());
-  //   const data = await update({
-  //     id: gig.id,
-  //     timeStart: time,
-  //   });
-
-  //   console.log("handle change", data);
-  // }
 
   return (
     <Form {...form}>
@@ -327,17 +297,11 @@ export default function GigForm({
                           const [hours, minutes] = selectedTime.split(":");
                           const gigDateObj = new Date(gig.gigDate);
 
-                          const offsetHours =
-                            new Date().getTimezoneOffset() / 60;
-
-                          const utcHours = Number(hours) - offsetHours;
-
-                          // Create a new Date object by combining gigDate and selectedTime
                           const updatedTimeStart = new Date(
                             gigDateObj.getFullYear(),
                             gigDateObj.getMonth(),
                             gigDateObj.getDate(),
-                            utcHours,
+                            Number(hours),
                             Number(minutes)
                           );
 
@@ -373,30 +337,17 @@ export default function GigForm({
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         const selectedTime = e.target.value;
 
-                        console.log("timeend orig", selectedTime);
-
                         if (selectedTime && gig.gigDate) {
                           const [hours, minutes] = selectedTime.split(":");
                           const gigDateObj = new Date(gig.gigDate);
-
-                          const offsetHours =
-                            new Date().getTimezoneOffset() / 60;
-
-                          const utcHours = Number(hours) - offsetHours;
 
                           // Create a new Date object by combining gigDate and selectedTime
                           const updatedTimeEnd = new Date(
                             gigDateObj.getFullYear(),
                             gigDateObj.getMonth(),
                             gigDateObj.getDate(),
-                            utcHours,
+                            Number(hours),
                             Number(minutes)
-                          );
-
-                          console.log(
-                            "timeend",
-                            updatedTimeEnd,
-                            updatedTimeEnd.toISOString()
                           );
 
                           startTransition(() => {

@@ -17,6 +17,7 @@ import {
   fromUTC,
   toUTC,
   calculateTimeDifference,
+  getTimeFromDate,
 } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
@@ -61,44 +62,7 @@ export default async function Page({ params }: Props) {
 
   const gig = await getGig(gigId);
 
-  const utcTimestamp = gig?.timeStart; // UTC timestamp
-  console.log(fromUTC(utcTimestamp));
-  // if (utcTimestamp) {
-  //   const options: Intl.DateTimeFormatOptions = {
-  //     timeZone: "UTC",
-  //     hour12: true,
-  //     hour: "numeric",
-  //     minute: "2-digit",
-  //   };
-
-  //   const utcDate = new Date(utcTimestamp);
-  //   const localTime = utcDate.toLocaleString("en-US", options);
-
-  //   console.log(localTime);
-  // }
-
-  // if (false) {
-  //   const { data } = await getGigs({
-  //     whereClause: { id: gigId },
-  //     select: { clientId: true, timeStart: true, timeEnd: true, gigDate: true },
-  //   });
-
-  // console.log(data);
-  // if (!data) return notFound();
-
-  // console.log(data);
-
-  // // const { clientId, timeStart, timeEnd, gigDate } = data;
-  // const gig = data[0];
-
   if (!gig) return;
-
-  // console.log(
-  //   gig.clientId,
-  //   // formatTime(gig?.timeStart),
-  //   gig.timeEnd,
-  //   gig.gigDate
-  // );
 
   const [client, santas, mrsSantas] = await Promise.all([
     gig.clientId ? getClient(gig.clientId) : undefined,
@@ -106,47 +70,44 @@ export default async function Page({ params }: Props) {
     getMrsSantas(),
   ]);
 
-  // client && useGigStore.setState({ client });
+  client && useGigStore.setState({ client });
 
-  // const formattedDate = gig.gigDate && formatDate(gig.gigDate, "friendly");
+  const formattedDate = gig.gigDate && formatDate(gig.gigDate, "friendly");
 
-  // const startTime = timeStart && timeStart.toLocaleTimeString("en-US");
-  // const endTime = gig?.timeEnd && formatTime(gig?.timeEnd);
+  const startTime = gig?.timeStart && getTimeFromDate(gig?.timeStart, true);
+  const endTime = gig?.timeEnd && getTimeFromDate(gig?.timeEnd, true);
 
-  // const clientName = client?.client ?? "";
-  // const addressFull =
-  //   gig?.venueAddressName &&
-  //   formatAddress({
-  //     name: gig?.venueAddressName,
-  //     addressLine1: gig?.venueAddressStreet ?? "",
-  //     addressLine2: gig?.venueAddressStreet2 ?? "",
-  //     city: gig?.venueAddressCity ?? "",
-  //     state: gig?.venueAddressState ?? "",
-  //     zip: gig?.venueAddressZip ?? "",
-  //   });
+  const clientName = client?.client ?? "";
+  const addressFull =
+    gig?.venueAddressName &&
+    formatAddress({
+      name: gig?.venueAddressName,
+      addressLine1: gig?.venueAddressStreet ?? "",
+      addressLine2: gig?.venueAddressStreet2 ?? "",
+      city: gig?.venueAddressCity ?? "",
+      state: gig?.venueAddressState ?? "",
+      zip: gig?.venueAddressZip ?? "",
+    });
 
-  //   const durationHours =
-  //     gig.timeStart && gig.timeEnd
-  //       ? calculateTimeDifference(gig.timeStart, gig.timeEnd)
-  //       : null;
+  const durationHours =
+    gig.timeStart && gig.timeEnd
+      ? calculateTimeDifference(gig.timeStart, gig.timeEnd)
+      : null;
 
-  //   let timeFormat;
-  //   if (gig.timeStart && gig.timeEnd) {
-  //     timeFormat = `${formatTime(
-  //       fromUTC(gig.timeStart)
-  //     )} - ${gig.timeEnd.toLocaleTimeString("en-us")}`;
-  //     if (durationHours) {
-  //       timeFormat += ` (${durationHours} hours)`;
-  //     }
-  //   } else {
-  //     timeFormat = "incomplete";
-  //   }
-  // }
+  let timeFormat;
+  if (startTime && endTime) {
+    timeFormat = `${startTime} - ${endTime}`;
+    if (durationHours) {
+      timeFormat += ` (${durationHours} hours)`;
+    }
+  } else {
+    timeFormat = "incomplete";
+  }
 
   return (
     <Card className="border-0 bg-background [&>*]:px-0 ">
       <CardHeader className="space-y-1">
-        {/* <Card className="flex  flex-col  border-b-2   border-b-primary p-4 shadow-md ">
+        <Card className="flex  flex-col  border-b-2   border-b-primary p-4 shadow-md ">
           <CardHeader className="px-0">
             <CardTitle>Summary</CardTitle>
           </CardHeader>
@@ -179,7 +140,7 @@ export default async function Page({ params }: Props) {
               </div>
             </div>
           </CardContent>
-        </Card> */}
+        </Card>
       </CardHeader>
 
       <CardContent className="flex flex-col gap-4">
