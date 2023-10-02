@@ -99,6 +99,18 @@ export async function getGig(id: string) {
     },
   });
 
+  // console.log(
+  //   "time start from utcx",
+  //   data?.timeStart,
+  //   data?.timeStart?.toLocaleString(),
+  //   fromUTC(data?.timeStart),
+  //   fromUTC(data?.timeEnd),
+  //   fromUTC(data?.gigDate),
+  //   data?.timeStart?.toISOString().slice(11, 16),
+  //   fromUTC(data?.timeStart?.toTimeString().slice(0, 5)),
+  //   fromUTC(data?.timeStart?.toTimeString().slice(11, 16))
+  // );
+
   // if (data?.gigDate) {
   //   const localGigDate = fromUTC(data.gigDate);
   //   data.gigDate = localGigDate;

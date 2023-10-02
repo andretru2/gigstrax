@@ -17,6 +17,7 @@ import {
   toTitleCase,
   formatTime,
   fromUTC,
+  getTimeFromDate,
 } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -113,7 +114,9 @@ export default function Datatable({ data, pageCount }: Props) {
         cell: ({ row }) => {
           return (
             <div className="w-24 text-center">
-              {row.original.timeStart ? fromUTC(row.original.timeStart) : ""}
+              {row.original.timeStart
+                ? getTimeFromDate(row.original.timeStart, true)
+                : ""}
             </div>
           );
         },
@@ -125,7 +128,9 @@ export default function Datatable({ data, pageCount }: Props) {
         cell: ({ row }) => {
           return (
             <div className="w-24 text-center">
-              {row.original.timeEnd ? fromUTC(row.original.timeEnd) : ""}
+              {row.original.timeEnd
+                ? getTimeFromDate(row.original.timeEnd, true)
+                : ""}
             </div>
           );
         },
