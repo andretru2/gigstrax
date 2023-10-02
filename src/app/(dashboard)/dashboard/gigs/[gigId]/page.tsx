@@ -91,18 +91,18 @@ export default async function Page({ params }: Props) {
       ? calculateTimeDifference(gig.timeStart, gig.timeEnd)
       : null;
 
-  let timeFormat;
-  if (gig?.timeStart && gig?.timeEnd) {
-    timeFormat = `${getTimeFromDate(gig?.timeStart, true)} - ${getTimeFromDate(
-      gig?.timeEnd,
-      true
-    )}`;
-    if (durationHours) {
-      timeFormat += ` (${durationHours} hours)`;
-    }
-  } else {
-    timeFormat = "incomplete";
-  }
+  // let timeFormat;
+  // if (gig?.timeStart && gig?.timeEnd) {
+  //   timeFormat = `${getTimeFromDate(gig?.timeStart, true)} - ${getTimeFromDate(
+  //     gig?.timeEnd,
+  //     true
+  //   )}`;
+  //   if (durationHours) {
+  //     timeFormat += ` (${durationHours} hours)`;
+  //   }
+  // } else {
+  //   timeFormat = "incomplete";
+  // }
 
   return (
     <Card className="border-0 bg-background [&>*]:px-0 ">
@@ -120,9 +120,9 @@ export default async function Page({ params }: Props) {
                 />
               </div>
 
-              <div className="flex flex-row items-center gap-2">
+              {/* <div className="flex flex-row items-center gap-2">
                 <SectionHeaderInfo icon="clock" data={timeFormat} />
-              </div>
+              </div> */}
             </div>
             <div className="flex flex-col gap-2">
               <div className="flex flex-row items-center gap-2">
