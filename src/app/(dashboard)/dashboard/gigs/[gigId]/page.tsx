@@ -74,9 +74,6 @@ export default async function Page({ params }: Props) {
 
   const formattedDate = gig.gigDate && formatDate(gig.gigDate, "friendly");
 
-  const startTime = gig?.timeStart && getTimeFromDate(gig?.timeStart, true);
-  const endTime = gig?.timeEnd && getTimeFromDate(gig?.timeEnd, true);
-
   const clientName = client?.client ?? "";
   const addressFull =
     gig?.venueAddressName &&
@@ -95,8 +92,11 @@ export default async function Page({ params }: Props) {
       : null;
 
   let timeFormat;
-  if (startTime && endTime) {
-    timeFormat = `${startTime} - ${endTime}`;
+  if (gig?.timeStart && gig?.timeEnd) {
+    timeFormat = `${getTimeFromDate(gig?.timeStart, true)} - ${getTimeFromDate(
+      gig?.timeEnd,
+      true
+    )}`;
     if (durationHours) {
       timeFormat += ` (${durationHours} hours)`;
     }
