@@ -17,7 +17,7 @@ export default function Header({
   return (
     <div className="flex items-center justify-between  ">
       <div className="grid gap-1">
-        <h1 className="font-heading text-3xl font-bold md:text-4xl">
+        <h1 className="font-heading text-xl font-bold md:text-2xl">
           {heading}
         </h1>
         {text && (
