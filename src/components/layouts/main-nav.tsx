@@ -26,7 +26,7 @@ export function MainNav({ items }: MainNavProps) {
     <div className="hidden gap-6  text-background lg:flex">
       <Link
         aria-label="Home"
-        href="/dashboard/"
+        href="/dashboard/gigs"
         className="hidden items-center space-x-2 bg-gradient-to-r from-background/90 to-background bg-clip-text font-bold text-transparent lg:flex"
       >
         <Icons.logo className="h-8 w-8  " />

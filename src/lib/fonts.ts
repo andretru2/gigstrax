@@ -1,3 +1,4 @@
+// import { Lato as FontSans, Oswald as FontHeading } from "next/font/google";
 import { Lato as FontSans, Oswald as FontHeading } from "next/font/google";
 
 export const fontSans = FontSans({

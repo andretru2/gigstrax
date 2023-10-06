@@ -159,25 +159,25 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Santa"
-            className="w-42"
+            className="[&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
-          return (
-            <span className="text-center">{row.original.santa?.role}</span>
-          );
+          return <div className="text-left">{row.original.santa?.role}</div>;
         },
       },
       {
         accessorKey: "mrsSantaId",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Mrs. Santa" />
+          <DataTableColumnHeader
+            column={column}
+            title="Mrs. Santa"
+            className="[&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+          />
         ),
         cell: ({ row }) => {
           return (
-            <span className="text-center">
-              {row.original?.mrsSanta?.nameFirst}
-            </span>
+            <div className="text-left">{row.original?.mrsSanta?.nameFirst}</div>
           );
         },
       },

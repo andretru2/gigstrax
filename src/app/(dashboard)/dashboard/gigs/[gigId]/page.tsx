@@ -111,7 +111,7 @@ export default async function Page({ params }: Props) {
           <CardHeader className="px-0">
             <CardTitle>Summary</CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-row gap-12 px-0 text-lg font-bold">
+          <CardContent className="flex flex-row gap-12 px-0 text-base ">
             <div className="flex flex-col gap-2">
               <div className="flex flex-row items-center gap-2 ">
                 <SectionHeaderInfo
