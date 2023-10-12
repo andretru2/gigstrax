@@ -21,13 +21,9 @@ export default function SignIn() {
         size="lg"
         isLoading={isPending}
         onClick={() => {
-          // const appUrl =
-          // process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-
-          // console.log(appUrl);
           void signIn("google", {
-            // callbackUrl: `${appUrl}/dashboard`,
-            callbackUrl: "https://gigstrax.vercel.app/dashboard/gigs",
+            // callbackUrl: "https://gigstrax.vercel.app/dashboard/gigs",
+            callbackUrl: "http://localhost:3000/dashboard/gigs",
           });
         }}
         className=" align-center flex w-full flex-row items-center gap-1"

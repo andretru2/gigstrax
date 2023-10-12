@@ -1,0 +1,10 @@
+{
+  "typescript.tsdk": "node_modules/.pnpm/typescript@5.1.0-dev.20230323/node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "liveServer.settings.https": {
+    "enable": true, //set it true to enable the feature.
+    "cert": "/Users/atrujillo/bhf-nextjs/certficates/app.crt", //full path of the certificate
+    "key": "/Users/atrujillo/bhf-nextjs/certficates/app.key", //full path of the private key
+    "passphrase": "12345"
+  }
+}

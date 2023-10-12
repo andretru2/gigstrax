@@ -1,6 +1,5 @@
 import { type Metadata } from "next";
 import SignIn from "@/components/auth";
-import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Real Beard Santas Login ",
