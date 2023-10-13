@@ -45,11 +45,15 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Client"
-            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className=" w-72 [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
-          return <div className="px-2 text-left">{row.original.client}</div>;
+          return (
+            <div className="w-72 truncate px-2 text-left">
+              {row.original.client}
+            </div>
+          );
         },
       },
       {
@@ -58,21 +62,29 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Contact"
-            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className="w-52 [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
-          return <div className="px-2 text-left">{row.original.contact}</div>;
+          return (
+            <div className="w-52 truncate px-2 text-left">
+              {row.original.contact}
+            </div>
+          );
         },
       },
       {
         accessorKey: "phoneCell",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Cell Phone" />
+          <DataTableColumnHeader
+            column={column}
+            title="Cell Phone"
+            className="w-52"
+          />
         ),
         cell: ({ row }) => {
           return (
-            <div className="">
+            <div className="w-52 truncate">
               {row.original.phoneCell && formatPhone(row.original.phoneCell)}
             </div>
           );
@@ -88,7 +100,9 @@ export default function Datatable({ data, pageCount }: Props) {
           />
         ),
         cell: ({ row }) => {
-          return <div className="px-2 text-left">{row.original.email}</div>;
+          return (
+            <div className="truncate px-2 text-left">{row.original.email}</div>
+          );
         },
       },
 
@@ -103,7 +117,7 @@ export default function Datatable({ data, pageCount }: Props) {
         ),
         cell: ({ row }) => {
           return (
-            <div className="px-2 text-left">
+            <div className="truncate px-2 text-left">
               {formatAddress({
                 addressLine1: row.original.addressStreet ?? "",
                 city: row.original.addressCity ?? "",
