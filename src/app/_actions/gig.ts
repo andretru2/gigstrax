@@ -338,89 +338,89 @@ export async function copyFromClient(id: string) {
   });
 }
 
-export async function multiEventCreate({
-  idCopyFrom,
-  formData,
-}: {
-  idCopyFrom: string;
-  formData: FormData<GigProps>[];
-}) {
-  if (!formData || !idCopyFrom) return null;
+// export async function multiEventCreate({
+//   idCopyFrom,
+//   formData,
+// }: {
+//   idCopyFrom: string;
+//   formData: FormData<GigProps>[];
+// }) {
+//   if (!formData || !idCopyFrom) return null;
 
-  const gig = await prisma.gig.findFirst({
-    where: { id: idCopyFrom },
-  });
+//   const gig = await prisma.gig.findFirst({
+//     where: { id: idCopyFrom },
+//   });
 
-  if (!gig) {
-    throw new Error("Gig not found.");
-  }
+//   if (!gig) {
+//     throw new Error("Gig not found.");
+//   }
 
-  const {
-    gigDate,
-    timeStart,
-    timeEnd,
-    venueAddressCity,
-    venueAddressName,
-    venueAddressState,
-    venueAddressStreet,
-    venueAddressStreet2,
-    venueAddressZip,
-    venueType,
-    contactName,
-    contactEmail,
-    contactPhoneCell,
-    contactPhoneLand,
-    notesVenue,
-    clientId,
-    santaId,
-    mrsSantaId,
-    price,
-    amountPaid,
-    isSoftHold,
-    driverId,
-    notesGig,
-    travelType,
-  } = gig;
+//   const {
+//     gigDate,
+//     timeStart,
+//     timeEnd,
+//     venueAddressCity,
+//     venueAddressName,
+//     venueAddressState,
+//     venueAddressStreet,
+//     venueAddressStreet2,
+//     venueAddressZip,
+//     venueType,
+//     contactName,
+//     contactEmail,
+//     contactPhoneCell,
+//     contactPhoneLand,
+//     notesVenue,
+//     clientId,
+//     santaId,
+//     mrsSantaId,
+//     price,
+//     amountPaid,
+//     isSoftHold,
+//     driverId,
+//     notesGig,
+//     travelType,
+//   } = gig;
 
-  // Create an array to store new gig objects
-  const newGigs = [];
+//   // Create an array to store new gig objects
+//   const newGigs = [];
 
-  // Iterate through the formData array
-  formData.forEach((form) => {
-    const newGig = {
-      timeStart: form.timeStart || timeStart,
-      timeEnd: form.timeEnd || timeEnd,
-      gigDate: form.gigDate || gigDate,
-      venueAddressCity: form.venueAddressCity || venueAddressCity,
-      venueAddressName: form.venueAddressName || venueAddressName,
-      venueAddressState: form.venueAddressState || venueAddressState,
-      venueAddressStreet: form.venueAddressStreet || venueAddressStreet,
-      venueAddressStreet2: form.venueAddressStreet2 || venueAddressStreet2,
-      venueAddressZip: form.venueAddressZip || venueAddressZip,
-      venueType: form.venueType || venueType,
-      contactName: form.contactName || contactName,
-      contactEmail: form.contactEmail || contactEmail,
-      contactPhoneCell: form.contactPhoneCell || contactPhoneCell,
-      contactPhoneLand: form.contactPhoneLand || contactPhoneLand,
-      notesVenue: form.notesVenue || notesVenue,
-      clientId: form.clientId || clientId,
-      santaId: form.santaId || santaId,
-      mrsSantaId: form.mrsSantaId || mrsSantaId,
-      price: form.price || price,
-      amountPaid: form.amountPaid || amountPaid,
-      isSoftHold: form.isSoftHold || isSoftHold,
-      driverId: form.driverId || driverId,
-      notesGig: form.notesGig || notesGig,
-      travelType: form.travelType || travelType,
-    };
+//   // Iterate through the formData array
+//   formData.forEach((form) => {
+//     const newGig = {
+//       timeStart: form.timeStart || timeStart,
+//       timeEnd: form.timeEnd || timeEnd,
+//       gigDate: form.gigDate || gigDate,
+//       venueAddressCity: form.venueAddressCity || venueAddressCity,
+//       venueAddressName: form.venueAddressName || venueAddressName,
+//       venueAddressState: form.venueAddressState || venueAddressState,
+//       venueAddressStreet: form.venueAddressStreet || venueAddressStreet,
+//       venueAddressStreet2: form.venueAddressStreet2 || venueAddressStreet2,
+//       venueAddressZip: form.venueAddressZip || venueAddressZip,
+//       venueType: form.venueType || venueType,
+//       contactName: form.contactName || contactName,
+//       contactEmail: form.contactEmail || contactEmail,
+//       contactPhoneCell: form.contactPhoneCell || contactPhoneCell,
+//       contactPhoneLand: form.contactPhoneLand || contactPhoneLand,
+//       notesVenue: form.notesVenue || notesVenue,
+//       clientId: form.clientId || clientId,
+//       santaId: form.santaId || santaId,
+//       mrsSantaId: form.mrsSantaId || mrsSantaId,
+//       price: form.price || price,
+//       amountPaid: form.amountPaid || amountPaid,
+//       isSoftHold: form.isSoftHold || isSoftHold,
+//       driverId: form.driverId || driverId,
+//       notesGig: form.notesGig || notesGig,
+//       travelType: form.travelType || travelType,
+//     };
 
-    newGigs.push(newGig);
-  });
+//     newGigs.push(newGig);
+//   });
 
-  // // Create all new gigs in a single database call
-  // await prisma.gig.createMany({
-  //   data: newGigs,
-  // });
+//   // // Create all new gigs in a single database call
+//   // await prisma.gig.createMany({
+//   //   data: newGigs,
+//   // });
 
-  // return newGigs; // Optionally, return the created gigs
-}
+//   // return newGigs; // Optionally, return the created gigs
+// }
