@@ -91,13 +91,15 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Date"
-            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className=" w-52 [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
 
         cell: ({ cell }) => (
-          <div className="w-72 px-2 text-left">
-            {formatDate(cell.getValue() as Date, "friendly")}
+          <div className="w-52 px-2 text-left">
+            {!cell.getValue()
+              ? null
+              : formatDate(cell.getValue() as Date, "friendly")}
           </div>
         ),
         // cell: ({ row }) => {
@@ -138,11 +140,11 @@ export default function Datatable({ data, pageCount }: Props) {
       {
         accessorKey: "duration",
         // header: "Duration",
-        header: () => <div className="text-center">Duration</div>,
+        header: () => <div className="w-20 text-center">Duration</div>,
 
         cell: ({ row }) => {
           return (
-            <div className="w-18 text-center">
+            <div className="w-20 text-center">
               {row.original.timeStart && row.original.timeEnd
                 ? calculateTimeDifference(
                     row.original.timeStart,
@@ -159,11 +161,13 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Santa"
-            className="[&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className="w-32 [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
-          return <div className="text-left">{row.original.santa?.role}</div>;
+          return (
+            <div className="w-32 text-left">{row.original.santa?.role}</div>
+          );
         },
       },
       {
@@ -172,12 +176,14 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Mrs. Santa"
-            className="[&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className="w-32 [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
           return (
-            <div className="text-left">{row.original?.mrsSanta?.nameFirst}</div>
+            <div className=" w-32 text-left">
+              {row.original?.mrsSanta?.nameFirst}
+            </div>
           );
         },
       },
@@ -187,12 +193,12 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Client"
-            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className=" w-72 [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
           return (
-            <div className="px-2 text-left">
+            <div className="w-72 truncate px-2 text-left">
               {row.original?.client?.client &&
                 toTitleCase(row.original?.client?.client)}
             </div>
@@ -206,13 +212,12 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Venue"
-            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className="  [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
-        width: 300,
         cell: ({ row }) => {
           return (
-            <div className="px-2 text-left">
+            <div className="   truncate pr-4 text-left">
               {formatAddress({
                 name: row.original.venueAddressName ?? "",
                 addressLine1: row.original.venueAddressStreet ?? "",
