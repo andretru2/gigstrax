@@ -83,7 +83,7 @@ export const authOptions: NextAuthOptions = {
     signIn: async ({ user, account, profile }) => {
       // console.log(user, account, profile);
 
-      if (true) {
+      if (false) {
         if (!user.email) {
           return false;
         }

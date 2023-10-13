@@ -587,7 +587,7 @@ export default function GigForm({
               Venue Details
               <Button
                 variant="link"
-                className=" absolute left-40 w-32  self-center text-left"
+                className=" absolute left-40 w-32  self-center text-left text-[10px]"
                 isLoading={isPending}
                 onClick={() => {
                   startTransition(() => {

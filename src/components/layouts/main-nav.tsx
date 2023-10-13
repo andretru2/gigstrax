@@ -30,7 +30,7 @@ export function MainNav({ items }: MainNavProps) {
         className="hidden items-center space-x-2 bg-gradient-to-r from-background/90 to-background bg-clip-text font-bold text-transparent lg:flex"
       >
         <Icons.logo className="h-8 w-8  " />
-        <h1 className=" ">
+        <h1 className="text-sm">
           Real Beard <span className="">Santas</span>
         </h1>
       </Link>
