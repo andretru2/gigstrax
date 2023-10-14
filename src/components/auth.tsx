@@ -1,30 +1,32 @@
 "use client";
 
-import { signIn, signOut } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import { useState } from "react";
-import { useTransition } from "react";
+// import { useTransition } from "react";
 
 // import { login } from "@/app/_actions/login";
 
 export default function SignIn() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const [isPending, startTransition] = useTransition();
+  // const [isPending, startTransition] = useTransition();
 
   return (
-    <div className="flex max-w-xs flex-col items-center justify-center gap-0 ">
+    <div className="flex max-w-xs flex-col items-center justify-center gap-0 text-base ">
       <Button
         type="button"
         variant="default"
         size="lg"
-        isLoading={isPending}
+        isLoading={isLoading}
         onClick={() => {
+          setIsLoading(true);
           void signIn("google", {
             // callbackUrl: "https://gigstrax.vercel.app/dashboard/gigs",
             callbackUrl: "http://localhost:3000/dashboard/gigs",
           });
+          setIsLoading(false);
         }}
         className=" align-center flex w-full flex-row items-center gap-1"
       >

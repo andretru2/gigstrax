@@ -326,3 +326,11 @@ export function isMacOs() {
 // date.setHours(Number(hours));
 // date.setMinutes(Number(minutes));
 // return date;
+
+export function subHours(date: Date, hours: number): Date {
+  return new Date(date.getTime() - hours * 60 * 60 * 1000);
+}
+
+export function addHours(date: Date, hours: number): Date {
+  return new Date(date.getTime() + hours * 60 * 60 * 1000);
+}

@@ -40,6 +40,8 @@ interface Props {
   };
 }
 
+const showSummary = false;
+
 export default async function Page({ params }: Props) {
   const id = params.sourceId;
   if (!id) return <h1>Please select a source. </h1>;
@@ -74,38 +76,40 @@ export default async function Page({ params }: Props) {
 
   return (
     <Card className="border-0 bg-background [&>*]:px-0 ">
-      <CardHeader className="space-y-1">
-        <Card className="flex items-start justify-between space-x-2 border-b-2 border-b-primary bg-card p-2 shadow-md">
-          <CardTitle className="flex flex-row gap-10 text-xl font-medium">
-            <div className="flex flex-col gap-2">
-              <SectionHeaderInfo
-                icon="user"
-                data={
-                  nameFirst && nameLast
-                    ? `${nameFirst} ${nameLast}`
-                    : "incomplete"
-                }
-              />
-              <SectionHeaderInfo
-                icon="phone"
-                data={phone ? formatPhone(phone) : "incomplete"}
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <SectionHeaderInfo icon="email" data={email || "incomplete"} />
-              <SectionHeaderInfo
-                icon="map"
-                data={addressFull || "incomplete"}
-              />
-            </div>
-          </CardTitle>
-          {/* Additional buttons go here */}
-        </Card>
-        <CardDescription className=" mt-12">
-          {/* <div className="border-4"> </div> */}
-          {/* <Separator /> */}
-        </CardDescription>
-      </CardHeader>
+      {showSummary && (
+        <CardHeader className="space-y-1">
+          <Card className="flex items-start justify-between space-x-2 border-b-2 border-b-primary bg-card p-2 shadow-md">
+            <CardTitle className="flex flex-row gap-10 text-xl font-medium">
+              <div className="flex flex-col gap-2">
+                <SectionHeaderInfo
+                  icon="user"
+                  data={
+                    nameFirst && nameLast
+                      ? `${nameFirst} ${nameLast}`
+                      : "incomplete"
+                  }
+                />
+                <SectionHeaderInfo
+                  icon="phone"
+                  data={phone ? formatPhone(phone) : "incomplete"}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <SectionHeaderInfo icon="email" data={email || "incomplete"} />
+                <SectionHeaderInfo
+                  icon="map"
+                  data={addressFull || "incomplete"}
+                />
+              </div>
+            </CardTitle>
+            {/* Additional buttons go here */}
+          </Card>
+          <CardDescription className=" mt-12">
+            {/* <div className="border-4"> </div> */}
+            {/* <Separator /> */}
+          </CardDescription>
+        </CardHeader>
+      )}
       <CardContent className="flex flex-col gap-4">
         {/* <Separator className="mb-8 " /> */}
         <SourceDetailTabs id={id} />

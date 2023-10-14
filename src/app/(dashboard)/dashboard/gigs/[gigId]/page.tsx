@@ -46,6 +46,8 @@ export const dynamic = "force-dynamic";
 // export const dynamic = true;
 export const cache = "no-store";
 
+const showSummary = false;
+
 // const MultiEvent = await import("@/components/gigs/multi-event");
 
 // const MultiEvent = dynamic(() => import("@/components/gigs/multi-event"));
@@ -106,43 +108,44 @@ export default async function Page({ params }: Props) {
 
   return (
     <Card className="border-0 bg-background [&>*]:px-0 ">
-      <CardHeader className="space-y-1">
-        <Card className="flex  flex-col  border-b-2   border-b-primary p-4 shadow-md ">
-          <CardHeader className="px-0">
-            <CardTitle>Summary</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-row gap-12 px-0 text-base ">
-            <div className="flex flex-col gap-2">
-              <div className="flex flex-row items-center gap-2 ">
-                <SectionHeaderInfo
-                  icon="calendar"
-                  data={formattedDate ? formattedDate : "incomplete"}
-                />
-              </div>
+      {showSummary && (
+        <CardHeader className="space-y-1">
+          <Card className="flex  flex-col  border-b-2   border-b-primary p-4 shadow-md ">
+            <CardHeader className="px-0">
+              <CardTitle>Summary</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-row gap-12 px-0  ">
+              <div className="flex flex-col gap-2">
+                <div className="flex flex-row items-center gap-2 ">
+                  <SectionHeaderInfo
+                    icon="calendar"
+                    data={formattedDate ? formattedDate : "incomplete"}
+                  />
+                </div>
 
-              {/* <div className="flex flex-row items-center gap-2">
+                {/* <div className="flex flex-row items-center gap-2">
                 <SectionHeaderInfo icon="clock" data={timeFormat} />
               </div> */}
-            </div>
-            <div className="flex flex-col gap-2">
-              <div className="flex flex-row items-center gap-2">
-                <SectionHeaderInfo
-                  icon="user"
-                  data={client ? clientName : "incomplete"}
-                />
               </div>
+              <div className="flex flex-col gap-2">
+                <div className="flex flex-row items-center gap-2">
+                  <SectionHeaderInfo
+                    icon="user"
+                    data={client ? clientName : "incomplete"}
+                  />
+                </div>
 
-              <div className="flex flex-row items-center gap-2">
-                <SectionHeaderInfo
-                  icon="map"
-                  data={addressFull ? addressFull : "incomplete"}
-                />
+                <div className="flex flex-row items-center gap-2">
+                  <SectionHeaderInfo
+                    icon="map"
+                    data={addressFull ? addressFull : "incomplete"}
+                  />
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      </CardHeader>
-
+            </CardContent>
+          </Card>
+        </CardHeader>
+      )}
       <CardContent className="flex flex-col gap-4">
         {/* <Separator className="mb-4 " /> */}
         {/* {client ? <StoreInitializer client={client} /> : null} */}

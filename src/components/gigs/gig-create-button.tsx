@@ -28,12 +28,12 @@ export default function GigCreateButton() {
     <Button
       variant="ghost"
       onClick={handleClick}
-      className=" rounded-md border-2 border-primary py-1 text-foreground"
+      className=" rounded-md border-2   border-primary text-foreground "
       disabled={isPending}
       isLoading={isPending}
       content="flex flex-row items-center gap-2"
     >
-      <Icons.add className="mr-2 h-4 w-4" />
+      <Icons.add className="mr-2 h-3 w-3" />
       {isPending ? "Adding..." : "New Gig"}
     </Button>
   );
