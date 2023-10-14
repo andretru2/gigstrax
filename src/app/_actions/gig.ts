@@ -207,11 +207,11 @@ export async function update(
     delete data.santaId;
     include.santa = true;
   }
-  const res = (await prisma.gig.update({
+  const res = await prisma.gig.update({
     data: data,
     where: { id: props.id },
     include: include ? include : undefined,
-  })) as GigExtendedProps;
+  });
   // console.log(res);
 
   props.id && revalidatePath(`/dashboard/gigs/${props.id}`);
@@ -292,13 +292,13 @@ export async function getAvailableSantas(id: string) {
 
   // const bookedSantaIds = bookedSantas.map((gig) => gig.santaId);
 
-  const availableSantas = santas.filter(
-    (santa) => !bookedSantaIds.includes(santa.id)
-  );
+  // const availableSantas = santas.filter(
+  //   (santa) => !bookedSantaIds.includes(santa.id)
+  // );
 
-  console.log("availableSantas", availableSantas);
+  // console.log("availableSantas", availableSantas);
 
-  return { available: availableSantas, unavailable: bookedSantas };
+  // return { available: availableSantas, unavailable: bookedSantas };
 }
 
 export async function copyFromClient(id: string) {
