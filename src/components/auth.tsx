@@ -22,8 +22,8 @@ export default function SignIn() {
         isLoading={isPending}
         onClick={() => {
           void signIn("google", {
-            callbackUrl: "https://gigstrax.vercel.app/dashboard/gigs",
-            // callbackUrl: "http://localhost:3000/dashboard/gigs",
+            // callbackUrl: "https://gigstrax.vercel.app/dashboard/gigs",
+            callbackUrl: "http://localhost:3000/dashboard/gigs",
           });
         }}
         className=" align-center flex w-full flex-row items-center gap-1"
