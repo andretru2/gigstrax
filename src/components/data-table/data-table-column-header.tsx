@@ -40,7 +40,7 @@ export function DataTableColumnHeader<TData, TValue>({
             }
             variant="ghost"
             size="sm"
-            className="h-8 w-full text-xs font-bold hover:text-gray-200 data-[state=open]:bg-accent"
+            className="h-8 w-full text-xs font-bold hover:text-gray-200 hover:text-secondary-900 data-[state=open]:bg-accent"
           >
             <span>{title}</span>
             {column.getIsSorted() === "desc" ? (

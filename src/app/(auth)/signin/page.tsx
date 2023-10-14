@@ -18,7 +18,7 @@ export default function LoginPage() {
         <div className="flex h-screen max-w-[50%] flex-1 flex-col  items-center justify-center ">
           <div className="flex w-72 flex-col items-center justify-center">
             <h2 className="mb-4 text-2xl font-bold">Welcome Back!</h2>
-            <h3 className="text-md mb-12">Please login to your account</h3>
+            <h3 className="mb-12 text-lg">Please login to your account</h3>
             <SignIn />
           </div>
         </div>

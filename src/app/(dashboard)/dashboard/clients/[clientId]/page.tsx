@@ -42,6 +42,8 @@ interface Props {
   };
 }
 
+const showSummary = false;
+
 export default async function Page({ params }: Props) {
   const id = params.clientId;
   if (!id) return <h1>Please select a client. </h1>;
@@ -74,36 +76,37 @@ export default async function Page({ params }: Props) {
 
   return (
     <Card className="border-0 bg-background [&>*]:px-0 ">
-      <CardHeader className="space-y-1">
-        <Card className="flex items-start justify-between space-x-2 border-b-2 border-b-primary bg-card p-2 shadow-md ">
-          <CardTitle className=" flex flex-col gap-10 text-xl font-medium">
-            <div className="flex flex-col gap-2">
-              <div className="flex flex-row items-center gap-2">
-                <SectionHeaderInfo
-                  icon="user"
-                  data={clientName ? clientName : "incomplete"}
-                />
-              </div>
-
-              <div>
-                <div className="flex flex-row items-center gap-2">
-                  <SectionHeaderInfo
-                    icon="phone"
-                    data={phoneCell ? formatPhone(phoneCell) : "incomplete"}
-                  />
-                </div>
-              </div>
+      {showSummary && (
+        <CardHeader className="space-y-1">
+          <Card className="flex items-start justify-between space-x-2 border-b-2 border-b-primary bg-card p-2 shadow-md ">
+            <CardTitle className=" flex flex-col gap-10 text-xl font-medium">
               <div className="flex flex-col gap-2">
                 <div className="flex flex-row items-center gap-2">
                   <SectionHeaderInfo
-                    icon="map"
-                    data={addressFull ? addressFull : "incomplete"}
+                    icon="user"
+                    data={clientName ? clientName : "incomplete"}
                   />
                 </div>
+
+                <div>
+                  <div className="flex flex-row items-center gap-2">
+                    <SectionHeaderInfo
+                      icon="phone"
+                      data={phoneCell ? formatPhone(phoneCell) : "incomplete"}
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-row items-center gap-2">
+                    <SectionHeaderInfo
+                      icon="map"
+                      data={addressFull ? addressFull : "incomplete"}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-          </CardTitle>
-          {/* <div className="flex flex-row gap-2">
+            </CardTitle>
+            {/* <div className="flex flex-row gap-2">
             <Button
               variant="secondary"
               className="flex flex-row items-center gap-1"
@@ -127,12 +130,13 @@ export default async function Page({ params }: Props) {
               Invoice
             </Button>
           </div> */}
-        </Card>
-        <CardDescription className=" mt-12">
-          {/* <div className="border-4"> </div> */}
-          {/* <Separator /> */}
-        </CardDescription>
-      </CardHeader>
+          </Card>
+          <CardDescription className=" mt-12">
+            {/* <div className="border-4"> </div> */}
+            {/* <Separator /> */}
+          </CardDescription>
+        </CardHeader>
+      )}
       <CardContent className="flex flex-col gap-4">
         {/* <Separator className="mb-8 " /> */}
         <ClientDetailTabs id={id} />
