@@ -74,7 +74,7 @@ export default function ClientTabs(props: Props) {
         >
           <Popover>
             <PopoverTrigger>
-              <div className="text-md flex flex-row items-center gap-1 rounded-md border-2 border-primary  px-3 py-1.5 text-foreground">
+              <div className="text-md flex flex-row items-center gap-1 rounded-md border-2 border-border bg-card  px-3 py-1.5 text-foreground">
                 <Icons.add className="h-3 w-3" />
                 New Client
               </div>

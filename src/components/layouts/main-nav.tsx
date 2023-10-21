@@ -23,11 +23,11 @@ interface MainNavProps {
 
 export function MainNav({ items }: MainNavProps) {
   return (
-    <div className="hidden gap-6  text-background lg:flex">
+    <div className="hidden gap-6   lg:flex">
       <Link
         aria-label="Home"
         href="/dashboard/gigs"
-        className="hidden items-center space-x-2 bg-gradient-to-r from-background/90 to-background bg-clip-text font-bold text-transparent lg:flex"
+        className="hidden items-center space-x-2 bg-gradient-to-r from-background/90 to-background bg-clip-text font-bold lg:flex"
       >
         <Icons.logo className="h-8 w-8  " />
         <h1 className="text-sm">
