@@ -49,7 +49,7 @@ export default function ClientTabs(props: Props) {
             key={tab.title}
             value={tab.href}
             className={cn(
-              "grid  w-32 grid-cols-4 self-center rounded-md border-2 border-secondary-200 text-foreground",
+              "grid  w-32 grid-cols-4 self-center rounded-md  text-foreground",
 
               // pathname === tab.href && "bg-background text-foreground shadow-sm"
               pathname?.includes(tab.href) &&
@@ -65,7 +65,7 @@ export default function ClientTabs(props: Props) {
           key="createNew"
           value=""
           className={cn(
-            "grid   grid-cols-1 self-center rounded-md border-2 border-secondary-200 text-foreground",
+            "grid   grid-cols-1 self-center rounded-md  text-foreground",
 
             pathname?.includes("createNew") &&
               "bg-background text-foreground shadow-sm"
@@ -74,7 +74,7 @@ export default function ClientTabs(props: Props) {
         >
           <Popover>
             <PopoverTrigger>
-              <div className="text-md flex flex-row items-center gap-1 rounded-md border-2 border-border bg-card  px-3 py-1.5 text-foreground">
+              <div className="text-md flex flex-row items-center gap-1 rounded-md bg-card px-3 py-2 text-foreground  outline -outline-offset-2 outline-accent">
                 <Icons.add className="h-3 w-3" />
                 New Client
               </div>

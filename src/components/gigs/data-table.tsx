@@ -2,26 +2,18 @@
 
 import * as React from "react";
 import Link from "next/link";
-// import { products, type Product } from "@/db/schema"
 import { type ColumnDef } from "@tanstack/react-table";
-// import { toast } from "sonner"
-import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
 import {
-  catchError,
   formatDate,
-  formatPrice,
   formatAddress,
   calculateTimeDifference,
   toTitleCase,
-  formatTime,
-  fromUTC,
   getTimeFromDate,
 } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,72 +23,35 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DataTable } from "@/components/data-table/data-table";
-// import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import { DataTableColumnHeader } from "../data-table/data-table-column-header";
 
 import { Icons } from "../icons";
-import { type ClientProps, type GigProps } from "@/server/db";
 import { type GigExtendedProps } from "@/types/index";
-import { redirect } from "next/navigation";
-import { type } from "os";
 
 interface Props {
-  // data: GigProps & { clients: Partial<ClientProps> };
   data: GigExtendedProps[];
   pageCount: number;
 }
 
 export default function Datatable({ data, pageCount }: Props) {
   const [isPending, startTransition] = React.useTransition();
-  const [selectedRowIds, setSelectedRowIds] = React.useState<number[]>([]);
   const router = useRouter();
 
   // Memoize the columns so they don't re-render on every render
   const columns = React.useMemo<ColumnDef<GigExtendedProps, unknown>[]>(
     () => [
-      // {
-      //   id: "select",
-      //   header: ({ table }) => (
-      //     <Checkbox
-      //       checked={table.getIsAllPageRowsSelected()}
-      //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-      //       aria-label="Select all"
-      //       className="translate-y-[2px]"
-      //     />
-      //   ),
-      //   cell: ({ row }) => (
-      //     <Checkbox
-      //       checked={row.getIsSelected()}
-      //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-      //       aria-label="Select row"
-      //       className="translate-y-[2px]"
-      //     />
-      //   ),
-      //   enableSorting: false,
-      //   enableHiding: false,
-      // },
-      // {
-      //   accessorKey: "id",
-      //   header: ({ column }) => (
-      //     <DataTableColumnHeader column={column} title="id" />
-      //   ),
-      //   cell: ({ row }) => <span className="w-[80px]">{row.getValue("id")}</span>,
-      //   enableSorting: false,
-      //   enableHiding: true,
-      // },
-
       {
         accessorKey: "gigDate",
         header: ({ column }) => (
           <DataTableColumnHeader
             column={column}
             title="Date"
-            className=" w-52 [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
 
         cell: ({ cell }) => (
-          <div className="w-52 px-2 text-left">
+          <div className=" w-44 px-2 text-left [&>*]:w-40">
             {!cell.getValue()
               ? null
               : formatDate(cell.getValue() as Date, "friendly")}
@@ -112,10 +67,10 @@ export default function Datatable({ data, pageCount }: Props) {
       },
       {
         accessorKey: "timeStart",
-        header: () => <div className="w-24 text-center">Start</div>,
+        header: () => <div className=" text-center">Start</div>,
         cell: ({ row }) => {
           return (
-            <div className="w-24 text-center">
+            <div className="text-center">
               {row.original.timeStart
                 ? getTimeFromDate(row.original.timeStart, true)
                 : ""}
@@ -125,11 +80,11 @@ export default function Datatable({ data, pageCount }: Props) {
       },
       {
         accessorKey: "timeEnd",
-        header: () => <div className="w-24 text-center">End</div>,
+        header: () => <div className=" text-center">End</div>,
 
         cell: ({ row }) => {
           return (
-            <div className="w-24 text-center">
+            <div className=" text-center">
               {row.original.timeEnd
                 ? getTimeFromDate(row.original.timeEnd, true)
                 : ""}
@@ -140,11 +95,11 @@ export default function Datatable({ data, pageCount }: Props) {
       {
         accessorKey: "duration",
         // header: "Duration",
-        header: () => <div className="w-20 text-center">Duration</div>,
+        header: () => <div className=" text-center">Duration</div>,
 
         cell: ({ row }) => {
           return (
-            <div className="w-20 text-center">
+            <div className=" text-center">
               {row.original.timeStart && row.original.timeEnd
                 ? calculateTimeDifference(
                     row.original.timeStart,
@@ -161,13 +116,11 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Santa"
-            className="w-32 [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
-          return (
-            <div className="w-32 text-left">{row.original.santa?.role}</div>
-          );
+          return <div className="text-left">{row.original.santa?.role}</div>;
         },
       },
       {
@@ -176,12 +129,12 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Mrs. Santa"
-            className="w-32 [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className="[&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
           return (
-            <div className=" w-32 text-left">
+            <div className="  text-left">
               {row.original?.mrsSanta?.nameFirst}
             </div>
           );
@@ -193,12 +146,12 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Client"
-            className=" w-72 [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className="  [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
           return (
-            <div className="w-72 truncate px-2 text-left">
+            <div className=" truncate px-2 text-left">
               {row.original?.client?.client &&
                 toTitleCase(row.original?.client?.client)}
             </div>

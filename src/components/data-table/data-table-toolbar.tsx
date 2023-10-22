@@ -1,28 +1,28 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import Link from "next/link"
+import * as React from "react";
+import Link from "next/link";
 import type {
   DataTableFilterableColumn,
   DataTableSearchableColumn,
-} from "@/types"
+} from "@/types";
 // import { Cross2Icon, TrashIcon } from "@radix-ui/react-icons"
-import type { Table } from "@tanstack/react-table"
+import type { Table } from "@tanstack/react-table";
 // import { PlusCircle } from "lucide-react"
-import { Icons } from "../icons"
+import { Icons } from "../icons";
 
-import { cn } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { DataTableFacetedFilter } from "@/components/data-table/data-table-faceted-filter"
-import { DataTableViewOptions } from "@/components/data-table/data-table-view-options"
+import { cn } from "@/lib/utils";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { DataTableFacetedFilter } from "@/components/data-table/data-table-faceted-filter";
+import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
 
 interface DataTableToolbarProps<TData> {
-  table: Table<TData>
-  filterableColumns?: DataTableFilterableColumn<TData>[]
-  searchableColumns?: DataTableSearchableColumn<TData>[]
-  deleteRowsAction?: React.MouseEventHandler<HTMLButtonElement>
-  newRowLink?: string
+  table: Table<TData>;
+  filterableColumns?: DataTableFilterableColumn<TData>[];
+  searchableColumns?: DataTableSearchableColumn<TData>[];
+  deleteRowsAction?: React.MouseEventHandler<HTMLButtonElement>;
+  newRowLink?: string;
 }
 
 export function DataTableToolbar<TData>({
@@ -32,10 +32,10 @@ export function DataTableToolbar<TData>({
   deleteRowsAction,
   newRowLink,
 }: DataTableToolbarProps<TData>) {
-  const isFiltered = table.getState().columnFilters.length > 0
+  const isFiltered = table.getState().columnFilters.length > 0;
 
   return (
-    <div className="flex w-full items-center justify-between space-x-2 overflow-auto p-1">
+    <div className="flex w-full items-center justify-between space-x-2 overflow-auto py-2">
       <div className="flex flex-1 items-center space-x-2">
         {searchableColumns.length > 0 &&
           searchableColumns.map(
@@ -90,8 +90,8 @@ export function DataTableToolbar<TData>({
             size="sm"
             className="h-8"
             onClick={(event) => {
-              table.toggleAllPageRowsSelected(false)
-              deleteRowsAction(event)
+              table.toggleAllPageRowsSelected(false);
+              deleteRowsAction(event);
             }}
           >
             <Icons.trash className="mr-2 h-4 w-4" aria-hidden="true" />
@@ -118,5 +118,5 @@ export function DataTableToolbar<TData>({
         <DataTableViewOptions table={table} />
       </div>
     </div>
-  )
+  );
 }

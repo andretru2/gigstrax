@@ -1,5 +1,6 @@
 import { type Metadata } from "next";
 import SignIn from "@/components/auth";
+import { Icons } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "Real Beard Santas Login ",
@@ -11,7 +12,8 @@ export default function LoginPage() {
     <main className="relative h-screen overscroll-y-none bg-gray-50 font-sans">
       <div className="flex flex-row ">
         <div className="relative flex max-w-[50%] flex-1 flex-col justify-center gap-10 bg-gradient-to-br from-primary to-primary/90 pl-20  ">
-          <h1 className=" line-clamp-3  max-w-md font-heading text-5xl font-bold leading-[1.2] text-background">
+          <h1 className=" line-clamp-3 flex max-w-md flex-row items-center  justify-center font-heading text-5xl font-bold leading-[1.2]">
+            <Icons.logo className="mr-4 h-12 w-12 text-white" />
             Real Beard Santas
           </h1>
         </div>

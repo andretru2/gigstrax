@@ -29,7 +29,7 @@ export default function GigDetailTabs({ gigId, ...props }: Props) {
     <Tabs
       {...props}
       defaultValue={`/dashboard/gigs/${gigId}`}
-      className={cn("w-full overflow-x-auto", props.className)}
+      className={cn("w-full   overflow-x-auto", props.className)}
       onValueChange={(value) => router.push(value)}
     >
       <TabsList>

@@ -218,7 +218,7 @@ export default function GigForm({
           <CardHeader className="px-0">
             <CardTitle>Gig Details</CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-8 items-end gap-4 px-0">
+          <CardContent className="grid grid-cols-8 items-end gap-2 px-0">
             <FormField
               control={form.control}
               name="gigDate"
@@ -603,7 +603,7 @@ export default function GigForm({
               </Button>
             </CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-6 items-end gap-4 px-0">
+          <CardContent className="grid grid-cols-6 items-end gap-2 px-0">
             <FormField
               control={form.control}
               name="venueAddressName"

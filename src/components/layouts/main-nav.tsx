@@ -16,14 +16,17 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { Icons } from "@/components/icons";
+import { useSelectedLayoutSegment } from "next/navigation";
 
 interface MainNavProps {
   items?: MainNavItem[];
 }
 
 export function MainNav({ items }: MainNavProps) {
+  const segment = useSelectedLayoutSegment();
+  console.log(segment);
   return (
-    <div className="hidden gap-6   lg:flex">
+    <div className="hidden gap-8   lg:flex">
       <Link
         aria-label="Home"
         href="/dashboard/gigs"
@@ -62,7 +65,7 @@ export function MainNav({ items }: MainNavProps) {
                   </li>
                   {items[0].items.map((item) => (
                     <ListItem
-                      className="bg-inherit"
+                      isActive={segment?.toUpperCase() === "CLIENTS"}
                       key={item.title}
                       title={item.title}
                       href={item.href}
@@ -120,6 +123,8 @@ const ListItem = React.forwardRef<
   React.ElementRef<"a">,
   React.ComponentPropsWithoutRef<"a">
 >(({ className, title, children, href, ...props }, ref) => {
+  const segment = useSelectedLayoutSegment();
+  console.log("a", segment, href, props.isActive);
   return (
     <li>
       <NavigationMenuLink asChild>
@@ -127,8 +132,10 @@ const ListItem = React.forwardRef<
           ref={ref}
           href={String(href)}
           className={cn(
-            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-            className
+            className,
+            "CLIENTS" === segment?.toUpperCase()
+              ? "bg-secondary text-foreground shadow-sm"
+              : " block select-none space-y-1 rounded-md bg-secondary p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
           )}
           {...props}
         >
