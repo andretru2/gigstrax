@@ -28,7 +28,7 @@ export default function GigCreateButton() {
     <Button
       variant="ghost"
       onClick={handleClick}
-      className=" rounded-md border-2   border-primary text-foreground "
+      className=" rounded-md bg-card text-foreground outline -outline-offset-2 outline-accent "
       disabled={isPending}
       isLoading={isPending}
       content="flex flex-row items-center gap-2"

@@ -40,7 +40,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
   //   user?.?.find((e) => e.id === user.primaryEmailAddressId)
   //     ?.emailAddress ?? "";
   return (
-    <header className="supports-backdrop-blur:bg-background/60 to- sticky top-0 z-40 w-full  rounded-b-3xl bg-gradient-to-tl from-primary to-[#FF331A] backdrop-blur">
+    <header className="supports-backdrop-blur:bg-background/60 sticky top-0 z-40  w-full rounded-b-3xl bg-gradient-to-tl from-background to-background/80 shadow-lg backdrop-blur">
       <div className="container flex h-16 w-full items-center gap-3 overflow-visible ">
         <MainNav items={siteConfig.mainNav} />
         {/* <MobileNav />  */}
@@ -49,7 +49,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
           {/* <div className="w-full flex-1 md:w-auto md:flex-none">
             <Combobox />
           </div> */}
-          <nav className="flex items-center gap-2 text-background">
+          <nav className="flex items-center gap-2 ">
             {/* <Link
               href={siteConfig.links.github}
               // target="_blank"

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default function Layout({ children }: DashboardLayoutProps) {
   return (
     <>
-      <Header heading="Sources" separator={true} />
+      {/* <Header heading="Sources" separator={true} /> */}
       <SourceTabs />
       {children}
     </>

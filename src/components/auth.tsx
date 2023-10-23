@@ -23,8 +23,8 @@ export default function SignIn() {
         onClick={() => {
           setIsLoading(true);
           void signIn("google", {
-            callbackUrl: "https://gigstrax.vercel.app/dashboard/gigs",
-            // callbackUrl: "http://localhost:3000/dashboard/gigs",
+            // callbackUrl: "https://gigstrax.vercel.app/dashboard/gigs",
+            callbackUrl: "http://localhost:3000/dashboard/gigs",
           });
           setIsLoading(false);
         }}

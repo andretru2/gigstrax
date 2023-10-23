@@ -134,14 +134,14 @@ export default function SourceForm(props: Partial<SourceProps>) {
   return (
     <Form {...form}>
       <form
-        className="grid w-full   gap-4  "
+        className="grid w-full   gap-2 "
         // onSubmit={(...args) => void form.handleSubmit(onSubmit)(...args)}
       >
         <Card className=" p-4">
           <CardHeader className="px-0">
             <CardTitle>Source Details</CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-6 items-end gap-4 px-0">
+          <CardContent className="grid grid-cols-6 items-end gap-2 px-0">
             <FormField
               control={form.control}
               name="nameFirst"

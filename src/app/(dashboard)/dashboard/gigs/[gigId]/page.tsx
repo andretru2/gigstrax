@@ -146,7 +146,7 @@ export default async function Page({ params }: Props) {
           </Card>
         </CardHeader>
       )}
-      <CardContent className="flex flex-col gap-4">
+      <CardContent className="flex flex-col gap-2">
         {/* <Separator className="mb-4 " /> */}
         {/* {client ? <StoreInitializer client={client} /> : null} */}
 
