@@ -46,12 +46,12 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Date"
-            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className="  [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
 
         cell: ({ cell }) => (
-          <div className=" w-44 px-2 text-left [&>*]:w-40">
+          <div className=" px-2 text-left">
             {!cell.getValue()
               ? null
               : formatDate(cell.getValue() as Date, "friendly")}
@@ -146,12 +146,12 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Client"
-            className="  [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className=" w-32  [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
           return (
-            <div className=" truncate px-2 text-left">
+            <div className=" w-32 truncate px-2 text-left">
               {row.original?.client?.client &&
                 toTitleCase(row.original?.client?.client)}
             </div>
