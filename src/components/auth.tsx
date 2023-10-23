@@ -23,8 +23,8 @@ export default function SignIn() {
         onClick={() => {
           setIsLoading(true);
           void signIn("google", {
-            // callbackUrl: "https://gigstrax.vercel.app/dashboard/gigs",
-            callbackUrl: "http://localhost:3000/dashboard/gigs",
+            callbackUrl: "https://gigstrax.vercel.app/dashboard/gigs",
+            // callbackUrl: "http://localhost:3000/dashboard/gigs",
           });
           setIsLoading(false);
         }}
@@ -40,7 +40,7 @@ export default function SignIn() {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <ellipse cx="143" cy="5" rx="143" ry="5" fill="#E4E7F9" />
+        <ellipse cx="143" cy="5" rx="143" ry="5" fill="#DDD4C4" />
       </svg>
     </div>
   );
