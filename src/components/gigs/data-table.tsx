@@ -146,12 +146,12 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Client"
-            className=" w-32  [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className="  [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
           return (
-            <div className=" w-32 truncate px-2 text-left">
+            <div className=" truncate px-2 text-left">
               {row.original?.client?.client &&
                 toTitleCase(row.original?.client?.client)}
             </div>
