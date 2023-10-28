@@ -36,6 +36,9 @@ export default function Datatable({ data, pageCount }: Props) {
   const [selectedRowIds, setSelectedRowIds] = React.useState<number[]>([]);
   const router = useRouter();
 
+  const classNameTableRow =
+    "[&>*:nth-child(1)]:w-48 [&>*:nth-child(2)]:w-44  [&>*:nth-child(3)]:w-32  [&>*:nth-child(4)]:w-60";
+
   // Memoize the columns so they don't re-render on every render
   const columns = React.useMemo<ColumnDef<ClientProps, unknown>[]>(
     () => [
@@ -45,12 +48,12 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Client"
-            className="  max-w-[10rem] [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className="   [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
           return (
-            <div className="max-w-[10rem] truncate px-2 text-left">
+            <div className=" w-48 truncate px-2 text-left">
               {row.original.client}
             </div>
           );
@@ -62,12 +65,12 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Contact"
-            className="max-w-[9rem] [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
           return (
-            <div className="max-w-[9rem] truncate px-2 text-left">
+            <div className="  w-44 truncate px-2 text-left">
               {row.original.contact}
             </div>
           );
@@ -96,12 +99,12 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Email"
-            className=" max-w-[11rem]  [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className=" w-60  [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
           return (
-            <div className=" max-w-[11rem] truncate px-2 text-left">
+            <div className=" w-60 truncate px-2 text-left">
               {row.original.email}
             </div>
           );
@@ -189,6 +192,7 @@ export default function Datatable({ data, pageCount }: Props) {
         const id = row.original.id as number;
         id && router.push(`/dashboard/clients/${id}`);
       }}
+      classNameTableRow={classNameTableRow}
       pageCount={pageCount}
       // filterableColumns={[
       //   {

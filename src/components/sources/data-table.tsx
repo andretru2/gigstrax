@@ -44,11 +44,15 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="First Name"
-            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className=" max-w-[7rem] [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
-          return <div className="px-2 text-left">{row.original.nameFirst}</div>;
+          return (
+            <div className="max-w-[7rem] truncate px-2 text-left">
+              {row.original.nameFirst}
+            </div>
+          );
         },
       },
       {
@@ -57,33 +61,48 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Last Name"
-            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className=" max-w-[6rem]  [&>*]:justify-start [&>*]:px-2 [&>*]:text-left "
           />
         ),
         cell: ({ row }) => {
-          return <div className="px-2 text-left">{row.original.nameLast}</div>;
+          return (
+            <div className="max-w-[6rem] truncate  px-2 text-left ">
+              {row.original.nameLast}
+            </div>
+          );
         },
       },
       {
         accessorKey: "role",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Role" />
+          <DataTableColumnHeader
+            column={column}
+            title="Role"
+            className=" max-w-[6rem] [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+          />
         ),
         cell: ({ row }) => {
-          return <span>{row.original.role}</span>;
+          return (
+            <div className="max-w-[6rem] truncate  px-2 text-left">
+              {row.original.role}
+            </div>
+          );
         },
       },
       {
         accessorKey: "phone",
         header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Phone" />
+          <DataTableColumnHeader
+            column={column}
+            title="Phone"
+            className=" max-w-[6rem]"
+          />
         ),
         cell: ({ row }) => {
           return (
-            <span>
-              {" "}
+            <div className="max-w-[6rem] truncate ">
               {row.original.phone && formatPhone(row.original.phone)}
-            </span>
+            </div>
           );
         },
       },

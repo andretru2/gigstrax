@@ -19,6 +19,7 @@ import {
   type SortingState,
   type VisibilityState,
 } from "@tanstack/react-table";
+import { cn } from "@/lib/utils";
 
 import { useDebounce } from "@/hooks/use-debounce";
 import {
@@ -46,6 +47,7 @@ interface DataTableProps<TData, TValue> {
   ) => void;
 
   deleteRowsAction?: React.MouseEventHandler<HTMLButtonElement>;
+  classNameTableRow?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -57,6 +59,7 @@ export function DataTable<TData, TValue>({
   deleteRowsAction,
   newRowLink,
   onRowClick,
+  classNameTableRow,
 }: DataTableProps<TData, TValue>) {
   const router = useRouter();
   const pathname = usePathname();
@@ -309,7 +312,10 @@ export function DataTable<TData, TValue>({
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   onClick={(e) => onRowClick && onRowClick(e, row)}
-                  className={onRowClick && "cursor-pointer"}
+                  className={cn(
+                    onRowClick && "cursor-pointer",
+                    classNameTableRow
+                  )}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>

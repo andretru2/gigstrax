@@ -37,6 +37,8 @@ export default function Datatable({ data, pageCount }: Props) {
   const [isPending, startTransition] = React.useTransition();
   const router = useRouter();
 
+  const classNameTableRow = "[&>*:nth-child(1)]:w-48 [&>*:nth-child(7)]:w-48 ";
+
   // Memoize the columns so they don't re-render on every render
   const columns = React.useMemo<ColumnDef<GigExtendedProps, unknown>[]>(
     () => [
@@ -46,12 +48,12 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Date"
-            className="  [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className="   [&>*]:justify-start [&>*]:px-2 "
           />
         ),
 
         cell: ({ cell }) => (
-          <div className=" px-2 text-left">
+          <div className="  px-2 text-left">
             {!cell.getValue()
               ? null
               : formatDate(cell.getValue() as Date, "friendly")}
@@ -116,11 +118,13 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Santa"
-            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className=" text-left [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
-          return <div className="text-left">{row.original.santa?.role}</div>;
+          return (
+            <div className="px-2 text-left">{row.original.santa?.role}</div>
+          );
         },
       },
       {
@@ -134,7 +138,7 @@ export default function Datatable({ data, pageCount }: Props) {
         ),
         cell: ({ row }) => {
           return (
-            <div className="  text-left">
+            <div className=" px-2 text-left">
               {row.original?.mrsSanta?.nameFirst}
             </div>
           );
@@ -295,6 +299,7 @@ export default function Datatable({ data, pageCount }: Props) {
         id && router.push(`/dashboard/gigs/${id}`);
       }}
       pageCount={pageCount}
+      classNameTableRow={classNameTableRow}
       // filterableColumns={[
       //   {
       //     id: "gigDate",
