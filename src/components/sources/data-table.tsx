@@ -35,6 +35,9 @@ export default function Datatable({ data, pageCount }: Props) {
   const [selectedRowIds, setSelectedRowIds] = React.useState<number[]>([]);
   const router = useRouter();
 
+  const classNameTableRow =
+    "[&>*:nth-child(1)]:w-28 [&>*:nth-child(2)]:w-28  [&>*:nth-child(3)]:w-28  [&>*:nth-child(4)]:w-32  [&>*:nth-child(5)]:w-40 [&>*:nth-child(6)]:w-32";
+
   // Memoize the columns so they don't re-render on every render
   const columns = React.useMemo<ColumnDef<SourceProps, unknown>[]>(
     () => [
@@ -44,12 +47,12 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="First Name"
-            className=" max-w-[7rem] [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
           return (
-            <div className="max-w-[7rem] truncate px-2 text-left">
+            <div className=" w-28 truncate px-2 text-left">
               {row.original.nameFirst}
             </div>
           );
@@ -61,12 +64,12 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Last Name"
-            className=" max-w-[6rem]  [&>*]:justify-start [&>*]:px-2 [&>*]:text-left "
+            className="   [&>*]:justify-start [&>*]:px-2 [&>*]:text-left "
           />
         ),
         cell: ({ row }) => {
           return (
-            <div className="max-w-[6rem] truncate  px-2 text-left ">
+            <div className=" truncate  px-2 text-left ">
               {row.original.nameLast}
             </div>
           );
@@ -78,12 +81,12 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Role"
-            className=" max-w-[6rem] [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
           return (
-            <div className="max-w-[6rem] truncate  px-2 text-left">
+            <div className=" w-28 truncate  px-2 text-left">
               {row.original.role}
             </div>
           );
@@ -92,15 +95,11 @@ export default function Datatable({ data, pageCount }: Props) {
       {
         accessorKey: "phone",
         header: ({ column }) => (
-          <DataTableColumnHeader
-            column={column}
-            title="Phone"
-            className=" max-w-[6rem]"
-          />
+          <DataTableColumnHeader column={column} title="Phone" className=" " />
         ),
         cell: ({ row }) => {
           return (
-            <div className="max-w-[6rem] truncate ">
+            <div className=" w-32 truncate ">
               {row.original.phone && formatPhone(row.original.phone)}
             </div>
           );
@@ -116,7 +115,9 @@ export default function Datatable({ data, pageCount }: Props) {
           />
         ),
         cell: ({ row }) => {
-          return <div className="px-2 text-left">{row.original.email}</div>;
+          return (
+            <div className=" w-40 px-2 text-left">{row.original.email}</div>
+          );
         },
       },
 
@@ -189,6 +190,7 @@ export default function Datatable({ data, pageCount }: Props) {
 
         id && router.push(`/dashboard/sources/${id}`);
       }}
+      classNameTableRow={classNameTableRow}
       pageCount={pageCount}
       // filterableColumns={[
       //   {

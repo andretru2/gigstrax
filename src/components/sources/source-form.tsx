@@ -432,7 +432,7 @@ export default function SourceForm(props: Partial<SourceProps>) {
               name="website"
               render={({ field }) => (
                 <FormItem className="col-span-2 flex flex-col ">
-                  <FormLabel>website</FormLabel>
+                  <FormLabel>Website</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
