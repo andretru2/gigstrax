@@ -43,7 +43,7 @@ export function DataTableFacetedFilter<TData, TValue>({
           aria-label="Filter rows"
           variant="outline"
           size="sm"
-          className="h-8 border-dashed"
+          className="h-8 border-dashed border-accent hover:text-accent"
         >
           <Icons.add className="mr-2 h-4 w-4" aria-hidden="true" />
           {title}
@@ -51,8 +51,8 @@ export function DataTableFacetedFilter<TData, TValue>({
             <>
               <Separator orientation="vertical" className="mx-2 h-4" />
               <Badge
-                variant="secondary"
-                className="rounded-sm px-1 font-normal lg:hidden"
+                // variant=""
+                className="rounded-sm bg-accent px-1 font-normal lg:hidden"
               >
                 {selectedValues.size}
               </Badge>
@@ -60,7 +60,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                 {selectedValues.size > 2 ? (
                   <Badge
                     variant="secondary"
-                    className="rounded-sm px-1 font-normal"
+                    className="rounded-sm  px-1 font-normal "
                   >
                     {selectedValues.size} selected
                   </Badge>
@@ -69,9 +69,9 @@ export function DataTableFacetedFilter<TData, TValue>({
                     .filter((option) => selectedValues.has(option.value))
                     .map((option) => (
                       <Badge
-                        variant="secondary"
+                        // variant="secondary"
                         key={option.value}
-                        className="rounded-sm px-1 font-normal"
+                        className="rounded-sm bg-accent px-1 font-normal text-background hover:bg-accent hover:text-background"
                       >
                         {option.label}
                       </Badge>

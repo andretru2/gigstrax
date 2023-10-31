@@ -23,6 +23,8 @@ import { DataTable } from "@/components/data-table/data-table";
 import { DataTableColumnHeader } from "../data-table/data-table-column-header";
 import { Icons } from "../icons";
 import { type SourceProps } from "@/server/db";
+import { SourceStatus } from "@prisma/client";
+
 // import { deleteProductAction } from "@/app/_actions/product"
 
 interface Props {
@@ -192,16 +194,17 @@ export default function Datatable({ data, pageCount }: Props) {
       }}
       classNameTableRow={classNameTableRow}
       pageCount={pageCount}
-      // filterableColumns={[
-      //   {
-      //     id: "gigDate",
-      //     title: "Category"
-      //     // options: products.category.enumValues.map((category) => ({
-      //     //   label: `${category.charAt(0).toUpperCase()}${category.slice(1)}`,
-      //     //   value: category,
-      //     // })),
-      //   },
-      // ]}
+      filterableColumns={[
+        {
+          id: "status",
+          title: "Status",
+          options: Object.values(SourceStatus).map((status) => ({
+            // label: `${status.charAt(0)}${status.slice(1)}`,
+            label: status,
+            value: status,
+          })),
+        },
+      ]}
       searchableColumns={[
         {
           id: "nameFirst",
@@ -211,6 +214,10 @@ export default function Datatable({ data, pageCount }: Props) {
           id: "nameLast",
           title: "Last Name",
         },
+        // {
+        //   id: "status",
+        //   title: "Status",
+        // },
       ]}
       // newRowLink={`/dashboard/gigs/new`}
       // deleteRowsAction={() => void deleteSelectedRows()}

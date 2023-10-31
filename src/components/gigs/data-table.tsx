@@ -37,7 +37,8 @@ export default function Datatable({ data, pageCount }: Props) {
   const [isPending, startTransition] = React.useTransition();
   const router = useRouter();
 
-  const classNameTableRow = "[&>*:nth-child(1)]:w-48 [&>*:nth-child(7)]:w-48 ";
+  const classNameTableRow =
+    "[&>*:nth-child(1)]:w-48  [&>*:nth-child(6)]:w-32 [&>*:nth-child(5)]:w-32 [&>*:nth-child(7)]:w-40 ";
 
   // Memoize the columns so they don't re-render on every render
   const columns = React.useMemo<ColumnDef<GigExtendedProps, unknown>[]>(
@@ -53,7 +54,7 @@ export default function Datatable({ data, pageCount }: Props) {
         ),
 
         cell: ({ cell }) => (
-          <div className="  px-2 text-left">
+          <div className="  truncate px-2 text-left">
             {!cell.getValue()
               ? null
               : formatDate(cell.getValue() as Date, "friendly")}
@@ -118,12 +119,14 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Santa"
-            className=" text-left [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className="  text-left [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
           return (
-            <div className="px-2 text-left">{row.original.santa?.role}</div>
+            <div className="truncate px-2 text-left">
+              {row.original.santa?.role}
+            </div>
           );
         },
       },
@@ -138,7 +141,7 @@ export default function Datatable({ data, pageCount }: Props) {
         ),
         cell: ({ row }) => {
           return (
-            <div className=" px-2 text-left">
+            <div className=" truncate px-2 text-left">
               {row.original?.mrsSanta?.nameFirst}
             </div>
           );

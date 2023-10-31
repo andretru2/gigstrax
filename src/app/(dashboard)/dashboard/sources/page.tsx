@@ -1,8 +1,8 @@
 import DataTable from "@/components/sources/data-table";
 import { type GetSourcesProps, type Tab } from "@/types/index";
-import { redirect } from "next/navigation";
 import { getSources } from "@/app/_actions/source";
 import { PER_PAGE } from "@/lib/constants";
+import { type SourceStatus } from "@prisma/client";
 
 interface Props {
   params: {
@@ -21,6 +21,7 @@ export default async function Page({ params, searchParams }: Props) {
     sort,
     nameFirst,
     nameLast,
+    status,
     tab = "all",
   } = searchParams ?? {};
 
@@ -91,6 +92,14 @@ export default async function Page({ params, searchParams }: Props) {
     whereClause.nameLast = {
       contains: nameLast as string,
       mode: "insensitive",
+    };
+  }
+
+  if (status) {
+    const statuses = (status as string).split(".");
+
+    whereClause.status = {
+      in: statuses.map((s) => s as SourceStatus),
     };
   }
 
