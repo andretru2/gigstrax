@@ -11,13 +11,19 @@ export const sourceSchema = z.object({
   addressZip: z.string().optional(),
   costume: z.string().optional(),
   dob: z.date().nullable().optional(),
-  email: z.string().optional(),
+  email: z.string().email().optional(),
   entity: z.string().optional(),
   gender: z.nativeEnum(Gender).optional(),
   gigMastersAccount: z.string().optional(),
   calendarId: z.string().optional(),
   notes: z.string().optional(),
-  phone: z.string().optional(),
+  phone: z
+    .string()
+    .refine((val) => /^\d{10}$/.test(val), {
+      message: "Phone must be 10 digits",
+    })
+    .optional(),
+
   resource: z.string().optional(),
   role: z.string().optional(),
   ssn: z.string().optional(),

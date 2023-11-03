@@ -1,30 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { sourceSchema } from "@/lib/validations/source";
 import { type SourceProps } from "@/server/db";
-import { Prisma, Gender, SourceStatus } from "@prisma/client";
+import { Gender, SourceStatus } from "@prisma/client";
 
-import {
-  catchError,
-  cn,
-  formatDate,
-  formatTime,
-  fromUTC,
-  toUTC,
-  // duration,
-  formatPrice,
-  calculateTimeDifference,
-  formatPhone,
-} from "@/lib/utils";
-import { type FocusEvent, useState } from "react";
+import { type FocusEvent, useState, useTransition } from "react";
 
 import type * as z from "zod";
 
-// import { type z } from "zod";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -46,28 +31,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Icons } from "@/components/icons";
-import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
-import { Calendar } from "../ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Label } from "../ui/label";
-
-import {
-  Command,
-  // CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from "../ui/command";
 
 import { update } from "@/app/_actions/source";
-import SourceCreate from "./source-create";
 
 export default function SourceForm(props: Partial<SourceProps>) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isPending, startTransition] = useTransition();
+  const [errors, setErrors] = useState();
 
   const {
     id,
@@ -103,6 +74,7 @@ export default function SourceForm(props: Partial<SourceProps>) {
   const form = useForm<z.infer<typeof sourceSchema>>({
     resolver: zodResolver(sourceSchema),
     mode: "onBlur",
+
     defaultValues: {
       addressCity: addressCity ? addressCity : undefined,
       addressState: addressState ? addressState : undefined,
@@ -131,11 +103,36 @@ export default function SourceForm(props: Partial<SourceProps>) {
     },
   });
 
+  console.log("errors", form.formState.errors, errors);
+
+  // const onBlur = (id, e) => {
+  //   console.log("onblur", e.target.value, id);
+  //   startTransition(async () => {
+  //     console.log("errors", form.formState.errors, errors);
+
+  //     try {
+  //       if (form.formState.errors.phone?.message) {
+  //         return false;
+  //       }
+  //       await update({
+  //         id: id,
+  //         phone: e.target.value, // Assuming 'data' is accessible here
+  //       });
+
+  //       // toast.success("Product updated successfully");
+  //       // setFiles(null);
+  //     } catch (err) {
+  //       // catchError(err);
+  //     }
+  //   });
+  // };
+
   return (
     <Form {...form}>
       <form
         className="grid w-full   gap-2 "
-        // onSubmit={(...args) => void form.handleSubmit(onSubmit)(...args)}
+        // onSubmit={(...args) => void form.handleSubmit(onBlur)(...args)}
+        // onBlur={(...args) => void form.handleSubmit(onBlur)(...args)}
       >
         <Card className=" p-4">
           <CardHeader className="px-0">
@@ -204,19 +201,36 @@ export default function SourceForm(props: Partial<SourceProps>) {
                     <Input
                       type="text"
                       {...field}
+                      {...form.register("phone")}
                       className="bg-white "
                       placeholder="xxx-xxx-xxxx"
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
+                        void form.trigger(["phone"]);
                         void update({
                           id: id,
                           phone: e.target.value,
                         });
+                        // handlePhoneBlur(id, e.target.value);
                       }}
+
+                      // if (!form.formState.errors.phone?.message) {
+                      //   console.log(
+                      //     form.formState.errors.phone,
+                      //     form.getFieldState("phone"),
+                      //     "hpone errors"
+                      //   );
+                      //   void update({
+                      //     id: id,
+                      //     phone: e.target.value,
+                      //   });
+                      // }
                     />
                   </FormControl>
                   <FormMessage />
+
                   {/* <UncontrolledFormMessage
-                    message={form.formState.errors.source?.phoneCell?.message}
+                    // message={form.formState.errors.source?.phone?.message}
+                    message={form.formState.errors.phone?.message}
                   /> */}
                 </FormItem>
               )}
@@ -231,7 +245,10 @@ export default function SourceForm(props: Partial<SourceProps>) {
                     <Input
                       {...field}
                       className="bg-white "
+                      {...form.register("email")}
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
+                        void form.trigger(["email"]);
+
                         void update({
                           id: id,
                           email: e.target.value,

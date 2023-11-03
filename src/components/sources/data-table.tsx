@@ -199,7 +199,6 @@ export default function Datatable({ data, pageCount }: Props) {
           id: "status",
           title: "Status",
           options: Object.values(SourceStatus).map((status) => ({
-            // label: `${status.charAt(0)}${status.slice(1)}`,
             label: status,
             value: status,
           })),
