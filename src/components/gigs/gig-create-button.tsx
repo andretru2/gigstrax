@@ -28,10 +28,10 @@ export default function GigCreateButton() {
     <Button
       variant="ghost"
       onClick={handleClick}
-      className=" rounded-md bg-card text-foreground outline -outline-offset-2 outline-accent "
+      className=" flex flex-row items-center gap-2 rounded-md bg-card  text-foreground outline -outline-offset-2 outline-accent"
       disabled={isPending}
       isLoading={isPending}
-      content="flex flex-row items-center gap-2"
+      // content=""
     >
       <Icons.add className="mr-2 h-3 w-3" />
       {isPending ? "Adding..." : "New Gig"}

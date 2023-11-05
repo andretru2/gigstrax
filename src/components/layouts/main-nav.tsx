@@ -24,7 +24,7 @@ interface MainNavProps {
 
 export function MainNav({ items }: MainNavProps) {
   const segment = useSelectedLayoutSegment();
-  console.log(segment);
+  // console.log(segment);
   return (
     <div className="hidden gap-8   lg:flex">
       <Link

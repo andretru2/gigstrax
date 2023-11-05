@@ -151,21 +151,21 @@ export default async function Page({ params }: Props) {
         {/* {client ? <StoreInitializer client={client} /> : null} */}
 
         <GigDetailTabs gigId={gig.id} />
-        <GigForm
-          gig={gig}
-          santas={santas}
-          mrsSantas={mrsSantas}
-          // clients={clients.data}
-          // clientSuggestions={clientSuggestions.data}
-        >
-          {client && (
+        <div className="flex flex-row gap-2">
+          <GigForm
+            gig={gig}
+            santas={santas}
+            mrsSantas={mrsSantas}
+            // clients={clients.data}
+            // clientSuggestions={clientSuggestions.data}
+          >
             <>
               <StoreInitializer client={client} />
               <ClientForm {...client} />
             </>
-          )}
-        </GigForm>
-        {/* <MultiEventCreate {...gig} /> */}
+          </GigForm>
+        </div>
+        <MultiEventCreate {...gig} />
       </CardContent>
     </Card>
   );

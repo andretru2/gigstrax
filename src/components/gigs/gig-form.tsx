@@ -585,7 +585,7 @@ export default function GigForm({
           <CardHeader className="flex flex-row items-center space-y-0 px-0">
             <CardTitle className="relative">
               Venue Details
-              <Button
+              {/* <Button
                 variant="link"
                 className=" absolute -top-2 left-20 w-32 self-center text-left  text-accent"
                 isLoading={isPending}
@@ -600,7 +600,7 @@ export default function GigForm({
                 }}
               >
                 Same as client?
-              </Button>
+              </Button> */}
             </CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-6 items-end gap-2 px-0">

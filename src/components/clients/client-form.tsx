@@ -114,7 +114,7 @@ export default function ClientForm(props?: ClientProps) {
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    console.log("client form", client);
+    // console.log("client form", client);
     form.reset(defaultValues);
     router.refresh();
     // props && setClient(props);
@@ -140,6 +140,7 @@ export default function ClientForm(props?: ClientProps) {
           <CardContent className="grid grid-cols-6 items-end gap-2 px-0">
             <FormField
               control={form.control}
+              disabled={!client}
               name="client"
               render={({ field }) => (
                 <FormItem className="col-span-6 flex flex-col ">
@@ -169,6 +170,7 @@ export default function ClientForm(props?: ClientProps) {
             <FormField
               control={form.control}
               name="contact"
+              disabled={!client}
               render={({ field }) => (
                 <FormItem className="col-span-6 flex flex-col ">
                   <FormLabel>Contact</FormLabel>
@@ -195,6 +197,7 @@ export default function ClientForm(props?: ClientProps) {
             <FormField
               control={form.control}
               name="phoneCell"
+              disabled={!client}
               render={({ field }) => (
                 <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>Cell</FormLabel>
@@ -222,6 +225,7 @@ export default function ClientForm(props?: ClientProps) {
             <FormField
               control={form.control}
               name="phoneLandline"
+              disabled={!client}
               render={({ field }) => (
                 <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>Landline</FormLabel>
@@ -249,6 +253,7 @@ export default function ClientForm(props?: ClientProps) {
             <FormField
               control={form.control}
               name="clientType"
+              disabled={!client}
               render={({ field }) => (
                 <FormItem className="col-span-2 w-full ">
                   <FormLabel>Client Type</FormLabel>
@@ -288,6 +293,7 @@ export default function ClientForm(props?: ClientProps) {
             <FormField
               control={form.control}
               name="email"
+              disabled={!client}
               render={({ field }) => (
                 <FormItem className="col-span-6 flex flex-col ">
                   <FormLabel>Email</FormLabel>
@@ -313,6 +319,7 @@ export default function ClientForm(props?: ClientProps) {
             <FormField
               control={form.control}
               name="addressStreet"
+              disabled={!client}
               render={({ field }) => (
                 <FormItem className="col-span-6 flex flex-col ">
                   <FormLabel>Street</FormLabel>
@@ -341,6 +348,7 @@ export default function ClientForm(props?: ClientProps) {
             <FormField
               control={form.control}
               name="addressCity"
+              disabled={!client}
               render={({ field }) => (
                 <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>City</FormLabel>
@@ -366,6 +374,7 @@ export default function ClientForm(props?: ClientProps) {
             <FormField
               control={form.control}
               name="addressState"
+              disabled={!client}
               render={({ field }) => (
                 <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>State</FormLabel>
@@ -393,6 +402,7 @@ export default function ClientForm(props?: ClientProps) {
             <FormField
               control={form.control}
               name="addressZip"
+              disabled={!client}
               render={({ field }) => (
                 <FormItem className="col-span-2 flex flex-col ">
                   <FormLabel>Zip</FormLabel>
@@ -418,6 +428,7 @@ export default function ClientForm(props?: ClientProps) {
             <FormField
               control={form.control}
               name="notes"
+              disabled={!client}
               render={({ field }) => (
                 <FormItem className="col-span-6 flex flex-col ">
                   <FormLabel>Notes</FormLabel>
