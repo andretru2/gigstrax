@@ -1,23 +1,17 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { gigSchema } from "@/lib/validations/gig";
-import { type GigProps, type SourceProps, type ClientProps } from "@/server/db";
-import { Prisma, VenueType, ClientType } from "@prisma/client";
+import { type ClientProps } from "@/server/db";
+import { Prisma, VenueType } from "@prisma/client";
 
 import {
   catchError,
   cn,
   formatDate,
-  formatTime,
-  fromUTC,
-  toUTC,
-  // duration,
   formatPrice,
   calculateTimeDifference,
-  formatPhone,
   getTimeFromDate,
 } from "@/lib/utils";
 import { type FocusEvent, type ReactNode, useMemo, useTransition } from "react";
@@ -57,10 +51,9 @@ import {
   type ClientPickerProps,
 } from "@/types/index";
 
-import { toast } from "@/hooks/use-toast";
-import ClientForm from "@/components/clients/client-form";
 import { useGigStore } from "@/app/_store/gig";
-import { SelectClient } from "./gig-select-client";
+import { PickClient, PickSanta } from "./gig-pickers";
+import { time } from "console";
 
 // interface Props {
 //   gig: Partial<GigProps> &
@@ -447,7 +440,7 @@ export default function GigForm({
               control={form.control}
               name="clientId"
               render={({ field }) => (
-                <SelectClient
+                <PickClient
                   gigId={id ?? ""}
                   control={form.control}
                   name="clientId"
@@ -457,7 +450,30 @@ export default function GigForm({
 
             <FormField
               control={form.control}
+              name="santaId"
+              render={({ field }) => {
+                if (timeStart && timeEnd && gigDate) {
+                  return (
+                    <PickSanta
+                      gigId={id ?? ""}
+                      timeStart={timeStart}
+                      timeEnd={timeEnd}
+                      gigDate={gigDate}
+                      initialSanta={{ id: santaId ?? "", role: role ?? "" }}
+                    />
+                  );
+                } else {
+                  return <div>Pick a date</div>;
+                }
+              }}
+            />
+
+            {/* <FormField
+              control={form.control}
               name="santa.id"
+              disabled={
+                timeStart === null || timeEnd === null || gigDate === null
+              }
               render={({ field }) => (
                 <FormItem className="col-span-3 w-full ">
                   <FormLabel>Santa</FormLabel>
@@ -499,7 +515,7 @@ export default function GigForm({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
             <FormField
               control={form.control}
               name="mrsSanta.id"

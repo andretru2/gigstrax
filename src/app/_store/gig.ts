@@ -6,7 +6,7 @@ type State = {
 };
 
 type Actions = {
-  setClient: (client: Partial<ClientProps>) => void;
+  setClient: (client: Partial<ClientProps> | undefined) => void;
 };
 
 const initalState: State = {
@@ -15,7 +15,7 @@ const initalState: State = {
 
 export const useGigStore = create<State & Actions>((set, get) => ({
   ...initalState,
-  setClient: (props: Partial<ClientProps>) => {
+  setClient: (props: Partial<ClientProps> | undefined) => {
     set({ client: props });
   },
 }));

@@ -6,7 +6,11 @@ import { revalidatePath } from "next/cache";
 import { addHours, subHours } from "@/lib/utils";
 import { getSources } from "./source";
 import { type Prisma } from "@prisma/client";
-import { type GetGigsProps, type GigExtendedProps } from "@/types/index";
+import {
+  type SantaProps,
+  type GetGigsProps,
+  type GigExtendedProps,
+} from "@/types/index";
 import { redirect } from "next/navigation";
 import { getClient } from "./client";
 
@@ -222,8 +226,13 @@ export async function update(
   return res;
 }
 
-export async function getAvailableSantas(id: string) {
+export async function getSantasByAvailability(id: string) {
   const gig = await prisma.gig.findFirst({
+    select: {
+      gigDate: true,
+      timeStart: true,
+      timeEnd: true,
+    },
     where: { id: id },
   });
 
@@ -233,8 +242,9 @@ export async function getAvailableSantas(id: string) {
 
   const { gigDate, timeStart, timeEnd } = gig;
 
-  if (!gigDate || !timeStart || !timeEnd)
-    throw new Error("Gig date, start time, or end time not found.");
+  if (!gigDate || !timeStart || !timeEnd) {
+    return { available: [], unavailable: [] };
+  }
 
   const dateStart = new Date(gigDate.getTime());
   dateStart.setHours(timeStart.getHours(), timeStart.getMinutes());
@@ -244,9 +254,10 @@ export async function getAvailableSantas(id: string) {
 
   // const santas = await getSantas();
 
-  const { data: santaIds } = await getSources({
+  const { data: santas } = await getSources({
     select: {
       id: true,
+      role: true,
     },
     whereClause: {
       status: "Active",
@@ -256,49 +267,41 @@ export async function getAvailableSantas(id: string) {
     },
   });
 
+  const santaIds = santas.map((santa) => santa.id);
+
   const { data: bookedSantaIds } = await getGigs({
     select: {
       santaId: true,
     },
     whereClause: {
-      AND: [
-        {
-          OR: [
-            { timeStart: { lte: subHours(dateStart, 4) } },
-            { timeEnd: { gte: addHours(dateEnd, 4) } },
-          ],
-        },
-        { santaId: { in: santaIds } },
+      OR: [
+        { timeStart: { lte: subHours(dateStart, 4) } },
+        { timeEnd: { gte: addHours(dateEnd, 4) } },
       ],
+      santaId: { in: santaIds },
     },
+    distinct: ["santaId"],
   });
 
-  console.log("bookedSantaIds", bookedSantaIds);
+  const bookedIds = bookedSantaIds.map((bookedSanta) => bookedSanta.santaId);
 
-  // const bookedSantas = await prisma.gig.findMany({
-  //   where: {
-  //     AND: [
-  //       { gigDate },
-  //       {
-  //         OR: [
-  //           { timeStart: { lte: dateStart, gte: dateEnd } },
-  //           { timeEnd: { lte: dateStart, gte: dateEnd } },
-  //         ],
-  //       },
-  //       { santaId: { in: santaIds } },
-  //     ],
-  //   },
-  // });
+  console.log("bookedSantaIds", bookedSantaIds, bookedIds);
 
-  // const bookedSantaIds = bookedSantas.map((gig) => gig.santaId);
+  const availableSantas = santaIds.filter(
+    (santa) => !bookedIds.includes(santa)
+  );
 
-  // const availableSantas = santas.filter(
-  //   (santa) => !bookedSantaIds.includes(santa.id)
-  // );
+  const available: SantaProps[] = availableSantas.map((santa) => {
+    return santas.find((s) => s.id === santa);
+  });
 
-  // console.log("availableSantas", availableSantas);
+  const unavailable = bookedIds.map((santa) => {
+    return santas.find((s) => s.id === santa);
+  }) as SantaProps[];
 
-  // return { available: availableSantas, unavailable: bookedSantas };
+  console.log("available", available, unavailable);
+
+  return { available, unavailable };
 }
 
 export async function copyFromClient(id: string) {
@@ -429,4 +432,60 @@ export async function copyFromClient(id: string) {
 //   // });
 
 //   // return newGigs; // Optionally, return the created gigs
+// }
+
+// Cache santas
+// let santasCache;
+
+// async function getSantas() {
+//   if (!santasCache) {
+//     santasCache = await getSources({
+//       // only select necessary fields
+//     });
+//   }
+
+//   return santasCache;
+// }
+
+// export async function getAvailableSantas(id) {
+
+//   // Get gig
+//   const gig = await prisma.gig.findFirst({
+//     where: { id },
+//     select: { // limit fields
+//       santaId: true,
+//       timeStart: true,
+//       timeEnd: true
+//     }
+//   });
+
+//   // Get santa ids
+//   const santaIds = await getSantas().then(santas => santas.map(s => s.id));
+
+//   // Get booked santa ids
+//   const bookedSantaIds = await getGigs({
+//     where: {
+//       santaId: { in: santaIds },
+//       OR: [
+//         { timeStart: { lte: subHours(gig.timeStart, 4) } },
+//         { timeEnd: { gte: addHours(gig.timeEnd, 4) } }
+//       ]
+//     }
+//   }).then(gigs => gigs.map(g => g.santaId));
+
+//   // Filter available
+//   const availableSantas = await Promise.all(santaIds.map(async santaId => {
+//     return {
+//       id: santaId,
+//       booked: bookedSantaIds.includes(santaId)
+//     };
+//   })).then(santas => santas.filter(s => !s.booked));
+
+//   // Map to santa data
+//   const available = await Promise.all(availableSantas.map(async santa => {
+//     return getSantas().then(santas => santas.find(s => s.id === santa.id));
+//   }));
+
+//   return available;
+
 // }

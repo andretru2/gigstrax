@@ -149,6 +149,7 @@ export default function ClientForm(props?: ClientProps) {
                     <Input
                       {...field}
                       type="text"
+                      disabled={!client}
                       className="bg-white"
                       onBlur={(e: FocusEvent<HTMLInputElement>) => {
                         startTransition(() => {
@@ -259,6 +260,7 @@ export default function ClientForm(props?: ClientProps) {
                   <FormLabel>Client Type</FormLabel>
                   <FormControl>
                     <Select
+                      disabled={!client}
                       value={field.value}
                       onValueChange={(value: ClientType) => {
                         field.onChange(value);
