@@ -130,7 +130,7 @@ export default function ClientForm(props?: ClientProps) {
   return (
     <Form {...form}>
       <form
-        className="grid w-full   gap-2  "
+        className="grid w-full   max-w-4xl gap-2 "
         // onSubmit={(...args) => void form.handleSubmit(onSubmit)(...args)}
       >
         <Card className=" p-4">
