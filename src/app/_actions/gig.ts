@@ -134,8 +134,11 @@ export async function getGigs({
   orderBy = [],
   limit = 10,
   skip = 0,
-}: GetGigsProps) {
+}: // distinct = [],
+GetGigsProps) {
   const totalCount = await prisma.gig.count({ where: whereClause });
+
+  console.log(whereClause);
 
   const data = await prisma.gig.findMany({
     select: select,
@@ -252,8 +255,6 @@ export async function getSantasByAvailability(id: string) {
   const dateEnd = new Date(gigDate.getTime());
   dateEnd.setHours(timeEnd.getHours(), timeEnd.getMinutes());
 
-  // const santas = await getSantas();
-
   const { data: santas } = await getSources({
     select: {
       id: true,
@@ -265,41 +266,43 @@ export async function getSantasByAvailability(id: string) {
         contains: "RBS",
       },
     },
+    limit: 100,
   });
 
   const santaIds = santas.map((santa) => santa.id);
 
   const { data: bookedSantaIds } = await getGigs({
     select: {
+      id: true,
       santaId: true,
     },
     whereClause: {
+      gigDate: gigDate,
       OR: [
         { timeStart: { lte: subHours(dateStart, 4) } },
         { timeEnd: { gte: addHours(dateEnd, 4) } },
+        { timeStart: { equals: dateStart } },
+        { timeEnd: { equals: dateEnd } },
       ],
-      santaId: { in: santaIds },
+      santaId: { not: null },
     },
-    distinct: ["santaId"],
   });
 
-  const bookedIds = bookedSantaIds.map((bookedSanta) => bookedSanta.santaId);
+  const unavailableIds = [
+    ...new Set(bookedSantaIds.map((bookedSanta) => bookedSanta.santaId)),
+  ];
 
-  console.log("bookedSantaIds", bookedSantaIds, bookedIds);
-
-  const availableSantas = santaIds.filter(
-    (santa) => !bookedIds.includes(santa)
+  const availableIds = santaIds.filter(
+    (santa) => !unavailableIds.includes(santa)
   );
+  // console.log(santas, availableIds, unavailableIds);
 
-  const available: SantaProps[] = availableSantas.map((santa) => {
-    return santas.find((s) => s.id === santa);
-  });
-
-  const unavailable = bookedIds.map((santa) => {
-    return santas.find((s) => s.id === santa);
-  }) as SantaProps[];
-
-  console.log("available", available, unavailable);
+  const available = santas
+    .filter((santa) => availableIds.includes(santa.id))
+    .sort((a, b) => a.role.localeCompare(b.role));
+  const unavailable = santas
+    .filter((santa) => unavailableIds.includes(santa.id))
+    .sort((a, b) => a.role.localeCompare(b.role));
 
   return { available, unavailable };
 }

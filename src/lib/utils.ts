@@ -327,10 +327,13 @@ export function isMacOs() {
 // date.setMinutes(Number(minutes));
 // return date;
 
-export function subHours(date: Date, hours: number): Date {
-  return new Date(date.getTime() - hours * 60 * 60 * 1000);
+export function subHours(date: Date, hours: number): string {
+  // return new Date(date.getTime() - hours * 60 * 60 * 1000);
+  const newDate = new Date(date.getTime() - hours * 60 * 60 * 1000);
+  return newDate.toISOString();
 }
 
-export function addHours(date: Date, hours: number): Date {
-  return new Date(date.getTime() + hours * 60 * 60 * 1000);
+export function addHours(date: Date, hours: number): string {
+  const newDate = new Date(date.getTime() + hours * 60 * 60 * 1000);
+  return newDate.toISOString();
 }

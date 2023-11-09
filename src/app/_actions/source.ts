@@ -51,7 +51,7 @@ export async function getSources({
   whereClause = {},
   // orderBy = [{ nameLast: "asc" }, { nameFirst: "asc" }],
   orderBy = [],
-  limit = 10,
+  limit = 20,
   skip = 0,
 }: GetSourcesProps) {
   const totalCount = await prisma.source.count({ where: whereClause });

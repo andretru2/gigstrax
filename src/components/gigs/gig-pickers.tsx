@@ -171,7 +171,7 @@ export function PickClient({
           </FormControl>
         </PopoverTrigger>
 
-        <PopoverContent className=" h-[650px] w-[500px] p-2 " side="right">
+        <PopoverContent className=" h-[650px] w-[500px] p-2 " side="bottom">
           <Command className="flex  flex-col gap-3 border p-4">
             <h1>Search Clients</h1>
             <CommandInput
@@ -319,7 +319,7 @@ export function PickSanta({
               });
         });
     });
-  }, [timeStart, timeEnd, gigDate]);
+  }, [timeStart, timeEnd, gigDate, gigId]);
 
   const handlePopoverOpen = () => {
     setIsOpen(!isOpen);
@@ -389,7 +389,7 @@ export function PickSanta({
           </FormControl>
         </PopoverTrigger>
 
-        <PopoverContent className=" h-[650px] w-[500px] p-2 " side="right">
+        <PopoverContent className=" h-[650px] w-[500px] p-2 " side="bottom">
           <Command className="flex  flex-col gap-3 border p-4">
             <CommandList className="max-h-[500px]">
               <CommandSeparator />

@@ -112,6 +112,7 @@ export type GetGigsProps = {
   orderBy?: Prisma.GigOrderByWithRelationInput[];
   limit?: Prisma.GigFindManyArgs["take"];
   skip?: Prisma.GigFindManyArgs["skip"];
+  distinct?: Prisma.GigScalarFieldEnum[];
 };
 
 export type GetClientsProps = {
