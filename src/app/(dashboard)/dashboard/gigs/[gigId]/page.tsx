@@ -19,8 +19,6 @@ import {
   calculateTimeDifference,
   getTimeFromDate,
 } from "@/lib/utils";
-import { Icons } from "@/components/icons";
-import { Button } from "@/components/ui/button";
 import { getGig, getGigs } from "@/app/_actions/gig";
 import { Separator } from "@/components/ui/separator";
 import GigDetailTabs from "@/components/gigs/gig-detail-tabs";
@@ -32,7 +30,6 @@ import ClientForm from "@/components/clients/client-form";
 import StoreInitializer from "@/components/gigs/store-initializer";
 import SectionHeaderInfo from "@/components/ui/section-header-info";
 import MultiEventCreate from "@/components/gigs/mulit-event";
-import { type GetGigsProps } from "@/types/index";
 // import dynamic from "next/dynamic";
 
 export const metadata: Metadata = {

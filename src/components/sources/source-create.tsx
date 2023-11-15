@@ -27,11 +27,12 @@ import { Icons } from "@/components/icons";
 import { Button } from "../ui/button";
 import { toast } from "@/hooks/use-toast";
 import { catchError } from "@/lib/utils";
+import { type SantaType } from "@/types/index";
 
 interface SourceCreateProps {
   onSuccess?: (newSourceId: string, role?: string) => void;
   goto?: boolean;
-  role?: "RBS" | "Mrs";
+  role?: SantaType;
 }
 
 export default function SourceCreate(props: SourceCreateProps) {
@@ -155,7 +156,7 @@ export default function SourceCreate(props: SourceCreateProps) {
             </div>
           ) : (
             <div className="flex flex-row items-center gap-2">
-              Next
+              Create
               <Icons.chevronRight className="mr-2 h-4 w-4" />
               <span className="sr-only">Submit</span>
             </div>

@@ -10,6 +10,7 @@ import {
   type SantaProps,
   type GetGigsProps,
   type GigExtendedProps,
+  type SantaType,
 } from "@/types/index";
 import { redirect } from "next/navigation";
 import { getClient } from "./client";
@@ -50,7 +51,7 @@ export async function getGig(id: string) {
       mrsSanta: {
         select: {
           id: true,
-          nameFirst: true,
+          role: true,
         },
       },
       price: true,
@@ -227,7 +228,7 @@ export async function update(
   return res;
 }
 
-export async function getSantasByAvailability(id: string) {
+export async function getSantasByAvailabilityx(id: string) {
   const gig = await prisma.gig.findFirst({
     select: {
       gigDate: true,
@@ -308,10 +309,7 @@ export async function getSantasByAvailability(id: string) {
   return { available, unavailable };
 }
 
-export async function getMrsSantasByAvailability(
-  id: string,
-  role: "RBS" | "Mrs"
-) {
+export async function getSantasByAvailability(id: string, role: SantaType) {
   const gig = await prisma.gig.findFirst({
     select: {
       gigDate: true,
@@ -337,7 +335,7 @@ export async function getMrsSantasByAvailability(
   const dateEnd = new Date(gigDate.getTime());
   dateEnd.setHours(timeEnd.getHours(), timeEnd.getMinutes());
 
-  const { data: MrsSantas } = await getSources({
+  const { data: santas } = await getSources({
     select: {
       id: true,
       role: true,
@@ -345,7 +343,7 @@ export async function getMrsSantasByAvailability(
     whereClause: {
       status: "Active",
       role: {
-        contains: "RBS",
+        contains: role,
       },
     },
     limit: 100,
@@ -353,10 +351,12 @@ export async function getMrsSantasByAvailability(
 
   const santaIds = santas.map((santa) => santa.id);
 
+  const santaIdKey = role === "RBS" ? "santaId" : "mrsSantaId";
+
   const { data: unavailableSantaIds } = await getGigs({
     select: {
       id: true,
-      santaId: true,
+      [santaIdKey]: true,
     },
     whereClause: {
       gigDate: gigDate,
@@ -366,7 +366,7 @@ export async function getMrsSantasByAvailability(
         { timeStart: { equals: dateStart } },
         { timeEnd: { equals: dateEnd } },
       ],
-      santaId: { not: null },
+      [santaIdKey]: { not: null },
       id: { not: id },
     },
   });

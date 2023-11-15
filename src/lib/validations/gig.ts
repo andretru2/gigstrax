@@ -63,7 +63,7 @@ export const gigSchema = z
     }),
     mrsSanta: z.object({
       id: z.string().optional(),
-      nameFirst: z.string().optional(),
+      role: z.string().optional(),
     }),
     // client: z.object({ update: clientSchema }),
     client: clientSchema,

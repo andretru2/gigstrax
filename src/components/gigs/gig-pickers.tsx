@@ -23,24 +23,18 @@ import {
   CommandList,
   CommandSeparator,
 } from "../ui/command";
-import { Input } from "../ui/input";
 import { type FocusEvent, useEffect, useState, useTransition } from "react";
 import { cn } from "@/lib/utils";
 import ClientCreate from "../clients/client-create";
 import { useRouter } from "next/navigation";
 import { useDebounce } from "@/hooks/use-debounce";
-import {
-  getGig,
-  getMrsSantasByAvailability,
-  getSantasByAvailability,
-  update,
-} from "@/app/_actions/gig";
+import { getSantasByAvailability, update } from "@/app/_actions/gig";
 import { getClient, getClients } from "@/app/_actions/client";
 import { toast } from "@/hooks/use-toast";
 import {
   type ClientPickerProps,
   type SantaProps,
-  type MrsSantaProps,
+  type SantaType,
 } from "@/types/index";
 import { useGigStore } from "@/app/_store/gig";
 import SourceCreate from "../sources/source-create";
@@ -269,7 +263,7 @@ export function PickClient({
   );
 }
 
-export function PickSanta({
+export function PickSantax({
   gigId,
   timeStart,
   timeEnd,
@@ -380,7 +374,7 @@ export function PickSanta({
 
         <PopoverContent className=" h-[650px] w-[500px] p-2 " side="bottom">
           <Command className="flex  flex-col gap-3 border p-4">
-            <CommandList className="max-h-[650px]">
+            <CommandList className="max-h-[650px] ">
               <CommandSeparator />
               <CommandEmpty>No results found.</CommandEmpty>
               <CommandGroup heading="Available">
@@ -457,30 +451,31 @@ export function PickSanta({
   );
 }
 
-export function PickMrsSanta({
+export function PickSanta({
   gigId,
   timeStart,
   timeEnd,
   gigDate,
-  initialMrsSanta,
+  initial,
+  role,
 }: {
   gigId: string;
   timeStart: Date;
   timeEnd: Date;
   gigDate: Date;
-  initialMrsSanta: MrsSantaProps | null;
+  initial: SantaProps | null;
+  role: SantaType;
 }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [selectedMrsSanta, setSelectedMrsSanta] =
-    useState<MrsSantaProps | null>(initialMrsSanta);
-  const [available, setAvailable] = useState<MrsSantaProps[] | null>(null);
-  const [unavailable, setUnavailable] = useState<MrsSantaProps[] | null>(null);
+  const [selected, setSelected] = useState<SantaProps | null>(initial);
+  const [available, setAvailable] = useState<SantaProps[] | null>(null);
+  const [unavailable, setUnavailable] = useState<SantaProps[] | null>(null);
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     startTransition(() => {
       if (!gigDate || !timeStart || !timeEnd) return;
-      getMrsSantasByAvailability(gigId)
+      getSantasByAvailability(gigId, role)
         .then(({ available, unavailable }) => {
           setAvailable(available);
           setUnavailable(unavailable);
@@ -495,17 +490,19 @@ export function PickMrsSanta({
               });
         });
     });
-  }, [timeStart, timeEnd, gigDate, gigId]);
+  }, [timeStart, timeEnd, gigDate, gigId, role]);
 
   const handlePopoverOpen = () => {
     setIsOpen(!isOpen);
   };
 
-  function handleSelectMrsSanta(props: MrsSantaProps) {
+  const santaIdKey = role === "RBS" ? "santaId" : "mrsSantaId";
+
+  function handleSelect(props: SantaProps) {
     startTransition(() => {
-      update({ id: gigId, mrsSantaId: props.id })
+      update({ id: gigId, [santaIdKey]: props.id })
         .then((updatedGig) => {
-          setSelectedMrsSanta(props);
+          setSelected(props);
           setIsOpen(false);
           // router.refresh();
         })
@@ -521,11 +518,11 @@ export function PickMrsSanta({
     });
   }
 
-  function handleClearMrsSanta() {
+  function handleClear() {
     startTransition(async () => {
       try {
-        await update({ id: gigId, clientId: null });
-        setSelectedMrsSanta(null);
+        await update({ id: gigId, [santaIdKey]: null });
+        setSelected(null);
         setIsOpen(false);
         // router.refresh();
       } catch (error) {
@@ -541,8 +538,12 @@ export function PickMrsSanta({
   }
 
   return (
-    <FormItem className=" col-span-3 flex flex-col ">
-      <FormLabel>MrsSanta</FormLabel>
+    <FormItem
+      className={
+        (cn("flex flex-col "), role === "RBS" ? "col-span-3 " : "col-span-2 ")
+      }
+    >
+      <FormLabel>{role === "RBS" ? "Santa" : "Mrs Santa"}</FormLabel>
       <Popover open={isOpen} onOpenChange={handlePopoverOpen}>
         <PopoverTrigger asChild>
           <FormControl>
@@ -551,10 +552,10 @@ export function PickMrsSanta({
               role="combobox"
               className="w-full justify-between bg-white"
             >
-              {selectedMrsSanta?.role ? (
-                <>{selectedMrsSanta?.role}</>
+              {selected?.role ? (
+                <>{selected?.role}</>
               ) : (
-                <>Pick MrsSanta...</>
+                <>{role === "RBS" ? "Pick Santa" : "Pick MrsSanta..."}</>
               )}
               {isPending ? (
                 <Icons.spinner className="h-4 w-4 animate-spin text-accent" />
@@ -572,18 +573,18 @@ export function PickMrsSanta({
               <CommandEmpty>No results found.</CommandEmpty>
               <CommandGroup heading="Available">
                 {available &&
-                  available.map((MrsSanta) => (
+                  available.map((santa) => (
                     <CommandItem
-                      value={MrsSanta.id}
-                      key={MrsSanta.id}
-                      onSelect={() => handleSelectMrsSanta(MrsSanta)}
+                      value={santa.id}
+                      key={santa.id}
+                      onSelect={() => handleSelect(santa)}
                     >
-                      {MrsSanta.role}
+                      {santa.role}
 
                       <Icons.check
                         className={cn(
                           "ml-auto h-4 w-4",
-                          MrsSanta.id === selectedMrsSanta?.id
+                          santa.id === selected?.id
                             ? "opacity-100"
                             : "opacity-0"
                         )}
@@ -598,14 +599,14 @@ export function PickMrsSanta({
                     <CommandItem
                       value={MrsSanta.id}
                       key={MrsSanta.id}
-                      onSelect={() => handleSelectMrsSanta(MrsSanta)}
+                      onSelect={() => handleSelect(MrsSanta)}
                     >
                       {MrsSanta.role}
 
                       <Icons.check
                         className={cn(
                           "ml-auto h-4 w-4",
-                          MrsSanta.id === selectedMrsSanta?.id
+                          MrsSanta.id === selected?.id
                             ? "opacity-100"
                             : "opacity-0"
                         )}
@@ -616,9 +617,10 @@ export function PickMrsSanta({
               <CommandSeparator />
               <CommandGroup className="" heading="Create new">
                 <CommandItem className="flex flex-col gap-2 self-end bg-none aria-selected:bg-inherit">
-                  <ClientCreate
-                    onSuccess={(newClientId) => {
-                      handleSelectMrsSanta(newClientId);
+                  <SourceCreate
+                    role={role}
+                    onSuccess={(newSourceId, role) => {
+                      handleSelect({ id: newSourceId, role: role });
                     }}
                   />
                 </CommandItem>
@@ -629,7 +631,7 @@ export function PickMrsSanta({
                   <Button
                     variant={"secondary"}
                     isLoading={isPending}
-                    onClick={handleClearMrsSanta}
+                    onClick={handleClear}
                   >
                     Clear
                   </Button>

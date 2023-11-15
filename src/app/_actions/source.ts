@@ -93,6 +93,7 @@ export async function getMrsSantas() {
     select: {
       id: true,
       nameFirst: true,
+      role: true,
     },
     where: {
       status: "Active",

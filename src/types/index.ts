@@ -97,13 +97,13 @@ export interface Address {
 }
 
 export type SantaProps = Pick<SourceProps, "id" | "role">;
-export type MrsSantaProps = Pick<SourceProps, "id" | "nameFirst">;
 export type ClientPickerProps = Pick<ClientProps, "id" | "client">;
+export type SantaType = "RBS" | "Mrs. Claus";
 
 export type GigExtendedProps = Partial<GigProps> & {
   client?: Partial<ClientProps>;
-  santa?: Pick<SourceProps, "id" | "role">;
-  mrsSanta?: Pick<SourceProps, "id" | "nameFirst">;
+  santa?: SantaProps;
+  mrsSanta?: SantaProps;
 };
 
 export type GetGigsProps = {

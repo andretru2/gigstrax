@@ -47,13 +47,10 @@ import { Label } from "../ui/label";
 import {
   type SantaProps,
   type GigExtendedProps,
-  type MrsSantaProps,
   type ClientPickerProps,
 } from "@/types/index";
 
-import { useGigStore } from "@/app/_store/gig";
 import { PickClient, PickSanta } from "./gig-pickers";
-import { time } from "console";
 
 // interface Props {
 //   gig: Partial<GigProps> &
@@ -68,7 +65,7 @@ interface Props {
   gig: GigExtendedProps;
   client?: ClientProps;
   santas: SantaProps[];
-  mrsSantas?: MrsSantaProps[];
+  mrsSantas?: SantaProps[];
   clients?: ClientPickerProps[];
   clientSuggestions?: ClientPickerProps[];
   children?: ReactNode;
@@ -85,8 +82,6 @@ export default function GigForm({
   children,
   ...props
 }: Props) {
-  const { client, setClient } = useGigStore();
-
   const {
     id,
     gigDate,
@@ -160,7 +155,9 @@ export default function GigForm({
   const [isPending, startTransition] = useTransition();
 
   const { id: santaId, role } = santa ?? {};
-  const { id: mrsSantaId, nameFirst } = mrsSanta ?? {};
+  const { id: mrsSantaId, role: mrsSantaRole } = mrsSanta ?? {};
+
+  console.log("mrsSantaId", mrsSantaId, mrsSantaRole);
 
   const durationHours =
     timeStart && timeEnd ? calculateTimeDifference(timeStart, timeEnd) : null;
@@ -196,7 +193,7 @@ export default function GigForm({
       },
       mrsSanta: {
         id: mrsSantaId ? mrsSantaId : undefined,
-        nameFirst: nameFirst ? nameFirst : undefined,
+        role: mrsSantaRole ? mrsSantaRole : undefined,
       },
     },
   });
@@ -455,11 +452,38 @@ export default function GigForm({
                 if (timeStart && timeEnd && gigDate) {
                   return (
                     <PickSanta
+                      key="santaId"
                       gigId={id ?? ""}
                       timeStart={timeStart}
                       timeEnd={timeEnd}
+                      role="RBS"
                       gigDate={gigDate}
-                      initialSanta={{ id: santaId ?? "", role: role ?? "" }}
+                      initial={{ id: santaId ?? "", role: role ?? "" }}
+                    />
+                  );
+                } else {
+                  return <div>Pick a date</div>;
+                }
+              }}
+            />
+
+            <FormField
+              control={form.control}
+              name="mrsSantaId"
+              render={({ field }) => {
+                if (timeStart && timeEnd && gigDate) {
+                  return (
+                    <PickSanta
+                      key="mrsSantaId"
+                      gigId={id ?? ""}
+                      timeStart={timeStart}
+                      timeEnd={timeEnd}
+                      role="Mrs. Claus"
+                      gigDate={gigDate}
+                      initial={{
+                        id: mrsSantaId ?? "",
+                        role: mrsSantaRole ?? "",
+                      }}
                     />
                   );
                 } else {
@@ -516,7 +540,7 @@ export default function GigForm({
                 </FormItem>
               )}
             /> */}
-            <FormField
+            {/* <FormField
               control={form.control}
               name="mrsSanta.id"
               render={({ field }) => (
@@ -561,7 +585,7 @@ export default function GigForm({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             {/* <FormField
               control={form.control}
