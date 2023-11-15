@@ -75,7 +75,7 @@ export default function ClientCreate(props: ClientCreateProps) {
   return (
     <Form {...form}>
       <form
-        className="flex flex-col gap-3  "
+        className="flex w-full flex-col gap-3 "
         onSubmit={(...args) => void form.handleSubmit(onSubmit)(...args)}
       >
         <FormField

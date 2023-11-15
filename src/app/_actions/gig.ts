@@ -138,8 +138,6 @@ export async function getGigs({
 GetGigsProps) {
   const totalCount = await prisma.gig.count({ where: whereClause });
 
-  console.log(whereClause);
-
   const data = await prisma.gig.findMany({
     select: select,
     where: whereClause,
@@ -271,7 +269,7 @@ export async function getSantasByAvailability(id: string) {
 
   const santaIds = santas.map((santa) => santa.id);
 
-  const { data: bookedSantaIds } = await getGigs({
+  const { data: unavailableSantaIds } = await getGigs({
     select: {
       id: true,
       santaId: true,
@@ -285,11 +283,98 @@ export async function getSantasByAvailability(id: string) {
         { timeEnd: { equals: dateEnd } },
       ],
       santaId: { not: null },
+      id: { not: id },
     },
   });
 
   const unavailableIds = [
-    ...new Set(bookedSantaIds.map((bookedSanta) => bookedSanta.santaId)),
+    ...new Set(
+      unavailableSantaIds.map((unavailableSanta) => unavailableSanta.santaId)
+    ),
+  ];
+
+  const availableIds = santaIds.filter(
+    (santa) => !unavailableIds.includes(santa)
+  );
+  // console.log(santas, availableIds, unavailableIds);
+
+  const available = santas
+    .filter((santa) => availableIds.includes(santa.id))
+    .sort((a, b) => a.role.localeCompare(b.role));
+  const unavailable = santas
+    .filter((santa) => unavailableIds.includes(santa.id))
+    .sort((a, b) => a.role.localeCompare(b.role));
+
+  return { available, unavailable };
+}
+
+export async function getMrsSantasByAvailability(
+  id: string,
+  role: "RBS" | "Mrs"
+) {
+  const gig = await prisma.gig.findFirst({
+    select: {
+      gigDate: true,
+      timeStart: true,
+      timeEnd: true,
+    },
+    where: { id: id },
+  });
+
+  if (!gig) {
+    throw new Error("Gig not found.");
+  }
+
+  const { gigDate, timeStart, timeEnd } = gig;
+
+  if (!gigDate || !timeStart || !timeEnd) {
+    return { available: [], unavailable: [] };
+  }
+
+  const dateStart = new Date(gigDate.getTime());
+  dateStart.setHours(timeStart.getHours(), timeStart.getMinutes());
+
+  const dateEnd = new Date(gigDate.getTime());
+  dateEnd.setHours(timeEnd.getHours(), timeEnd.getMinutes());
+
+  const { data: MrsSantas } = await getSources({
+    select: {
+      id: true,
+      role: true,
+    },
+    whereClause: {
+      status: "Active",
+      role: {
+        contains: "RBS",
+      },
+    },
+    limit: 100,
+  });
+
+  const santaIds = santas.map((santa) => santa.id);
+
+  const { data: unavailableSantaIds } = await getGigs({
+    select: {
+      id: true,
+      santaId: true,
+    },
+    whereClause: {
+      gigDate: gigDate,
+      OR: [
+        { timeStart: { lte: subHours(dateStart, 4) } },
+        { timeEnd: { gte: addHours(dateEnd, 4) } },
+        { timeStart: { equals: dateStart } },
+        { timeEnd: { equals: dateEnd } },
+      ],
+      santaId: { not: null },
+      id: { not: id },
+    },
+  });
+
+  const unavailableIds = [
+    ...new Set(
+      unavailableSantaIds.map((unavailableSanta) => unavailableSanta.santaId)
+    ),
   ];
 
   const availableIds = santaIds.filter(
@@ -465,8 +550,8 @@ export async function copyFromClient(id: string) {
 //   // Get santa ids
 //   const santaIds = await getSantas().then(santas => santas.map(s => s.id));
 
-//   // Get booked santa ids
-//   const bookedSantaIds = await getGigs({
+//   // Get unavailable santa ids
+//   const unavailableSantaIds = await getGigs({
 //     where: {
 //       santaId: { in: santaIds },
 //       OR: [
@@ -480,9 +565,9 @@ export async function copyFromClient(id: string) {
 //   const availableSantas = await Promise.all(santaIds.map(async santaId => {
 //     return {
 //       id: santaId,
-//       booked: bookedSantaIds.includes(santaId)
+//       unavailable: unavailableSantaIds.includes(santaId)
 //     };
-//   })).then(santas => santas.filter(s => !s.booked));
+//   })).then(santas => santas.filter(s => !s.unavailable));
 
 //   // Map to santa data
 //   const available = await Promise.all(availableSantas.map(async santa => {

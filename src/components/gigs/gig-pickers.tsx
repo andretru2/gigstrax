@@ -29,11 +29,21 @@ import { cn } from "@/lib/utils";
 import ClientCreate from "../clients/client-create";
 import { useRouter } from "next/navigation";
 import { useDebounce } from "@/hooks/use-debounce";
-import { getGig, getSantasByAvailability, update } from "@/app/_actions/gig";
+import {
+  getGig,
+  getMrsSantasByAvailability,
+  getSantasByAvailability,
+  update,
+} from "@/app/_actions/gig";
 import { getClient, getClients } from "@/app/_actions/client";
 import { toast } from "@/hooks/use-toast";
-import { type ClientPickerProps, type SantaProps } from "@/types/index";
+import {
+  type ClientPickerProps,
+  type SantaProps,
+  type MrsSantaProps,
+} from "@/types/index";
 import { useGigStore } from "@/app/_store/gig";
+import SourceCreate from "../sources/source-create";
 
 export function PickClient({
   gigId,
@@ -161,7 +171,7 @@ export function PickClient({
               role="combobox"
               className="w-full justify-between bg-white"
             >
-              {client?.client ? <>{client.client}</> : <>Select Client...</>}
+              {client?.client ? <>{client.client}</> : <>Pick Client...</>}
               {isPending ? (
                 <Icons.spinner className="h-4 w-4 animate-spin text-accent" />
               ) : (
@@ -261,44 +271,24 @@ export function PickClient({
 
 export function PickSanta({
   gigId,
-  // control,
-  // name,
   timeStart,
   timeEnd,
   gigDate,
   initialSanta,
 }: {
   gigId: string;
-  // control: Control;
-  // name: string;
   timeStart: Date;
   timeEnd: Date;
   gigDate: Date;
   initialSanta: SantaProps | null;
 }) {
-  // const { field } = useController({ control, name });
-  const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-
   const [selectedSanta, setSelectedSanta] = useState<SantaProps | null>(
     initialSanta
   );
   const [available, setAvailable] = useState<SantaProps[] | null>(null);
   const [unavailable, setUnavailable] = useState<SantaProps[] | null>(null);
-
   const [isPending, startTransition] = useTransition();
-
-  // if (!gigDate || !timeStart || !timeEnd) return null;
-
-  // useEffect(() => {
-  //   startTransition(async () => {
-  //     const gig = await getGig(gigId);
-  //     const { timeStart, timeEnd, gigDate } = gig;
-
-  //     console.log(timeStart, timeEnd, gigDate);
-  //     // setSantas(data);
-  //   });
-  // }, [gigId]);
 
   useEffect(() => {
     startTransition(() => {
@@ -307,7 +297,6 @@ export function PickSanta({
         .then(({ available, unavailable }) => {
           setAvailable(available);
           setUnavailable(unavailable);
-          console.log(available, unavailable);
         })
         .catch((error) => {
           error instanceof Error
@@ -328,8 +317,8 @@ export function PickSanta({
   function handleSelectSanta(props: SantaProps) {
     startTransition(() => {
       update({ id: gigId, santaId: props.id })
-        .then((updateGig) => {
-          setSanta(props);
+        .then((updatedGig) => {
+          setSelectedSanta(props);
           setIsOpen(false);
           // router.refresh();
         })
@@ -349,9 +338,9 @@ export function PickSanta({
     startTransition(async () => {
       try {
         await update({ id: gigId, clientId: null });
-        setClient(undefined);
+        setSelectedSanta(null);
         setIsOpen(false);
-        router.refresh();
+        // router.refresh();
       } catch (error) {
         error instanceof Error
           ? toast({
@@ -391,7 +380,7 @@ export function PickSanta({
 
         <PopoverContent className=" h-[650px] w-[500px] p-2 " side="bottom">
           <Command className="flex  flex-col gap-3 border p-4">
-            <CommandList className="max-h-[500px]">
+            <CommandList className="max-h-[650px]">
               <CommandSeparator />
               <CommandEmpty>No results found.</CommandEmpty>
               <CommandGroup heading="Available">
@@ -407,7 +396,7 @@ export function PickSanta({
                       <Icons.check
                         className={cn(
                           "ml-auto h-4 w-4",
-                          santa.id === selectedSanta.id
+                          santa.id === selectedSanta?.id
                             ? "opacity-100"
                             : "opacity-0"
                         )}
@@ -429,7 +418,7 @@ export function PickSanta({
                       <Icons.check
                         className={cn(
                           "ml-auto h-4 w-4",
-                          santa.id === selectedSanta.id
+                          santa.id === selectedSanta?.id
                             ? "opacity-100"
                             : "opacity-0"
                         )}
@@ -438,27 +427,214 @@ export function PickSanta({
                   ))}
               </CommandGroup>
               <CommandSeparator />
-              {/* <CommandGroup className="" heading="Create new">
-                <CommandItem className="flex flex-col gap-2 self-end bg-none data-[selected]:bg-none">
-                  <ClientCreate
-                    onSuccess={(newClientId) => {
-                      handleSelectClient(newClientId);
+              <CommandGroup className="" heading="Create new">
+                <CommandItem className="flex  flex-col gap-2 self-end bg-none aria-selected:bg-inherit">
+                  <SourceCreate
+                    role="RBS"
+                    onSuccess={(newSourceId, role) => {
+                      handleSelectSanta({ id: newSourceId, role: role });
                     }}
                   />
                 </CommandItem>
               </CommandGroup>
               <CommandSeparator />
               <CommandGroup className="" heading="Clear">
-                <CommandItem className="flex flex-col gap-2 self-end bg-none data-[selected]:bg-none">
+                <CommandItem className="flex flex-col gap-2 self-end bg-none aria-selected:bg-inherit">
                   <Button
                     variant={"secondary"}
                     isLoading={isPending}
-                    onClick={handleClearClient}
+                    onClick={handleClearSanta}
                   >
                     Clear
                   </Button>
                 </CommandItem>
-              </CommandGroup> */}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </FormItem>
+  );
+}
+
+export function PickMrsSanta({
+  gigId,
+  timeStart,
+  timeEnd,
+  gigDate,
+  initialMrsSanta,
+}: {
+  gigId: string;
+  timeStart: Date;
+  timeEnd: Date;
+  gigDate: Date;
+  initialMrsSanta: MrsSantaProps | null;
+}) {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [selectedMrsSanta, setSelectedMrsSanta] =
+    useState<MrsSantaProps | null>(initialMrsSanta);
+  const [available, setAvailable] = useState<MrsSantaProps[] | null>(null);
+  const [unavailable, setUnavailable] = useState<MrsSantaProps[] | null>(null);
+  const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    startTransition(() => {
+      if (!gigDate || !timeStart || !timeEnd) return;
+      getMrsSantasByAvailability(gigId)
+        .then(({ available, unavailable }) => {
+          setAvailable(available);
+          setUnavailable(unavailable);
+        })
+        .catch((error) => {
+          error instanceof Error
+            ? toast({
+                description: error.message,
+              })
+            : toast({
+                description: "Something went wrong, please try again.",
+              });
+        });
+    });
+  }, [timeStart, timeEnd, gigDate, gigId]);
+
+  const handlePopoverOpen = () => {
+    setIsOpen(!isOpen);
+  };
+
+  function handleSelectMrsSanta(props: MrsSantaProps) {
+    startTransition(() => {
+      update({ id: gigId, mrsSantaId: props.id })
+        .then((updatedGig) => {
+          setSelectedMrsSanta(props);
+          setIsOpen(false);
+          // router.refresh();
+        })
+        .catch((error) => {
+          error instanceof Error
+            ? toast({
+                description: error.message,
+              })
+            : toast({
+                description: "Something went wrong, please try again.",
+              });
+        });
+    });
+  }
+
+  function handleClearMrsSanta() {
+    startTransition(async () => {
+      try {
+        await update({ id: gigId, clientId: null });
+        setSelectedMrsSanta(null);
+        setIsOpen(false);
+        // router.refresh();
+      } catch (error) {
+        error instanceof Error
+          ? toast({
+              description: error.message,
+            })
+          : toast({
+              description: "Something went wrong, please try again.",
+            });
+      }
+    });
+  }
+
+  return (
+    <FormItem className=" col-span-3 flex flex-col ">
+      <FormLabel>MrsSanta</FormLabel>
+      <Popover open={isOpen} onOpenChange={handlePopoverOpen}>
+        <PopoverTrigger asChild>
+          <FormControl>
+            <Button
+              variant="outline"
+              role="combobox"
+              className="w-full justify-between bg-white"
+            >
+              {selectedMrsSanta?.role ? (
+                <>{selectedMrsSanta?.role}</>
+              ) : (
+                <>Pick MrsSanta...</>
+              )}
+              {isPending ? (
+                <Icons.spinner className="h-4 w-4 animate-spin text-accent" />
+              ) : (
+                <Icons.arrowUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              )}
+            </Button>
+          </FormControl>
+        </PopoverTrigger>
+
+        <PopoverContent className=" h-[650px] w-[500px] p-2 " side="bottom">
+          <Command className="flex  flex-col gap-3 border p-4">
+            <CommandList className="max-h-[650px]">
+              <CommandSeparator />
+              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandGroup heading="Available">
+                {available &&
+                  available.map((MrsSanta) => (
+                    <CommandItem
+                      value={MrsSanta.id}
+                      key={MrsSanta.id}
+                      onSelect={() => handleSelectMrsSanta(MrsSanta)}
+                    >
+                      {MrsSanta.role}
+
+                      <Icons.check
+                        className={cn(
+                          "ml-auto h-4 w-4",
+                          MrsSanta.id === selectedMrsSanta?.id
+                            ? "opacity-100"
+                            : "opacity-0"
+                        )}
+                      />
+                    </CommandItem>
+                  ))}
+              </CommandGroup>
+              <CommandSeparator />
+              <CommandGroup heading="Unavailable">
+                {unavailable &&
+                  unavailable.map((MrsSanta) => (
+                    <CommandItem
+                      value={MrsSanta.id}
+                      key={MrsSanta.id}
+                      onSelect={() => handleSelectMrsSanta(MrsSanta)}
+                    >
+                      {MrsSanta.role}
+
+                      <Icons.check
+                        className={cn(
+                          "ml-auto h-4 w-4",
+                          MrsSanta.id === selectedMrsSanta?.id
+                            ? "opacity-100"
+                            : "opacity-0"
+                        )}
+                      />
+                    </CommandItem>
+                  ))}
+              </CommandGroup>
+              <CommandSeparator />
+              <CommandGroup className="" heading="Create new">
+                <CommandItem className="flex flex-col gap-2 self-end bg-none aria-selected:bg-inherit">
+                  <ClientCreate
+                    onSuccess={(newClientId) => {
+                      handleSelectMrsSanta(newClientId);
+                    }}
+                  />
+                </CommandItem>
+              </CommandGroup>
+              <CommandSeparator />
+              <CommandGroup className="" heading="Clear">
+                <CommandItem className="flex flex-col gap-2 self-end bg-none aria-selected:bg-inherit">
+                  <Button
+                    variant={"secondary"}
+                    isLoading={isPending}
+                    onClick={handleClearMrsSanta}
+                  >
+                    Clear
+                  </Button>
+                </CommandItem>
+              </CommandGroup>
             </CommandList>
           </Command>
         </PopoverContent>
