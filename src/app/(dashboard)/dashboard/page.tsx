@@ -71,7 +71,7 @@ export default async function Page() {
       updatedStart = new Date(gigYear, gigMonth, gigDay);
       updatedStart.setHours(
         gig.timeStart.getHours(),
-        gig.timeStart.getMinutes()
+        gig.timeStart.getMinutes(),
       );
 
       // Initialize Date object with those parts

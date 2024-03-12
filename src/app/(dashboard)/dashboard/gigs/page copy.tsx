@@ -1,12 +1,10 @@
 import DataTable from "@/components/gigs/data-table";
 import { type GigTab } from "@/types/index";
-import type { Gig as GigProps } from "@prisma/client";
+import type { GigProps } from "@/server/db";
 import type { GetGigsProps } from "@/types/index";
 import { PER_PAGE } from "@/lib/constants";
+
 import { getGigs } from "@/app/_actions/gig";
-import { Suspense } from "react";
-import { Spinner } from "@/components/spinner";
-import GigTabs from "@/components/gigs/gig-tabs";
 
 interface Props {
   params: {
@@ -17,24 +15,17 @@ interface Props {
   };
 }
 
-export default function Page(props: Props) {
-  return (
-    <Suspense fallback={<Spinner />}>
-      <GigTabs />
-      <Gigs {...props} />
-    </Suspense>
-  );
-}
+export const revalidate = 120;
 
-async function Gigs(props: Props) {
+export default async function Page({ params, searchParams }: Props) {
   const {
     page,
     per_page = PER_PAGE,
     sort,
     clientId,
     santaId,
-    tab = "recentlyCreated",
-  } = props.searchParams ?? {};
+    tab = "upcoming",
+  } = searchParams ?? {};
 
   let { whereClause, select, limit, orderBy }: GetGigsProps = {};
 

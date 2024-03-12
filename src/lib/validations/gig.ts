@@ -1,4 +1,3 @@
-import { type GigProps } from "@/server/db";
 import * as z from "zod";
 import { isValidDate, isValidTime, isValidPrice } from "../utils";
 import { clientSchema } from "./client";
@@ -22,7 +21,7 @@ export const gigSchema = z
       },
       {
         message: "Must be a valid date",
-      }
+      },
     ),
     timeStart: timeSchema,
     timeEnd: timeSchema,
@@ -74,7 +73,7 @@ export const gigSchema = z
     },
     {
       message: "Start time must be before end time",
-    }
+    },
   );
 //satisfies z.ZodType<GigProps>;
 
@@ -96,7 +95,7 @@ export const gigMultiEventSchema = z.object({
     },
     {
       message: "Must be a valid date",
-    }
+    },
   ),
   timeStart: timeSchema,
   timeEnd: timeSchema,

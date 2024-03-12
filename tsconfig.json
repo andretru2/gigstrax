@@ -18,7 +18,7 @@
     "noUncheckedIndexedAccess": true,
     "baseUrl": ".",
     "paths": {
-      "@/components/*": ["./src/components/*"],
+      "@/components/*": ["src/app/_components/*"],
       "@/config/*": ["./src/config/*"],
       "@/types/*": ["./src/types/*"],
       "@/*": ["./src/*"]
