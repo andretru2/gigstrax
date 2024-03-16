@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useImperativeHandle, useState } from "react";
 import { formatDate } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -10,16 +9,35 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Icons } from "../icons";
 
 type DatePickerProps = {
   id: string;
   name: string;
   defaultValue?: string;
+  imperativeHandleRef: React.RefObject<{
+    reset: () => void;
+  }>;
 };
 
-const DatePicker = ({ id, name, defaultValue }: DatePickerProps) => {
+const DatePicker = ({
+  id,
+  name,
+  defaultValue,
+  imperativeHandleRef,
+}: DatePickerProps) => {
   const [date, setDate] = useState<Date | undefined>(
     defaultValue ? new Date(defaultValue) : undefined,
+  );
+
+  useImperativeHandle(
+    imperativeHandleRef,
+    () => ({
+      reset() {
+        setDate(undefined);
+      },
+    }),
+    [],
   );
 
   const formattedStringDate = date ? formatDate(date, "friendly") : "";
@@ -29,9 +47,10 @@ const DatePicker = ({ id, name, defaultValue }: DatePickerProps) => {
       <PopoverTrigger id={id} className="w-full" asChild>
         <Button
           variant="outline"
-          className="justify-start text-left font-normal"
+          className="bg-white  text-left font-normal hover:bg-none"
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
+          <Icons.calendar className=" mr-2 size-4" />
+
           {formattedStringDate}
           <input type="hidden" name={name} value={formattedStringDate} />
         </Button>
@@ -49,3 +68,16 @@ const DatePicker = ({ id, name, defaultValue }: DatePickerProps) => {
 };
 
 export { DatePicker };
+
+{
+  /* <Button
+  variant={"outline"}
+  className={cn(
+    "bg-white pl-3 text-left font-normal hover:bg-none",
+    !field.value && "text-muted-foreground",
+  )}
+>
+  {field.value ? formatDate(field.value, "friendly") : <span>Pick a date</span>}
+  <Icons.calendar className="ml-auto h-4 w-4 opacity-50" />
+</Button>; */
+}

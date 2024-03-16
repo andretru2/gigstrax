@@ -6,7 +6,7 @@ const Spinner = () => {
       role="status"
       className="flex flex-1 flex-col items-center justify-center self-center"
     >
-      <Icons.spinner className="h-8 w-8 animate-spin text-primary-foreground/80" />
+      <Icons.spinner className="h-8 w-8 animate-spin text-primary-foreground/50" />
     </div>
   );
 };

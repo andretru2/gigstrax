@@ -10,9 +10,11 @@ const priceSchema = z.string().refine(isValidPrice, {
   message: "Price must be a number",
 });
 
-export const gigSchema = z
-  .object({
-    gigDate: z.date().refine(
+export const gigSchema = z.object({
+  gigDate: z
+    .date()
+
+    .refine(
       (date) => {
         if (!isValidDate(date)) {
           return false;
@@ -22,59 +24,77 @@ export const gigSchema = z
       {
         message: "Must be a valid date",
       },
-    ),
-    timeStart: timeSchema,
-    timeEnd: timeSchema,
-    venueAddressCity: z.string().min(1, { message: "City is required" }),
-    venueAddressName: z.string().min(1, { message: "Venue is required" }),
-    venueAddressState: z.string().min(1, { message: "State is required" }),
-    venueAddressStreet: z.string().min(1, { message: "Street is required" }),
-    venueAddressStreet2: z.string().optional(),
-    venueAddressZip: z.string(),
-    clientId: z.string().min(1, { message: "Client is required" }),
-    santaId: z.string().min(1, { message: "Santa is required" }),
-    mrsSantaId: z.string().optional(),
-    calendarId: z.string().optional(),
-    driverId: z.string().optional(),
-    contactEmail: z
-      .string()
-      .email({ message: "Please enter a valid Email." })
-      .optional(),
-    contactName: z.string().optional(),
-    contactPhoneCell: z.string().optional(),
-    contactPhoneLand: z.string().optional(),
-    invoiceNumber: z.string().optional(),
-    notesGig: z.string().optional(),
-    notesVenue: z.string().optional(),
-    amountPaid: priceSchema,
-    price: priceSchema,
-    serial: z.number().optional(),
-    travelType: z.string().optional(),
-    venueType: z.nativeEnum(VenueType).optional(),
-    isSoftHold: z.boolean().optional(),
-    createdAt: z.date().optional(),
-    createdBy: z.string().optional(),
-    updatedAt: z.date().optional(),
-    updatedBy: z.string().optional(),
-    santa: z.object({
+    )
+    .optional(),
+  timeStart: timeSchema.optional(),
+  timeEnd: timeSchema.optional(),
+  venueAddressCity: z
+    .string()
+    .min(1, { message: "City is required" })
+    .optional(),
+  venueAddressName: z
+    .string()
+    .min(1, { message: "Venue is required" })
+    .optional(),
+  venueAddressState: z
+    .string()
+    .min(1, { message: "State is required" })
+    .optional(),
+  venueAddressStreet: z
+    .string()
+    .min(1, { message: "Street is required" })
+    .optional(),
+  venueAddressStreet2: z.string().optional(),
+  venueAddressZip: z.string().optional(),
+  clientId: z.string().min(1, { message: "Client is required" }).optional(),
+  santaId: z.string().min(1, { message: "Santa is required" }).optional(),
+  mrsSantaId: z.string().optional(),
+  calendarId: z.string().optional(),
+  driverId: z.string().optional(),
+  contactEmail: z
+    .string()
+    .email({ message: "Please enter a valid Email." })
+    .optional(),
+  contactName: z.string().optional(),
+  contactPhoneCell: z.string().optional(),
+  contactPhoneLand: z.string().optional(),
+  invoiceNumber: z.string().optional(),
+  notesGig: z.string().optional(),
+  notesVenue: z.string().optional(),
+  amountPaid: priceSchema.optional(),
+  // price: priceSchema.optional(),
+  price: z.coerce.number().positive().optional(),
+  serial: z.number().optional(),
+  travelType: z.string().optional(),
+  venueType: z.nativeEnum(VenueType).optional(),
+  isSoftHold: z.boolean().optional(),
+  createdAt: z.date().optional(),
+  createdBy: z.string().optional(),
+  updatedAt: z.date().optional(),
+  updatedBy: z.string().optional(),
+  santa: z
+    .object({
       id: z.string().optional(),
       role: z.string().optional(),
-    }),
-    mrsSanta: z.object({
+    })
+    .optional(),
+  mrsSanta: z
+    .object({
       id: z.string().optional(),
       role: z.string().optional(),
-    }),
-    // client: z.object({ update: clientSchema }),
-    client: clientSchema,
-  })
-  .refine(
-    (data) => {
-      return data.timeStart <= data.timeEnd;
-    },
-    {
-      message: "Start time must be before end time",
-    },
-  );
+    })
+    .optional(),
+  // client: z.object({ update: clientSchema }),
+  client: clientSchema.optional(),
+});
+// .refine(
+//   (data) => {
+//     if (data.timeStart && data.timeEnd) return data.timeStart <= data.timeEnd;
+//   },
+//   {
+//     message: "Start time must be before end time",
+//   },
+// );
 //satisfies z.ZodType<GigProps>;
 
 // export const gigMultiEventSchema = gigSchema.pick({

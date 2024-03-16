@@ -9,25 +9,45 @@ import {
   fromErrorToFormState,
   toFormState,
 } from "@/components/form/to-form-state";
+import { toCent } from "@/utils/currency";
 
-interface Props {
-  id: string | undefined;
-  _formState: FormState;
-  formData: FormData;
-}
+// interface Props {
+//   id: string;
+//   formState: FormState;
+//   formData: FormData;
+// }
 
-export async function update(props: Props) {
-  const { id, formData } = props;
+export async function update(
+  id: string,
+  _formState: { message: string },
+  formData: FormData,
+) {
+  if (!id) return;
+
   try {
     const data = gigSchema.parse({
-      gigDate: formData.get("gigDate"),
+      // gigDate: formData.get("gigDate"),
+      price: formData.get("price"),
     });
+
+    const dbData = {
+      price: toCent(data.price),
+      ...data,
+    };
+
+    // const data = Object.entries(formData).reduce((acc, [key, value]) => {
+    //   if (value) {
+    //     acc[key] = value;
+    //   }
+    //   return acc;
+    // });
+    console.log(data, "data");
 
     await prisma.gig.update({
       where: {
         id,
       },
-      data: data,
+      data: dbData,
     });
   } catch (error) {
     // return false;
@@ -42,7 +62,7 @@ export async function update(props: Props) {
   //   redirect(ticketPath(id));
   // }
 
-  return toFormState("SUCCESS", "Ticket created");
+  return toFormState("SUCCESS", "Gig updated");
 }
 
 export async function getGigs({

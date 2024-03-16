@@ -1,10 +1,18 @@
 // "use client";
 import { type Metadata } from "next";
 import { env } from "@/env.mjs";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { GigForm } from "@/components/gigs/gig-form";
 
 import { getGigs } from "@/app/_actions/gig";
+
+import { BackButton } from "@/components/ui/back-button";
 
 import { Suspense } from "react";
 import { Spinner } from "@/components/spinner";
@@ -25,6 +33,7 @@ export default function Page(props: Props) {
   return (
     <Card className="border-0 bg-background [&>*]:px-0 ">
       <CardContent className="flex flex-col gap-2">
+        <BackButton />
         <Suspense fallback={<Spinner />}>
           <Gig {...props} />
         </Suspense>
@@ -46,6 +55,7 @@ async function Gig(props: Props) {
       gigDate: true,
       timeStart: true,
       timeEnd: true,
+      price: true,
       venueAddressCity: true,
       venueAddressState: true,
       venueAddressName: true,
@@ -60,7 +70,21 @@ async function Gig(props: Props) {
     },
   });
 
-  return <GigForm gig={gig.data[0]} />;
+  if (!gig.data[0]) return <h1>Gig not found</h1>;
+
+  return <GigForm {...gig.data[0]} />;
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center">
+      <Card className="animate-fade-in-from-top w-[420px]">
+        <CardHeader>
+          <CardTitle>Edit Gig</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <GigForm gig={gig.data[0]} />
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
 
 // async function getClient(id: string) {

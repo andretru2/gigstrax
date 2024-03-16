@@ -1,5 +1,5 @@
-import { useRef, useEffect } from 'react';
-import { FormState } from '@/components/form/utils/to-form-state';
+import { useRef, useEffect } from "react";
+import { type FormState } from "./to-form-state";
 
 type OnArgs = {
   formState: FormState;
@@ -13,7 +13,7 @@ type UseFormFeedbackOptions = {
 
 const useFormFeedback = (
   formState: FormState,
-  options?: UseFormFeedbackOptions
+  options?: UseFormFeedbackOptions,
 ) => {
   const ref = useRef<HTMLFormElement>(null);
 
@@ -27,14 +27,14 @@ const useFormFeedback = (
 
   useEffect(() => {
     if (isUpdate) {
-      if (options?.onSuccess && formState.status === 'SUCCESS') {
+      if (options?.onSuccess && formState.status === "SUCCESS") {
         options.onSuccess({
           formState,
           reset: handleReset,
         });
       }
 
-      if (options?.onError && formState.status === 'ERROR') {
+      if (options?.onError && formState.status === "ERROR") {
         options.onError({
           formState,
           reset: handleReset,
