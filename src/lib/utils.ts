@@ -11,7 +11,7 @@ export function cn(...inputs: ClassValue[]) {
 export function formatPrice(
   price: number | string,
   currency: "USD" | "EUR" | "GBP" | "BDT" = "USD",
-  notation: "compact" | "engineering" | "scientific" | "standard" = "standard"
+  notation: "compact" | "engineering" | "scientific" | "standard" = "standard",
 ) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -21,7 +21,7 @@ export function formatPrice(
 }
 export function formatDate(
   input: string | number | Date,
-  format?: "friendly" | "formal"
+  format?: "friendly" | "formal",
 ) {
   const date = new Date(input);
 
@@ -92,18 +92,38 @@ export function catchError(err: unknown) {
 
 export function calculateTimeDifference(
   timeStart: Date,
-  timeEnd: Date
-): number {
+  timeEnd: Date,
+): string {
   const startTime = new Date(timeStart);
   const endTime = new Date(timeEnd);
   const timeDiffInMilliseconds = Math.abs(
-    startTime.getTime() - endTime.getTime()
+    startTime.getTime() - endTime.getTime(),
   );
-  const timeDiffInHours = timeDiffInMilliseconds / (1000 * 60 * 60);
-  const roundedTimeDiff = Math.round(timeDiffInHours * 100) / 100;
 
-  return roundedTimeDiff;
+  // Calculate hours and minutes
+  const hours = Math.floor(timeDiffInMilliseconds / (1000 * 60 * 60));
+  const minutes = Math.floor(
+    (timeDiffInMilliseconds % (1000 * 60 * 60)) / (1000 * 60),
+  );
+
+  // Construct the friendly string representation
+  let timeDiffString = "";
+  if (hours > 0) {
+    timeDiffString += hours + "h ";
+  }
+  if (minutes > 0) {
+    timeDiffString += minutes + "m";
+  }
+
+  // Return the friendly string representation
+  return timeDiffString.trim();
 }
+
+// Test
+const timeStart = new Date("2024-03-15T09:00:00.000Z");
+const timeEnd = new Date("2024-03-15T10:20:00.000Z");
+console.log(calculateTimeDifference(timeStart, timeEnd)); // Output: 1h 20mins
+
 export function slugify(str: string) {
   return str
     .toLowerCase()
@@ -133,7 +153,7 @@ export function formatAddress({
 export function toTitleCase(str: string) {
   return str.replace(
     /\w\S*/g,
-    (txt) => txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase()
+    (txt) => txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase(),
   );
 }
 
@@ -243,7 +263,7 @@ export function getTimeFromDate(dateTime: Date, friendly?: boolean): string {
 export function fromUTC(dateTimeString: string | Date): Date {
   const utcDate = new Date(dateTimeString);
   const localDate = new Date(
-    utcDate.getTime() - utcDate.getTimezoneOffset() * 60000
+    utcDate.getTime() - utcDate.getTimezoneOffset() * 60000,
   );
 
   // console.log("from utc local", localDate);
@@ -295,7 +315,7 @@ export function convertTimeToISOString(selectedTime: string) {
     Number(hours),
     Number(minutes),
     0,
-    0
+    0,
   );
 
   // Adjust the local time by subtracting the UTC offset

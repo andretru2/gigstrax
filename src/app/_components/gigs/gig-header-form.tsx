@@ -11,13 +11,18 @@ import { update } from "@/app/_actions/gig";
 import type { Gig as GigProps } from "@prisma/client";
 import { DatePicker } from "../ui/date-picker";
 import { type FocusEvent, useRef, startTransition, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { formatDate, getTimeFromDate } from "@/lib/utils";
+import {
+  calculateTimeDifference,
+  formatDate,
+  getTimeFromDate,
+} from "@/lib/utils";
 
 export function GigHeaderForm(
   props: Awaited<{ id: string } & Partial<GigProps>>,
 ) {
   const { id, gigDate, timeStart, timeEnd, price, amountPaid } = props;
+
+  // console.log(timeStart, timeEnd, calculateTimeDifference(timeStart, timeEnd));
 
   const updateGigWithId = update.bind(null, id);
 
@@ -91,11 +96,14 @@ export function GigHeaderForm(
         });
   };
 
+  const durationHours =
+    timeStart && timeEnd ? calculateTimeDifference(timeStart, timeEnd) : null;
+
   return (
     <form
       action={formAction}
       ref={ref}
-      className="grid w-full grid-cols-12  gap-4 "
+      className="grid w-full grid-cols-12  gap-4 [&>label]:ml-12"
     >
       <div className="col-span-2 space-y-1">
         <Label htmlFor="gigDate">Gig Date</Label>
@@ -148,6 +156,15 @@ export function GigHeaderForm(
           name="timeEnd"
         />
       </div>
+      <div className="col-span-1 w-20 space-y-1">
+        <Label htmlFor="duration">Duration</Label>
+        <Input
+          disabled={true}
+          name="duration"
+          defaultValue={durationHours ? durationHours : undefined}
+          className=""
+        />
+      </div>
 
       <div className="col-span-1 space-y-1">
         <Label htmlFor="price">Price</Label>
@@ -156,7 +173,7 @@ export function GigHeaderForm(
           inputMode="numeric"
           name="price"
           defaultValue={Number(price)}
-          className="bg-white text-right"
+          className="bg-white "
           onBlur={(e: FocusEvent<HTMLInputElement>) =>
             void handleUpdate(e.target.name as keyof GigProps, e.target.value)
           }
