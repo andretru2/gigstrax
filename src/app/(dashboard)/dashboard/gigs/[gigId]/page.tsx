@@ -70,7 +70,7 @@ async function GigHeader(props: Props) {
       <CardHeader className="px-0">
         <CardTitle>Gig Details</CardTitle>
       </CardHeader>
-      <CardContent className="  col-span-12 gap-2 px-0">
+      <CardContent className="  col-span-12 mt-3 gap-2 px-0">
         <GigHeaderForm {...gig.data[0]} />
       </CardContent>
     </Card>

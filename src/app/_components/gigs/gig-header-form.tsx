@@ -13,7 +13,9 @@ import { DatePicker } from "../ui/date-picker";
 import { type FocusEvent, useRef, startTransition, useState } from "react";
 import {
   calculateTimeDifference,
+  cn,
   formatDate,
+  formatPrice,
   getTimeFromDate,
 } from "@/lib/utils";
 
@@ -99,13 +101,16 @@ export function GigHeaderForm(
   const durationHours =
     timeStart && timeEnd ? calculateTimeDifference(timeStart, timeEnd) : null;
 
+  const balance =
+    price && amountPaid ? Number(price) - Number(amountPaid) : null;
+
   return (
     <form
       action={formAction}
       ref={ref}
-      className="grid w-full grid-cols-12  gap-4 [&>label]:ml-12"
+      className="grid w-full grid-cols-12  gap-4 [&>*>label]:ml-2"
     >
-      <div className="col-span-2 space-y-1">
+      <div className="col-span-2 space-y-1 ">
         <Label htmlFor="gigDate">Gig Date</Label>
         <DatePicker
           id="gigDate"
@@ -182,6 +187,36 @@ export function GigHeaderForm(
           formState={formState}
           error={fieldError.key === "price" ? fieldError.error : null}
           name="price"
+        />
+      </div>
+      <div className="col-span-1 space-y-1">
+        <Label htmlFor="amountPaid">Paid</Label>
+        <Input
+          type="number"
+          inputMode="numeric"
+          name="amountPaid"
+          defaultValue={Number(amountPaid)}
+          className="bg-white "
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleUpdate(e.target.name as keyof GigProps, e.target.value)
+          }
+        />
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "amountPaid" ? fieldError.error : null}
+          name="amountPaid"
+        />
+      </div>
+      <div className="col-span-1  space-y-1">
+        <Label htmlFor="duration">Balance</Label>
+        <Input
+          disabled={true}
+          name="balance"
+          defaultValue={balance ? formatPrice(balance) : ""}
+          className={cn(
+            "disabled:bg-none",
+            balance && balance > 0 && "font-bold text-destructive",
+          )}
         />
       </div>
 
