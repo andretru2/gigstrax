@@ -10,47 +10,59 @@ import {
   toFormState,
 } from "@/components/form/to-form-state";
 import { toCent } from "@/utils/currency";
+// import type {Gig} from "@prisma/client";
 
-// interface Props {
-//   id: string;
-//   formState: FormState;
-//   formData: FormData;
-// }
+import { ZodError, type ZodIssue, ZodObject, type ZodSchema } from "zod";
+
+function parseFormData<T extends Record<string, unknown>>(
+  formData: FormData,
+  schema: ZodSchema<T>,
+): T {
+  if (!(schema instanceof ZodObject)) {
+    throw new Error("Schema must be a ZodObject");
+  }
+  const keys = Array.from(formData.keys()) as Array<keyof T>;
+  const dataEntries: [keyof T, unknown][] = keys.map((key) => {
+    try {
+      const value = formData.get(key);
+      const parsedValue = schema.shape[key].parse(value);
+      return [key, parsedValue];
+    } catch (error) {
+      const zodError = ZodError.create(
+        (error as ZodError<T>).issues.map(
+          (issue): ZodIssue => ({
+            ...issue,
+            path: [key, ...issue.path],
+          }),
+        ),
+      );
+      console.log(zodError, "zodError");
+      throw zodError;
+    }
+  });
+
+  return Object.fromEntries(dataEntries) as T;
+}
 
 export async function update(
   id: string,
-  _formState: { message: string },
+  prevState: FormState,
   formData: FormData,
-) {
-  if (!id) return;
+): Promise<FormState> {
+  if (!id) return toFormState("ERROR", "Gig not found");
 
   try {
-    const data = gigSchema.parse({
-      // gigDate: formData.get("gigDate"),
-      price: formData.get("price"),
-    });
+    const parsedData = parseFormData(formData, gigSchema);
 
-    const dbData = {
-      price: toCent(data.price),
-      ...data,
-    };
-
-    // const data = Object.entries(formData).reduce((acc, [key, value]) => {
-    //   if (value) {
-    //     acc[key] = value;
-    //   }
-    //   return acc;
-    // });
-    console.log(data, "data");
-
-    await prisma.gig.update({
-      where: {
-        id,
-      },
-      data: dbData,
-    });
+    if (parsedData)
+      await prisma.gig.update({
+        where: {
+          id,
+        },
+        data: { id: id, ...parsedData },
+      });
   } catch (error) {
-    // return false;
+    console.log(error);
     return fromErrorToFormState(error);
   }
 

@@ -18,6 +18,8 @@ type DatePickerProps = {
   imperativeHandleRef: React.RefObject<{
     reset: () => void;
   }>;
+
+  onSelect?: (date: Date) => void;
 };
 
 const DatePicker = ({
@@ -25,6 +27,8 @@ const DatePicker = ({
   name,
   defaultValue,
   imperativeHandleRef,
+
+  onSelect,
 }: DatePickerProps) => {
   const [date, setDate] = useState<Date | undefined>(
     defaultValue ? new Date(defaultValue) : undefined,
@@ -44,10 +48,14 @@ const DatePicker = ({
 
   return (
     <Popover>
-      <PopoverTrigger id={id} className="w-full" asChild>
+      <PopoverTrigger
+        id={id}
+        className="w-full justify-start text-left"
+        asChild
+      >
         <Button
           variant="outline"
-          className="bg-white  text-left font-normal hover:bg-none"
+          className="bg-white   font-normal hover:bg-none"
         >
           <Icons.calendar className=" mr-2 size-4" />
 
@@ -59,7 +67,10 @@ const DatePicker = ({
         <Calendar
           mode="single"
           selected={date}
-          onSelect={setDate}
+          onSelect={(date) => {
+            setDate(date);
+            onSelect && date && onSelect(date);
+          }}
           initialFocus
         />
       </PopoverContent>
@@ -68,16 +79,3 @@ const DatePicker = ({
 };
 
 export { DatePicker };
-
-{
-  /* <Button
-  variant={"outline"}
-  className={cn(
-    "bg-white pl-3 text-left font-normal hover:bg-none",
-    !field.value && "text-muted-foreground",
-  )}
->
-  {field.value ? formatDate(field.value, "friendly") : <span>Pick a date</span>}
-  <Icons.calendar className="ml-auto h-4 w-4 opacity-50" />
-</Button>; */
-}

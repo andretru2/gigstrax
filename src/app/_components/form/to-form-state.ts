@@ -4,6 +4,7 @@ export type FormState = {
   status: "IDLE" | "SUCCESS" | "ERROR";
   message: string;
   fieldErrors: Record<string, string[] | undefined>;
+  issues?: string[];
   timestamp: number;
 };
 
@@ -11,32 +12,29 @@ export const EMPTY_FORM_STATE: FormState = {
   status: "IDLE" as const,
   message: "",
   fieldErrors: {},
+  issues: [],
   timestamp: Date.now(),
 };
 
 export const fromErrorToFormState = (error: unknown) => {
-  if (error instanceof ZodError) {
-    return {
-      status: "ERROR" as const,
-      message: "",
-      fieldErrors: error.flatten().fieldErrors,
-      timestamp: Date.now(),
-    };
-  } else if (error instanceof Error) {
-    return {
-      status: "ERROR" as const,
-      message: error.message,
-      fieldErrors: {},
-      timestamp: Date.now(),
-    };
-  } else {
-    return {
-      status: "ERROR" as const,
-      message: "An unknown error occurred",
-      fieldErrors: {},
-      timestamp: Date.now(),
-    };
-  }
+  const isZodError = error instanceof ZodError;
+  const message = isZodError
+    ? error.message
+    : error instanceof Error
+      ? error.message
+      : "An unknown error occurred";
+
+  const fieldErrors = isZodError ? error.flatten().fieldErrors : {};
+
+  const issues = isZodError ? error.issues.map((issue) => issue.message) : [];
+
+  return {
+    status: "ERROR" as const,
+    message,
+    fieldErrors,
+    issues,
+    timestamp: Date.now(),
+  };
 };
 
 export const toFormState = (
@@ -47,6 +45,7 @@ export const toFormState = (
     status,
     message,
     fieldErrors: {},
+    issues: [],
     timestamp: Date.now(),
   };
 };

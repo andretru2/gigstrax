@@ -17,11 +17,11 @@ export function BackButton({ fallback = defaultFallback }) {
 
   return (
     <Button
-      className="flex items-center gap-2 self-start text-sm text-current"
+      className="flex items-center gap-1 self-start text-xs text-current"
       onClick={handleBack}
     >
-      <Icons.arrowLeft aria-hidden="true" className="size-5" />
-      <span className="pr-2">Go back</span>
+      <Icons.arrowLeft aria-hidden="true" className="size-4 opacity-70" />
+      <span className="pr-1">Go back</span>
     </Button>
   );
 }

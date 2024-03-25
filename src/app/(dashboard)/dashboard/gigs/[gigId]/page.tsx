@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { GigForm } from "@/components/gigs/gig-form";
+import { GigHeaderForm } from "@/components/gigs/gig-header-form";
 
 import { getGigs } from "@/app/_actions/gig";
 
@@ -35,14 +35,14 @@ export default function Page(props: Props) {
       <CardContent className="flex flex-col gap-2">
         <BackButton />
         <Suspense fallback={<Spinner />}>
-          <Gig {...props} />
+          <GigHeader {...props} />
         </Suspense>
       </CardContent>
     </Card>
   );
 }
 
-async function Gig(props: Props) {
+async function GigHeader(props: Props) {
   const { gigId } = props.params;
 
   if (!gigId) {
@@ -56,14 +56,7 @@ async function Gig(props: Props) {
       timeStart: true,
       timeEnd: true,
       price: true,
-      venueAddressCity: true,
-      venueAddressState: true,
-      venueAddressName: true,
-      venueAddressZip: true,
-      venueAddressStreet: true,
-      clientId: true,
-      mrsSantaId: true,
-      santaId: true,
+      amountPaid: true,
     },
     whereClause: {
       id: gigId,
@@ -72,18 +65,15 @@ async function Gig(props: Props) {
 
   if (!gig.data[0]) return <h1>Gig not found</h1>;
 
-  return <GigForm {...gig.data[0]} />;
   return (
-    <div className="flex flex-1 flex-col items-center justify-center">
-      <Card className="animate-fade-in-from-top w-[420px]">
-        <CardHeader>
-          <CardTitle>Edit Gig</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <GigForm gig={gig.data[0]} />
-        </CardContent>
-      </Card>
-    </div>
+    <Card className="grid  grid-cols-12 p-4 ">
+      <CardHeader className="px-0">
+        <CardTitle>Gig Details</CardTitle>
+      </CardHeader>
+      <CardContent className="  col-span-12 gap-2 px-0">
+        <GigHeaderForm {...gig.data[0]} />
+      </CardContent>
+    </Card>
   );
 }
 

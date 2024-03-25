@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import GigForm from "@/components/gigs/gig-form";
+import GigForm from "@/components/gigs/gig-header-form";
 import {
   formatDate,
   formatTime,

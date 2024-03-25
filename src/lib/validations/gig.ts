@@ -10,24 +10,18 @@ const priceSchema = z.string().refine(isValidPrice, {
   message: "Price must be a number",
 });
 
-export const gigSchema = z.object({
-  gigDate: z
-    .date()
+const dateTimeSchema = z
+  .string()
+  .datetime({ offset: true })
+  .pipe(z.coerce.date())
+  .optional();
 
-    .refine(
-      (date) => {
-        if (!isValidDate(date)) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "Must be a valid date",
-      },
-    )
-    .optional(),
-  timeStart: timeSchema.optional(),
-  timeEnd: timeSchema.optional(),
+export const gigSchema = z.object({
+  gigDate: dateTimeSchema,
+  timeStart: dateTimeSchema,
+  timeEnd: dateTimeSchema,
+  // timeStart: timeSchema.optional(),
+  // timeEnd: timeSchema.optional(),
   venueAddressCity: z
     .string()
     .min(1, { message: "City is required" })
