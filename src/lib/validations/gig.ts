@@ -1,7 +1,7 @@
 import * as z from "zod";
 import { isValidDate, isValidTime, isValidPrice } from "../utils";
 import { clientSchema } from "./client";
-import { VenueType } from "@prisma/client";
+import { VenueType, type Gig } from "@prisma/client";
 
 const timeSchema = z.string().refine(isValidTime, {
   message: "Must be a valid date",
@@ -89,7 +89,7 @@ export const gigSchema = z.object({
 //     message: "Start time must be before end time",
 //   },
 // );
-//satisfies z.ZodType<GigProps>;
+//satisfies z.ZodType<Gig>;
 
 // export const gigMultiEventSchema = gigSchema.pick({
 //   gigDate: true,

@@ -55,7 +55,7 @@ const DatePicker = ({
       >
         <Button
           variant="outline"
-          className="bg-white   font-normal hover:bg-none"
+          className="h-9 bg-white text-xs  font-normal hover:bg-none"
         >
           <Icons.calendar className=" mr-2 size-4" />
 

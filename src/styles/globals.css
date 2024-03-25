@@ -91,6 +91,20 @@
   }
   body {
     @apply bg-background text-xs text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
+  }
+}
+
+@layer components {
+  .form > label {
+    @apply relative block h-full w-full;
+  }
+  .form > label > * {
+    @apply bg-white font-normal transition-shadow;
+  }
+  .form > label > span {
+    @apply absolute left-2 top-0 -translate-y-1 scale-100 bg-white font-semibold transition-transform;
   }
 }

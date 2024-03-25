@@ -32,6 +32,7 @@ export function GigHeaderForm(
     updateGigWithId,
     EMPTY_FORM_STATE,
   );
+
   const [fieldError, setFieldError] = useState<
     Record<string, string | null | undefined>
   >({});
@@ -39,6 +40,7 @@ export function GigHeaderForm(
   const datePickerImperativeHandleRef = useRef<{
     reset: () => void;
   }>(null);
+
   const { ref } = useFormFeedback(formState, {
     onSuccess: ({ formState, reset }) => {
       if (formState.message) {
@@ -108,10 +110,9 @@ export function GigHeaderForm(
     <form
       action={formAction}
       ref={ref}
-      className="grid w-full grid-cols-12  gap-4 [&>*>label]:ml-2"
+      className="form grid w-full  grid-cols-12 items-center justify-center gap-4"
     >
-      <div className="col-span-2 space-y-1 ">
-        <Label htmlFor="gigDate">Gig Date</Label>
+      <Label className="col-span-2">
         <DatePicker
           id="gigDate"
           name="gigDate"
@@ -119,96 +120,98 @@ export function GigHeaderForm(
           onSelect={(date) => void handleUpdate("gigDate", date.toISOString())}
           imperativeHandleRef={datePickerImperativeHandleRef}
         />
+        <span>Gig Date</span>
         <FieldError
           formState={formState}
           error={fieldError.key === "gigDate" ? fieldError.error : null}
           name="gigDate"
         />
-      </div>
-      <div className="col-span-1 space-y-1">
-        <Label htmlFor="timeStart">Start</Label>
+      </Label>
+
+      <Label className="col-span-1">
         <Input
           type="time"
           disabled={gigDate == null}
           name="timeStart"
           defaultValue={timeStart ? getTimeFromDate(timeStart) : undefined}
-          className="bg-white text-right"
+          className="text-right"
           onBlur={(e: FocusEvent<HTMLInputElement>) =>
             void handleTimeInputBlur(e)
           }
         />
+        <span>Start</span>
         <FieldError
           formState={formState}
           error={fieldError.key === "timeStart" ? fieldError.error : null}
           name="timeStart"
         />
-      </div>
-      <div className="col-span-1 space-y-1">
-        <Label htmlFor="timeEnd">End</Label>
+      </Label>
+
+      <Label className="col-span-1">
         <Input
           type="time"
           disabled={gigDate == null}
           name="timeEnd"
           defaultValue={timeEnd ? getTimeFromDate(timeEnd) : undefined}
-          className="bg-white text-right"
+          className="text-right"
           onBlur={(e: FocusEvent<HTMLInputElement>) =>
             void handleTimeInputBlur(e)
           }
         />
+        <span>End</span>
         <FieldError
           formState={formState}
           error={fieldError.key === "timeEnd" ? fieldError.error : null}
           name="timeEnd"
         />
-      </div>
-      <div className="col-span-1 w-20 space-y-1">
-        <Label htmlFor="duration">Duration</Label>
+      </Label>
+
+      <Label className="col-span-1 w-20">
         <Input
           disabled={true}
           name="duration"
           defaultValue={durationHours ? durationHours : undefined}
-          className=""
         />
-      </div>
+        <span>Duration</span>
+      </Label>
 
-      <div className="col-span-1 space-y-1">
-        <Label htmlFor="price">Price</Label>
+      <Label className="col-span-1">
         <Input
           type="number"
           inputMode="numeric"
           name="price"
           defaultValue={Number(price)}
-          className="bg-white "
           onBlur={(e: FocusEvent<HTMLInputElement>) =>
             void handleUpdate(e.target.name as keyof GigProps, e.target.value)
           }
         />
+        <span>Price</span>
         <FieldError
           formState={formState}
           error={fieldError.key === "price" ? fieldError.error : null}
           name="price"
         />
-      </div>
-      <div className="col-span-1 space-y-1">
-        <Label htmlFor="amountPaid">Paid</Label>
+      </Label>
+
+      <Label className="col-span-1">
         <Input
           type="number"
           inputMode="numeric"
           name="amountPaid"
           defaultValue={Number(amountPaid)}
-          className="bg-white "
           onBlur={(e: FocusEvent<HTMLInputElement>) =>
             void handleUpdate(e.target.name as keyof GigProps, e.target.value)
           }
         />
+        <span>Paid</span>
         <FieldError
           formState={formState}
           error={fieldError.key === "amountPaid" ? fieldError.error : null}
           name="amountPaid"
         />
-      </div>
-      <div className="col-span-1  space-y-1">
-        <Label htmlFor="duration">Balance</Label>
+      </Label>
+
+      <Label className="col-span-1">
         <Input
           disabled={true}
           name="balance"
@@ -218,7 +221,8 @@ export function GigHeaderForm(
             balance && balance > 0 && "font-bold text-destructive",
           )}
         />
-      </div>
+        <span>Balance</span>
+      </Label>
 
       <noscript>
         {formState.status === "ERROR" && (
