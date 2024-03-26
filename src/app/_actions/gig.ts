@@ -24,7 +24,7 @@ function parseFormData<T extends Record<string, unknown>>(
   const keys = Array.from(formData.keys()) as Array<keyof T>;
   const dataEntries: [keyof T, unknown][] = keys.map((key) => {
     try {
-      const value = formData.get(key);
+      const value = formData.get(key.toString());
       const parsedValue = schema.shape[key].parse(value);
       return [key, parsedValue];
     } catch (error) {

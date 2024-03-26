@@ -99,7 +99,7 @@
 
 @layer components {
   .form > label {
-    @apply relative block h-full w-full;
+    @apply relative block h-full;
   }
   .form > label > * {
     @apply bg-white font-normal transition-shadow;

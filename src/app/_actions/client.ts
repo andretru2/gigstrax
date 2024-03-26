@@ -47,7 +47,6 @@ export async function getClient(id: string): Promise<ClientProps | null> {
 export async function getClients({
   select = { id: true, client: true },
   whereClause = {},
-  // orderBy = [{ client: "asc" }],
   orderBy = [],
   limit = 10,
   skip = 0,

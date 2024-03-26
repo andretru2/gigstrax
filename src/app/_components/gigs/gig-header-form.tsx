@@ -8,7 +8,10 @@ import { FieldError } from "@/components/form/field-error";
 import { useFormFeedback } from "@/components/form/use-form-feedback";
 import { EMPTY_FORM_STATE } from "@/components/form/to-form-state";
 import { update } from "@/app/_actions/gig";
-import type { Gig as GigProps } from "@prisma/client";
+import {
+  type Gig as GigProps,
+  type Client as ClientProps,
+} from "@prisma/client";
 import { DatePicker } from "../ui/date-picker";
 import { type FocusEvent, useRef, startTransition, useState } from "react";
 import {
@@ -18,11 +21,18 @@ import {
   formatPrice,
   getTimeFromDate,
 } from "@/lib/utils";
+import { ClientPicker } from "../client-picker";
 
-export function GigHeaderForm(
-  props: Awaited<{ id: string } & Partial<GigProps>>,
-) {
-  const { id, gigDate, timeStart, timeEnd, price, amountPaid } = props;
+interface Props {
+  id: string;
+  gig: Awaited<Partial<GigProps>>;
+  client?: Awaited<Partial<ClientProps>> | undefined;
+}
+
+export function GigHeaderForm(props: Props) {
+  const { id } = props;
+  const { gigDate, timeStart, timeEnd, price, amountPaid } = props.gig;
+  // const { id: clientId, client: clientName } = props.client;
 
   // console.log(timeStart, timeEnd, calculateTimeDifference(timeStart, timeEnd));
 
@@ -38,6 +48,10 @@ export function GigHeaderForm(
   >({});
 
   const datePickerImperativeHandleRef = useRef<{
+    reset: () => void;
+  }>(null);
+
+  const clientPickerImperativeHandleRef = useRef<{
     reset: () => void;
   }>(null);
 
@@ -110,7 +124,7 @@ export function GigHeaderForm(
     <form
       action={formAction}
       ref={ref}
-      className="form grid w-full  grid-cols-12 items-center justify-center gap-4"
+      className="form grid w-full  grid-cols-12 items-center justify-center gap-x-4 gap-y-6"
     >
       <Label className="col-span-2">
         <DatePicker
@@ -181,9 +195,10 @@ export function GigHeaderForm(
           inputMode="numeric"
           name="price"
           defaultValue={Number(price)}
-          onBlur={(e: FocusEvent<HTMLInputElement>) =>
-            void handleUpdate(e.target.name as keyof GigProps, e.target.value)
-          }
+          onBlur={(e: FocusEvent<HTMLInputElement>) => {
+            console.log(e);
+            void handleUpdate(e.target.name as keyof GigProps, e.target.value);
+          }}
         />
         <span>Price</span>
         <FieldError
@@ -222,6 +237,22 @@ export function GigHeaderForm(
           )}
         />
         <span>Balance</span>
+      </Label>
+
+      <Label className="col-span-3 row-start-2">
+        <ClientPicker
+          id="clientId"
+          name="clientId"
+          defaultValue={props.client.id ? props.client : undefined}
+          onSelect={(clientId) => void handleUpdate("clientId", clientId)}
+          imperativeHandleRef={clientPickerImperativeHandleRef}
+        />
+        <span>Client</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "clientId" ? fieldError.error : null}
+          name="clientId"
+        />
       </Label>
 
       <noscript>

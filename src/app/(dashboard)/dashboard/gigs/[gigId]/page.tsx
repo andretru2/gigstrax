@@ -11,6 +11,7 @@ import {
 import { GigHeaderForm } from "@/components/gigs/gig-header-form";
 
 import { getGigs } from "@/app/_actions/gig";
+import { getClients } from "@/app/_actions/client";
 
 import { BackButton } from "@/components/ui/back-button";
 
@@ -49,7 +50,7 @@ async function GigHeader(props: Props) {
     return <h1>Please select a gig</h1>;
   }
 
-  const gig = await getGigs({
+  const res = await getGigs({
     select: {
       id: true,
       gigDate: true,
@@ -57,13 +58,31 @@ async function GigHeader(props: Props) {
       timeEnd: true,
       price: true,
       amountPaid: true,
+      clientId: true,
     },
     whereClause: {
       id: gigId,
     },
   });
 
-  if (!gig.data[0]) return <h1>Gig not found</h1>;
+  const gig = res.data[0];
+
+  if (!gig) return <h1>Gig not found</h1>;
+
+  let client;
+  if (gig.clientId) {
+    const resClient = await getClients({
+      select: {
+        id: true,
+        client: true,
+      },
+      whereClause: {
+        id: gig.clientId,
+      },
+    });
+
+    client = resClient.data[0];
+  }
 
   return (
     <Card className="grid  grid-cols-12 p-4 ">
@@ -71,7 +90,11 @@ async function GigHeader(props: Props) {
         <CardTitle>Gig Details</CardTitle>
       </CardHeader>
       <CardContent className="  col-span-12 mt-3 gap-2 px-0">
-        <GigHeaderForm {...gig.data[0]} />
+        <GigHeaderForm
+          id={gigId}
+          gig={gig}
+          client={client ? client : undefined}
+        />
       </CardContent>
     </Card>
   );

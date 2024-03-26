@@ -25,24 +25,6 @@ export function formatDate(
 ) {
   const date = new Date(input);
 
-  // const year = date.getFullYear();
-  // const month = String(date.getMonth() + 1).padStart(2, "0");
-  // const day = String(date.getDate()).padStart(2, "0");
-
-  // if (format === "friendly") {
-  //   const options = {
-  //     weekday: "short",
-  //     month: "short",
-  //     day: "numeric",
-  //     year: "2-digit",
-  //   };
-  //   return date.toLocaleDateString("en-US", options);
-  // }
-
-  // if (format === "formal" || !format) {
-  //   return `${month}/${day}/${year}`;
-  // }
-
   if (format === "friendly") {
     return date.toLocaleDateString("en-US", {
       dateStyle: "full",
@@ -118,11 +100,6 @@ export function calculateTimeDifference(
   // Return the friendly string representation
   return timeDiffString.trim();
 }
-
-// Test
-const timeStart = new Date("2024-03-15T09:00:00.000Z");
-const timeEnd = new Date("2024-03-15T10:20:00.000Z");
-console.log(calculateTimeDifference(timeStart, timeEnd)); // Output: 1h 20mins
 
 export function slugify(str: string) {
   return str
@@ -284,17 +261,6 @@ export function fromUTC(dateTimeString: string | Date): Date {
   // return local;
 }
 
-// export function fromUTC(utcTimestamp: Date): string {
-//   const options: Intl.DateTimeFormatOptions = {
-//     timeZone: "UTC",
-//     hour12: true,
-//     hour: "numeric",
-//     minute: "2-digit",
-//   };
-
-//   const utcDate = new Date(utcTimestamp);
-//   return utcDate.toLocaleString("en-US", options);
-// }
 export function toUTC(dateTimeString: string): Date {
   const local = new Date(dateTimeString);
   const offset = local.getTimezoneOffset();
@@ -326,26 +292,9 @@ export function convertTimeToISOString(selectedTime: string) {
   return isoTime;
 }
 
-// Convert UTC date to local time
-// export function convertUTCtoLocalTime(utcTime: Date): Date {
-//   const utcDate = new Date(utcTime);
-//   utcDate.setSeconds(0);
-//   utcDate.setMilliseconds(0);
-//   const localTime = new Date(
-//     utcDate.getTime() + utcDate.getTimezoneOffset() * 60000
-//   );
-//   return localTime;
-// }
-
 export function isMacOs() {
   return window.navigator.userAgent.includes("Mac");
 }
-
-// const [hours, minutes] = time.split(":");
-// const date = new Date();
-// date.setHours(Number(hours));
-// date.setMinutes(Number(minutes));
-// return date;
 
 export function subHours(date: Date, hours: number): string {
   // return new Date(date.getTime() - hours * 60 * 60 * 1000);
