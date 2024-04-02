@@ -1,20 +1,19 @@
-import ClientTabs from "@/components/clients/client-tabs";
 import { type Metadata } from "next";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
+  // client: React.ReactNode;
 }
 
 export const metadata: Metadata = {
-  title: "Gigs",
-  description: "Manage your gigs",
+  title: "Gig",
+  description: "Manage your gig",
 };
 
 export default function Layout({ children }: DashboardLayoutProps) {
   return (
     <>
-      {/* <Header heading="Clients" separator={true} /> */}
-      <ClientTabs />
+      {/* <Header heading="Gigs" separator={true} /> */}
       {children}
     </>
   );

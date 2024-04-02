@@ -8,10 +8,7 @@ import { FieldError } from "@/components/form/field-error";
 import { useFormFeedback } from "@/components/form/use-form-feedback";
 import { EMPTY_FORM_STATE } from "@/components/form/to-form-state";
 import { update } from "@/app/_actions/gig";
-import {
-  type Gig as GigProps,
-  type Client as ClientProps,
-} from "@prisma/client";
+import { type Gig as GigProps } from "@prisma/client";
 import { DatePicker } from "../ui/date-picker";
 import { type FocusEvent, useRef, startTransition, useState } from "react";
 import {
@@ -21,18 +18,44 @@ import {
   formatPrice,
   getTimeFromDate,
 } from "@/lib/utils";
-import { ClientPicker } from "../client-picker";
+import { useQueryState, parseAsBoolean } from "nuqs";
+import { type ClientPickerProps } from "@/types/index";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import { Button } from "../ui/button";
+import { Icons } from "../icons";
+
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 interface Props {
   id: string;
   gig: Awaited<Partial<GigProps>>;
-  client?: Awaited<Partial<ClientProps>> | undefined;
+  client?: Awaited<ClientPickerProps> | undefined;
+  clientPicker: React.ReactElement;
 }
 
-export function GigHeaderForm(props: Props) {
-  const { id } = props;
+export function GigForm(props: Props) {
+  const { id, clientPicker } = props;
   const { gigDate, timeStart, timeEnd, price, amountPaid } = props.gig;
-  // const { id: clientId, client: clientName } = props.client;
+  const { id: clientId, client: clientName } = props.client;
 
   // console.log(timeStart, timeEnd, calculateTimeDifference(timeStart, timeEnd));
 
@@ -48,10 +71,6 @@ export function GigHeaderForm(props: Props) {
   >({});
 
   const datePickerImperativeHandleRef = useRef<{
-    reset: () => void;
-  }>(null);
-
-  const clientPickerImperativeHandleRef = useRef<{
     reset: () => void;
   }>(null);
 
@@ -120,6 +139,7 @@ export function GigHeaderForm(props: Props) {
   const balance =
     price && amountPaid ? Number(price) - Number(amountPaid) : null;
 
+  /* TODO: Update back to using form after creating a update funciton that maps the gigDate, start/end times.  */
   return (
     <form
       action={formAction}
@@ -196,7 +216,6 @@ export function GigHeaderForm(props: Props) {
           name="price"
           defaultValue={Number(price)}
           onBlur={(e: FocusEvent<HTMLInputElement>) => {
-            console.log(e);
             void handleUpdate(e.target.name as keyof GigProps, e.target.value);
           }}
         />
@@ -239,20 +258,14 @@ export function GigHeaderForm(props: Props) {
         <span>Balance</span>
       </Label>
 
-      <Label className="col-span-3 row-start-2">
-        <ClientPicker
-          id="clientId"
-          name="clientId"
-          defaultValue={props.client.id ? props.client : undefined}
-          onSelect={(clientId) => void handleUpdate("clientId", clientId)}
-          imperativeHandleRef={clientPickerImperativeHandleRef}
-        />
+      <Label className="col-span-3">
+        <Input name="clientId" defaultValue={clientId ? clientName : ""} />
         <span>Client</span>
-        <FieldError
-          formState={formState}
-          error={fieldError.key === "clientId" ? fieldError.error : null}
-          name="clientId"
-        />
+      </Label>
+
+      <Label className="col-span-3 row-start-2">
+        <ClientPicker {...props} />
+        <span>Client</span>
       </Label>
 
       <noscript>
@@ -265,5 +278,29 @@ export function GigHeaderForm(props: Props) {
         )}
       </noscript>
     </form>
+  );
+}
+
+function ClientPicker(props: Props) {
+  const [open, setOpen] = useQueryState(
+    "modalOpen",
+    parseAsBoolean.withDefault(false),
+  );
+
+  function handleDrawerOpen() {
+    void setOpen(!open);
+  }
+
+  return (
+    <Sheet open={open} onOpenChange={handleDrawerOpen}>
+      <SheetTrigger className="w-full justify-start text-left" asChild>
+        <Button variant="outline">
+          <Icons.user className=" mr-2 size-3" />
+          {props.client?.client}
+          <Input type="hidden" name="clientId" value={props.client?.client} />
+        </Button>
+      </SheetTrigger>
+      <SheetContent className="">{props.clientPicker}</SheetContent>
+    </Sheet>
   );
 }

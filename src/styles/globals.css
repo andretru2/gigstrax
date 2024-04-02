@@ -95,6 +95,9 @@
       "rlig" 1,
       "calt" 1;
   }
+  /* h4 {
+    @apply text-xs font-semibold;
+  } */
 }
 
 @layer components {

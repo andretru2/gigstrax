@@ -57,7 +57,7 @@ const DatePicker = ({
           variant="outline"
           className="h-9 bg-white text-xs  font-normal hover:bg-none"
         >
-          <Icons.calendar className=" mr-2 size-4" />
+          <Icons.calendar className=" mr-2 size-3" />
 
           {formattedStringDate}
           <input type="hidden" name={name} value={formattedStringDate} />

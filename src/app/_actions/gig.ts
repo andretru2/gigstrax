@@ -62,17 +62,10 @@ export async function update(
         data: { id: id, ...parsedData },
       });
   } catch (error) {
-    console.log(error);
     return fromErrorToFormState(error);
   }
 
   revalidatePath(`/dashboard/gigs/${id}`);
-
-  // if (id) {
-  //   cookies().set("toast", "Ticket updated");
-
-  //   redirect(ticketPath(id));
-  // }
 
   return toFormState("SUCCESS", "Gig updated");
 }
@@ -98,4 +91,20 @@ export async function getGigs({
     data: data,
     totalCount,
   };
+}
+
+export async function gigSelectClientPicker(id: string, clientId: string) {
+  const res = await prisma.gig.update({
+    where: {
+      id: id,
+    },
+    data: {
+      clientId: clientId,
+    },
+  });
+
+  if (!res) throw Error("Unable to select client for gig");
+  revalidatePath(`/dashboard/gigs/${id}`);
+
+  return res;
 }

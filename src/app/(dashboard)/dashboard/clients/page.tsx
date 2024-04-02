@@ -3,14 +3,19 @@ import { type Tab } from "@/types/index";
 import { getClients } from "@/app/_actions/client";
 import { type GetClientsProps } from "@/types/index";
 import { PER_PAGE } from "@/lib/constants";
+import { searchParamsCache } from "@/components/clients/search-params";
+import { type SearchParams } from "nuqs/server";
+
+import { ClientPicker } from "@/components/clients/client-picker";
 
 interface Props {
   params: {
     tab: Tab;
   };
-  searchParams: {
-    [key: string]: string | string[] | undefined;
-  };
+  searchParams: SearchParams;
+  // searchParams: {
+  //   [key: string]: string | string[] | undefined;
+  // };
 }
 
 export const revalidate = 120;
@@ -97,5 +102,10 @@ export default async function Page({ params, searchParams }: Props) {
 
   const pageCount = Math.ceil(totalCount / limit);
 
-  return <DataTable data={data} pageCount={pageCount} />;
+  return (
+    <>
+      <DataTable data={data} pageCount={pageCount} />
+      <ClientPicker searchParams={searchParamsCache?.parse(searchParams)} />
+    </>
+  );
 }

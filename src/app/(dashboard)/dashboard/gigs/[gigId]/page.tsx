@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { GigHeaderForm } from "@/components/gigs/gig-header-form";
+import { GigForm } from "@/components/gigs/gig-form";
 
 import { getGigs } from "@/app/_actions/gig";
 import { getClients } from "@/app/_actions/client";
@@ -17,6 +17,9 @@ import { BackButton } from "@/components/ui/back-button";
 
 import { Suspense } from "react";
 import { Spinner } from "@/components/spinner";
+import { ClientPicker } from "@/components/clients/client-picker";
+import { type SearchParams } from "nuqs/server";
+import { searchParamsCache } from "@/components/clients/search-params";
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -28,6 +31,7 @@ interface Props {
   params: {
     gigId: string;
   };
+  searchParams: SearchParams;
 }
 
 export default function Page(props: Props) {
@@ -36,14 +40,20 @@ export default function Page(props: Props) {
       <CardContent className="flex flex-col gap-2">
         <BackButton />
         <Suspense fallback={<Spinner />}>
-          <GigHeader {...props} />
+          <GigFormWrapper {...props} />
         </Suspense>
+
+        {/* <Suspense fallback={<Spinner />}>{props.clientPicker}</Suspense> */}
+        {/* <ClientPicker
+          searchParams={searchParamsCache.parse(props.searchParams)}
+          gigId={props.params.gigId}
+        /> */}
       </CardContent>
     </Card>
   );
 }
 
-async function GigHeader(props: Props) {
+async function GigFormWrapper(props: Props) {
   const { gigId } = props.params;
 
   if (!gigId) {
@@ -85,15 +95,21 @@ async function GigHeader(props: Props) {
   }
 
   return (
-    <Card className="grid  grid-cols-12 p-4 ">
+    <Card className="grid  grid-cols-12 px-12 py-4 ">
       <CardHeader className="px-0">
         <CardTitle>Gig Details</CardTitle>
       </CardHeader>
-      <CardContent className="  col-span-12 mt-3 gap-2 px-0">
-        <GigHeaderForm
+      <CardContent className="  col-span-12 mt-3  gap-2 ">
+        <GigForm
           id={gigId}
           gig={gig}
           client={client ? client : undefined}
+          clientPicker={
+            <ClientPicker
+              searchParams={searchParamsCache.parse(props.searchParams)}
+              gigId={props.params.gigId}
+            />
+          }
         />
       </CardContent>
     </Card>

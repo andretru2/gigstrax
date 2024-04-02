@@ -17,9 +17,10 @@ const dateTimeSchema = z
   .optional();
 
 export const gigSchema = z.object({
-  gigDate: dateTimeSchema,
-  timeStart: dateTimeSchema,
-  timeEnd: dateTimeSchema,
+  // gigDate: dateTimeSchema,
+  gigDate: z.any().optional(),
+  timeStart: z.any().optional(),
+  timeEnd: z.any().optional(),
   // timeStart: timeSchema.optional(),
   // timeEnd: timeSchema.optional(),
   venueAddressCity: z
@@ -66,20 +67,20 @@ export const gigSchema = z.object({
   createdBy: z.string().optional(),
   updatedAt: z.date().optional(),
   updatedBy: z.string().optional(),
-  santa: z
-    .object({
-      id: z.string().optional(),
-      role: z.string().optional(),
-    })
-    .optional(),
-  mrsSanta: z
-    .object({
-      id: z.string().optional(),
-      role: z.string().optional(),
-    })
-    .optional(),
+  // santa: z
+  //   .object({
+  //     id: z.string().optional(),
+  //     role: z.string().optional(),
+  //   })
+  //   .optional(),
+  // mrsSanta: z
+  //   .object({
+  //     id: z.string().optional(),
+  //     role: z.string().optional(),
+  //   })
+  //   .optional(),
   // client: z.object({ update: clientSchema }),
-  client: clientSchema.optional(),
+  // client: clientSchema.optional(),
 });
 // .refine(
 //   (data) => {
