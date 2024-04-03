@@ -39,7 +39,7 @@ function mapClient(client: ClientProps) {
 }
 
 export async function checkIfExists(name: string) {
-  name.toLowerCase().trim();
+  name = name.toLowerCase().trim();
   const client = await prisma.client.findFirst({
     where: {
       client: {
@@ -48,7 +48,7 @@ export async function checkIfExists(name: string) {
     },
   });
 
-  console.log("check if exists", client, !!client, client?.id);
+  console.log("check if exists", name, client, !!client, client?.id);
 
   return {
     result: "Success",
@@ -68,7 +68,6 @@ export async function createClient(props: Partial<ClientProps>) {
   if (resultExists.isDuplicate) {
     return resultExists;
   }
-  console.log(props);
   const client = await prisma.client.create({ data: props });
 
   revalidatePath(`/dashboard/clients/`);

@@ -41,6 +41,9 @@ export const fieldErrorParser = {
 
 export const searchParamsCache = createSearchParamsCache({
   search: searchParser,
+  searchMrsSanta: searchParser,
+  searchSanta: searchParser,
+  searchClient: searchParser,
   modalOpen: modalOpenParser,
   ...fieldErrorParser,
   ...sortParser,

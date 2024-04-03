@@ -95,6 +95,10 @@ export interface Address {
 }
 
 export type SantaProps = Pick<SourceProps, "id" | "role">;
+export type SourcePickerProps = Pick<
+  SourceProps,
+  "id" | "role" | "nameFirst" | "nameLast"
+>;
 export type ClientPickerProps = Pick<ClientProps, "id" | "client">;
 export type SantaType = "RBS" | "Mrs. Claus";
 

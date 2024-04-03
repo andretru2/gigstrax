@@ -20,6 +20,8 @@ import { Spinner } from "@/components/spinner";
 import { ClientPicker } from "@/components/clients/client-picker";
 import { type SearchParams } from "nuqs/server";
 import { searchParamsCache } from "@/components/search-params";
+import { SourcePicker } from "@/components/sources/source-picker";
+import { getSources } from "@/app/_actions/source";
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -32,6 +34,20 @@ interface Props {
     gigId: string;
   };
   searchParams: SearchParams;
+}
+
+async function getClient(props: Props) {
+  const { data } = await getClients({
+    select: {
+      id: true,
+      client: true,
+    },
+    whereClause: {
+      id: props.params.gigId,
+    },
+  });
+
+  return data;
 }
 
 export default function Page(props: Props) {
@@ -69,6 +85,8 @@ async function GigFormWrapper(props: Props) {
       price: true,
       amountPaid: true,
       clientId: true,
+      santaId: true,
+      mrsSantaId: true,
     },
     whereClause: {
       id: gigId,
@@ -94,23 +112,75 @@ async function GigFormWrapper(props: Props) {
     client = resClient.data[0];
   }
 
+  let santa;
+  if (gig.santaId) {
+    const resSanta = await getSources({
+      select: {
+        id: true,
+        role: true,
+        nameFirst: true,
+        nameLast: true,
+      },
+      whereClause: {
+        id: gig.santaId,
+      },
+    });
+
+    santa = resSanta.data[0];
+  }
+
+  let mrsSanta;
+  if (gig.mrsSantaId) {
+    const resMrsSanta = await getSources({
+      select: {
+        id: true,
+        role: true,
+        nameFirst: true,
+        nameLast: true,
+      },
+      whereClause: {
+        id: gig.mrsSantaId,
+      },
+    });
+
+    mrsSanta = resMrsSanta.data[0];
+  }
+
   const parsedSearchParams = searchParamsCache.parse(props.searchParams);
 
   return (
-    <Card className="grid  grid-cols-12 px-12 py-4 ">
-      <CardHeader className="px-0">
+    <Card className="mx-auto flex w-full flex-col gap-4 p-4">
+      <CardHeader className="pl-24">
         <CardTitle>Gig Details</CardTitle>
       </CardHeader>
-      <CardContent className="  col-span-12 mt-3  gap-2 ">
+      <CardContent className="   ">
         <GigForm
           id={gigId}
           gig={gig}
           client={client ? client : undefined}
-          // searchParams={parsedSearchParams}
+          santa={santa ? santa : undefined}
+          mrsSanta={mrsSanta ? mrsSanta : undefined}
           clientPicker={
             <ClientPicker
+              key="clientPicker"
               searchParams={parsedSearchParams}
               gigId={props.params.gigId}
+            />
+          }
+          santaPicker={
+            <SourcePicker
+              key="santaPicker"
+              searchParams={parsedSearchParams}
+              gigId={props.params.gigId}
+              role="RBS"
+            />
+          }
+          mrsSantaPicker={
+            <SourcePicker
+              key="mrsSantaPicker"
+              searchParams={parsedSearchParams}
+              gigId={props.params.gigId}
+              role="Mrs. Claus"
             />
           }
         />

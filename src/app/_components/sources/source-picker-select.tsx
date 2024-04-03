@@ -1,6 +1,6 @@
 "use client";
 
-import { type ClientPickerProps } from "@/types/index";
+import { type SourcePickerProps, type SantaType } from "@/types/index";
 import { Button } from "../ui/button";
 import { useQueryState } from "nuqs";
 import { toTitleCase } from "@/lib/utils";
@@ -10,14 +10,18 @@ import { handleSaveGig } from "@/lib/gig/handle-save-gig";
 import { useTransition } from "react";
 
 interface Props {
-  client: ClientPickerProps;
+  source: SourcePickerProps;
   gigId?: string | undefined;
   searchParams?: ParsedSearchParams;
   className?: string;
+  role: SantaType;
 }
 
-export function ClientPickerSelect(props: Props) {
-  const [open, setOpen] = useQueryState("modalOpenClient", modalOpenParser);
+export function SourcePickerSelect(props: Props) {
+  const [open, setOpen] = useQueryState(
+    props.role === "RBS" ? "modalOpenSanta" : "modalOpenMrsSanta",
+    modalOpenParser,
+  );
   const [isPending, startTransition] = useTransition();
 
   function handleSelect() {
@@ -25,8 +29,8 @@ export function ClientPickerSelect(props: Props) {
       props.gigId &&
         void handleSaveGig({
           id: props.gigId,
-          key: "clientId",
-          value: props.client.id,
+          key: props.role === "RBS" ? "santaId" : "mrsSantaId",
+          value: props.source.id,
         });
       void setOpen(!open);
     });
@@ -46,7 +50,7 @@ export function ClientPickerSelect(props: Props) {
         void handleSelect();
       }}
     >
-      {toTitleCase(props.client.client)}
+      {props.source.role && toTitleCase(props.source.role)}
     </Button>
   );
 }

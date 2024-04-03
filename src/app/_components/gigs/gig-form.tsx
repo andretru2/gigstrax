@@ -10,7 +10,7 @@ import { EMPTY_FORM_STATE } from "@/components/form/to-form-state";
 import { submitGig } from "@/app/_actions/gig";
 import { type Gig as GigProps } from "@prisma/client";
 import { DatePicker } from "../ui/date-picker";
-import { type FocusEvent, useRef, startTransition, useState } from "react";
+import { type FocusEvent, useRef, type ReactElement } from "react";
 import {
   calculateTimeDifference,
   cn,
@@ -19,35 +19,34 @@ import {
   getTimeFromDate,
 } from "@/lib/utils";
 import { useQueryStates, parseAsBoolean, useQueryState } from "nuqs";
-import { type ClientPickerProps } from "@/types/index";
+import { type ClientPickerProps, type SourcePickerProps } from "@/types/index";
 import { handleSaveGig, type SaveGigProps } from "@/lib/gig/handle-save-gig";
 
 import { Button } from "../ui/button";
 import { Icons } from "../icons";
 
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { type ParsedSearchParams, fieldErrorParser } from "../search-params";
+import { fieldErrorParser } from "../search-params";
 
 interface Props {
   id: string;
   gig: Awaited<Partial<GigProps>>;
   client?: Awaited<ClientPickerProps> | undefined;
-  clientPicker: React.ReactElement;
+  santa?: Awaited<SourcePickerProps> | undefined;
+  mrsSanta?: Awaited<SourcePickerProps> | undefined;
+  clientPicker: ReactElement;
+  santaPicker: ReactElement;
+  mrsSantaPicker: ReactElement;
   // searchParams?: ParsedSearchParams;
 }
 
 export function GigForm(props: Props) {
   const { id } = props;
   const { gigDate, timeStart, timeEnd, price, amountPaid } = props.gig;
-  const { id: clientId, client: clientName } = props.client;
+  // const { id: clientId, client: clientName } = props.client;
+  // const { id: santaId, role: santaRole } = props.santa;
 
-  // const [fieldError, setFieldError] = useQueryStates(
-  //   { key: props.searchParams?.key, error: props.searchParams?.error },
-  //   fieldErrorParser,
-  // );
   const [fieldError, setFieldError] = useQueryStates(fieldErrorParser);
-
-  console.log("fieldError", fieldError);
 
   const submitGigWithId = submitGig.bind(null, id);
 
@@ -117,9 +116,9 @@ export function GigForm(props: Props) {
     <form
       action={formAction}
       ref={ref}
-      className="form grid w-full  grid-cols-12 items-center justify-center gap-x-4 gap-y-6"
+      className="form mx-auto grid  w-full max-w-7xl grid-cols-9 items-center justify-center gap-x-4 gap-y-6"
     >
-      <Label className="col-span-2">
+      <Label className="col-span-3">
         <DatePicker
           id="gigDate"
           name="gigDate"
@@ -179,7 +178,7 @@ export function GigForm(props: Props) {
         />
       </Label>
 
-      <Label className="col-span-1 w-20">
+      <Label className="col-span-1 ">
         <Input
           disabled={true}
           name="duration"
@@ -245,15 +244,25 @@ export function GigForm(props: Props) {
         <span>Balance</span>
       </Label>
 
-      <Label className="col-span-3">
+      {/* <Label className="col-span-3">
         <Input name="clientId" defaultValue={clientId ? clientName : ""} />
         <span>Client</span>
-      </Label>
+      </Label> */}
 
       <Label className="col-span-3 row-start-2">
         {/* {props.clientPicker} */}
         <ClientPicker {...props} />
         <span>Client</span>
+      </Label>
+
+      <Label className="col-span-3  row-start-2">
+        <SantaPicker {...props} />
+        <span>Santa</span>
+      </Label>
+
+      <Label className="col-span-3  row-start-2">
+        <MrsSantaPicker {...props} />
+        <span>Mrs Santa</span>
       </Label>
 
       <noscript>
@@ -271,7 +280,31 @@ export function GigForm(props: Props) {
 
 function ClientPicker(props: Props) {
   const [open, setOpen] = useQueryState(
-    "modalOpen",
+    "modalOpenClient",
+    parseAsBoolean.withDefault(false),
+  );
+
+  function handleDrawerOpen() {
+    void setOpen(!open);
+  }
+
+  return (
+    <Sheet open={open} onOpenChange={handleDrawerOpen}>
+      <SheetTrigger className="w-full justify-start text-left" asChild>
+        <Button variant="outline" className="text-xs">
+          <Icons.user className=" mr-2 size-3 " />
+          {props.client?.client}
+          <Input type="hidden" name="clientId" value={props.client?.client} />
+        </Button>
+      </SheetTrigger>
+      <SheetContent className="">{props.clientPicker}</SheetContent>
+    </Sheet>
+  );
+}
+
+function SantaPicker(props: Props) {
+  const [open, setOpen] = useQueryState(
+    "modalOpenSanta",
     parseAsBoolean.withDefault(false),
   );
 
@@ -283,12 +316,44 @@ function ClientPicker(props: Props) {
     <Sheet open={open} onOpenChange={handleDrawerOpen}>
       <SheetTrigger className="w-full justify-start text-left" asChild>
         <Button variant="outline">
-          <Icons.user className=" mr-2 size-3" />
-          {props.client?.client}
-          <Input type="hidden" name="clientId" value={props.client?.client} />
+          <Icons.santa className=" mr-2 size-3" />
+          {props.santa?.role}
+          <Input
+            type="hidden"
+            name="santaId"
+            value={props?.santa?.role || undefined}
+          />
         </Button>
       </SheetTrigger>
-      <SheetContent className="">{props.clientPicker}</SheetContent>
+      <SheetContent className="">{props.santaPicker}</SheetContent>
+    </Sheet>
+  );
+}
+
+function MrsSantaPicker(props: Props) {
+  const [open, setOpen] = useQueryState(
+    "modalOpenMrsSanta",
+    parseAsBoolean.withDefault(false),
+  );
+
+  function handleDrawerOpen() {
+    void setOpen(!open);
+  }
+
+  return (
+    <Sheet open={open} onOpenChange={handleDrawerOpen}>
+      <SheetTrigger className="w-full justify-start text-left" asChild>
+        <Button variant="outline">
+          <Icons.mrsSanta className=" mr-2 size-3" />
+          {props.mrsSanta?.role}
+          <Input
+            type="hidden"
+            name="mrsSantaId"
+            value={props?.mrsSanta?.role || undefined}
+          />
+        </Button>
+      </SheetTrigger>
+      <SheetContent className="">{props.mrsSantaPicker}</SheetContent>
     </Sheet>
   );
 }

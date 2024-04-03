@@ -24,7 +24,7 @@ interface Props {
 export function ClientPickerCreate(props: Props) {
   const [client, setClient] = useState<string>("");
   const [isPending, startTransition] = useTransition();
-  const [open, setOpen] = useQueryState("modalOpen", modalOpenParser);
+  const [open, setOpen] = useQueryState("modalOpenClient", modalOpenParser);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setClient(event.target.value);
@@ -33,7 +33,6 @@ export function ClientPickerCreate(props: Props) {
   const handleCreate = () => {
     startTransition(async () => {
       const { clientId } = await createClient({ client });
-      console.log("clientId", clientId);
       props.gigId &&
         void handleSaveGig({
           id: props.gigId,

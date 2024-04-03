@@ -11,7 +11,6 @@ import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 
 interface Props {
   searchParams?: ParsedSearchParams;
-  // onSelect?: (client: ClientPickerProps) => void;
   gigId?: string | undefined;
 }
 
@@ -23,7 +22,7 @@ async function fetchClients({ searchParams }: Props) {
     },
     whereClause: {
       client: {
-        contains: searchParams?.search,
+        contains: searchParams?.searchClient,
         mode: "insensitive",
       },
     },
@@ -63,7 +62,9 @@ export function ClientPicker(props: Props) {
 }
 
 async function Search(props: Props) {
-  const clients = props.searchParams?.search ? await fetchClients(props) : [];
+  const clients = props.searchParams?.searchClient
+    ? await fetchClients(props)
+    : [];
 
   return (
     <Card className=" p-4">
@@ -86,7 +87,7 @@ async function Search(props: Props) {
           </div>
         </div>
 
-        {clients?.length === 0 && props.searchParams?.search && (
+        {clients?.length === 0 && props.searchParams?.searchClient && (
           <div className="flex h-[166px] w-[420px] flex-col justify-center">
             <Placeholder label="No clients found" />
           </div>
