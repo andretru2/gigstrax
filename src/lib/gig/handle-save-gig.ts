@@ -4,8 +4,6 @@ import type { Gig } from "@prisma/client";
 import { startTransition } from "react";
 import { saveGig } from "@/app/_actions/gig";
 import { toast } from "sonner";
-// import { useQueryStates } from "nuqs";
-// import { fieldErrorParser } from "@/components/search-params";
 
 export interface SaveGigProps {
   id: string;
@@ -37,8 +35,11 @@ export async function handleSaveGig(props: SaveGigProps) {
       })
     : startTransition(() => {
         toast.success(resultSaveGig?.message);
+        result = {
+          result: "Success",
+          resultDescription: resultSaveGig?.message,
+        };
       });
 
-  if (result) return result;
-  return { result: "Success", resultDescription: "Updated gig." };
+  return result;
 }

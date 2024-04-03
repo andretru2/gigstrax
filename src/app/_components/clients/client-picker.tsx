@@ -12,7 +12,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 interface Props {
   searchParams?: ParsedSearchParams;
   // onSelect?: (client: ClientPickerProps) => void;
-  gigId?: string;
+  gigId?: string | undefined;
 }
 
 async function fetchClients({ searchParams }: Props) {
@@ -56,7 +56,7 @@ export function ClientPicker(props: Props) {
         <span className="flex w-full items-center justify-center">—or—</span>
         <Recent {...props} />
         <span className="flex w-full items-center justify-center">—or—</span>
-        <ClientPickerCreate />
+        <ClientPickerCreate {...props} />
       </div>
     </div>
   );

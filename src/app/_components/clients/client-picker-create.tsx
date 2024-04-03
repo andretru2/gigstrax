@@ -12,16 +12,19 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { createClient } from "@/app/_actions/client";
-// import { saveGig } from "@/app/_actions/gig";
+import { type ParsedSearchParams, modalOpenParser } from "../search-params";
+import { useQueryState } from "nuqs";
+import { handleSaveGig } from "@/lib/gig/handle-save-gig";
 
 interface Props {
-  onSuccess?: (newClientId: string) => void;
-  goto?: boolean;
+  searchParams?: ParsedSearchParams;
+  gigId?: string | undefined;
 }
 
 export function ClientPickerCreate(props: Props) {
   const [client, setClient] = useState<string>("");
   const [isPending, startTransition] = useTransition();
+  const [open, setOpen] = useQueryState("modalOpen", modalOpenParser);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setClient(event.target.value);
@@ -30,10 +33,14 @@ export function ClientPickerCreate(props: Props) {
   const handleCreate = () => {
     startTransition(async () => {
       const { clientId } = await createClient({ client });
-
-      const res = await updateGig();
-
-      console.log("create client", resultCreateClient);
+      console.log("clientId", clientId);
+      props.gigId &&
+        void handleSaveGig({
+          id: props.gigId,
+          key: "clientId",
+          value: clientId,
+        });
+      void setOpen(!open);
     });
   };
 
@@ -43,7 +50,7 @@ export function ClientPickerCreate(props: Props) {
         <CardTitle className="pl-2">Create new Client</CardTitle>
       </CardHeader>
       <CardContent className="flex w-full flex-col gap-4">
-        <Label className="">
+        <Label className="font-medium">
           <Input name="clientId" value={client} onChange={handleInputChange} />
         </Label>
         <Button
