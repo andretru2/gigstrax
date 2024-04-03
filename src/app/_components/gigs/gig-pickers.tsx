@@ -25,7 +25,7 @@ import {
 } from "../ui/command";
 import { type FocusEvent, useEffect, useState, useTransition } from "react";
 import { cn } from "@/lib/utils";
-import ClientCreate from "../clients/client-create";
+import ClientCreate from "../clients/client-picker-create";
 import { useRouter } from "next/navigation";
 import { useDebounce } from "@/hooks/use-debounce";
 import { getSantasByAvailability, update } from "@/app/_actions/gig";

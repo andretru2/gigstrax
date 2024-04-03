@@ -9,42 +9,34 @@ import {
   fromErrorToFormState,
   toFormState,
 } from "@/components/form/to-form-state";
-import { toCent } from "@/utils/currency";
-// import type {Gig} from "@prisma/client";
+import { parseFormData } from "@/lib/utils";
 
-import { ZodError, type ZodIssue, ZodObject, type ZodSchema } from "zod";
-
-function parseFormData<T extends Record<string, unknown>>(
+export async function saveGig(
+  id: string,
   formData: FormData,
-  schema: ZodSchema<T>,
-): T {
-  if (!(schema instanceof ZodObject)) {
-    throw new Error("Schema must be a ZodObject");
-  }
-  const keys = Array.from(formData.keys()) as Array<keyof T>;
-  const dataEntries: [keyof T, unknown][] = keys.map((key) => {
-    try {
-      const value = formData.get(key.toString());
-      const parsedValue = schema.shape[key].parse(value);
-      return [key, parsedValue];
-    } catch (error) {
-      const zodError = ZodError.create(
-        (error as ZodError<T>).issues.map(
-          (issue): ZodIssue => ({
-            ...issue,
-            path: [key, ...issue.path],
-          }),
-        ),
-      );
-      console.log(zodError, "zodError");
-      throw zodError;
-    }
-  });
+): Promise<FormState> {
+  if (!id || !formData) return toFormState("ERROR", "Missing params");
 
-  return Object.fromEntries(dataEntries) as T;
+  try {
+    const parsedData = parseFormData(formData, gigSchema);
+
+    if (parsedData)
+      /** TODO: if gig date changes, update timestart/end */
+      await prisma.gig.update({
+        where: {
+          id,
+        },
+        data: { id: id, ...parsedData },
+      });
+  } catch (error) {
+    return fromErrorToFormState(error);
+  }
+  revalidatePath(`/dashboard/gigs/${id}`);
+
+  return toFormState("SUCCESS", "Gig updated");
 }
 
-export async function update(
+export async function submitGig(
   id: string,
   prevState: FormState,
   formData: FormData,
@@ -91,20 +83,4 @@ export async function getGigs({
     data: data,
     totalCount,
   };
-}
-
-export async function gigSelectClientPicker(id: string, clientId: string) {
-  const res = await prisma.gig.update({
-    where: {
-      id: id,
-    },
-    data: {
-      clientId: clientId,
-    },
-  });
-
-  if (!res) throw Error("Unable to select client for gig");
-  revalidatePath(`/dashboard/gigs/${id}`);
-
-  return res;
 }

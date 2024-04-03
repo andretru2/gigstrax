@@ -19,7 +19,7 @@ import { Suspense } from "react";
 import { Spinner } from "@/components/spinner";
 import { ClientPicker } from "@/components/clients/client-picker";
 import { type SearchParams } from "nuqs/server";
-import { searchParamsCache } from "@/components/clients/search-params";
+import { searchParamsCache } from "@/components/search-params";
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -94,6 +94,8 @@ async function GigFormWrapper(props: Props) {
     client = resClient.data[0];
   }
 
+  const parsedSearchParams = searchParamsCache.parse(props.searchParams);
+
   return (
     <Card className="grid  grid-cols-12 px-12 py-4 ">
       <CardHeader className="px-0">
@@ -104,9 +106,10 @@ async function GigFormWrapper(props: Props) {
           id={gigId}
           gig={gig}
           client={client ? client : undefined}
+          // searchParams={parsedSearchParams}
           clientPicker={
             <ClientPicker
-              searchParams={searchParamsCache.parse(props.searchParams)}
+              searchParams={parsedSearchParams}
               gigId={props.params.gigId}
             />
           }

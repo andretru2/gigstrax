@@ -2,12 +2,15 @@
 
 import { type ClientPickerProps } from "@/types/index";
 import { Button } from "../ui/button";
-import { gigSelectClientPicker } from "@/app/_actions/gig";
+// import { saveGig } from "@/app/_actions/gig";
 import { useQueryState } from "nuqs";
 import { toTitleCase } from "@/lib/utils";
-import { type ParsedSearchParams } from "../clients/search-params";
-import { modalOpenParser } from "../clients/search-params";
+import { type ParsedSearchParams } from "../search-params";
+import { modalOpenParser } from "../search-params";
 import { cn } from "@/lib/utils";
+// import { useTransition } from "react";
+import { handleSaveGig } from "@/lib/gig/handle-save-gig";
+import { use, useTransition } from "react";
 
 interface Props {
   gigId: string;
@@ -18,18 +21,31 @@ interface Props {
 
 export function GigClientPickerSelect(props: Props) {
   const [open, setOpen] = useQueryState("modalOpen", modalOpenParser);
+  const [isPending, startTransition] = useTransition();
+
+  function handleSelect() {
+    startTransition(() => {
+      void handleSaveGig({
+        id: props.gigId,
+        key: "clientId",
+        value: props.client.id,
+      });
+      void setOpen(!open);
+    });
+  }
 
   return (
     <Button
       type="button"
       variant="ghost"
+      isLoading={isPending}
+      disabled={isPending}
       className={cn(
-        "  w-full justify-start truncate  p-2 text-left hover:bg-primary hover:text-black ",
         props.className,
+        "  w-full justify-start   p-2 text-left hover:bg-primary hover:text-black ",
       )}
       onClick={() => {
-        void setOpen(!open);
-        void gigSelectClientPicker(props.gigId, props.client.id);
+        void handleSelect();
       }}
     >
       {toTitleCase(props.client.client)}

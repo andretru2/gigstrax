@@ -34,9 +34,15 @@ export const paginationOptions = {
   clearOnDefault: true,
 };
 
+export const fieldErrorParser = {
+  key: parseAsString.withDefault(""),
+  error: parseAsString.withDefault(""),
+};
+
 export const searchParamsCache = createSearchParamsCache({
   search: searchParser,
   modalOpen: modalOpenParser,
+  ...fieldErrorParser,
   ...sortParser,
   ...paginationParser,
 });

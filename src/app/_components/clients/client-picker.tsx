@@ -1,8 +1,9 @@
 import { getClients } from "@/app/_actions/client";
 
 import { type ClientPickerProps } from "@/types/index";
-import { type ParsedSearchParams } from "./search-params";
+import { type ParsedSearchParams } from "../search-params";
 import { ClientSearchInput } from "./client-search-input";
+import { ClientPickerCreate } from "./client-picker-create";
 import { ClientSortSelect } from "./client-sort-select";
 import { Placeholder } from "../ui/placeholder";
 import { GigClientPickerSelect } from "../gigs/gig-client-picker-select";
@@ -55,7 +56,7 @@ export function ClientPicker(props: Props) {
         <span className="flex w-full items-center justify-center">—or—</span>
         <Recent {...props} />
         <span className="flex w-full items-center justify-center">—or—</span>
-        {/* <Create {...props} /> */}
+        <ClientPickerCreate />
       </div>
     </div>
   );
@@ -100,17 +101,17 @@ async function Search(props: Props) {
 async function Recent(props: Props) {
   const recent = await fetchRecent();
   return (
-    <Card className=" p-4">
+    <Card className=" h-full w-full p-4">
       <CardHeader>
         <CardTitle className="pl-2">Pick from Recent</CardTitle>
       </CardHeader>
-      <CardContent className="flex  flex-row gap-2">
+      <CardContent className="grid h-full  grid-cols-3  gap-2   ">
         {recent.map((client) => (
           <GigClientPickerSelect
             key={client.id}
             client={client}
             {...props}
-            className="flex items-center justify-center truncate rounded-md bg-primary"
+            className="pill"
           />
         ))}
       </CardContent>

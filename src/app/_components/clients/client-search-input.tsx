@@ -2,7 +2,8 @@
 
 import { useQueryState } from "nuqs";
 import { SearchInput } from "@/components/search-input";
-import { searchParser } from "./search-params";
+
+import { searchParser } from "../search-params";
 
 interface Props {
   placeholder: string;

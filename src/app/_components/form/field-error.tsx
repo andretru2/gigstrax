@@ -11,7 +11,7 @@ const FieldError = ({ formState, name, error }: FieldErrorProps) => {
 
   if (!message) return null;
 
-  return <span className="text-xs text-red-500">{message}</span>;
+  return <div className="text-xs text-red-500">{message}</div>;
 };
 
 export { FieldError };

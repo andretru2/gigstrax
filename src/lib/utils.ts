@@ -306,3 +306,33 @@ export function addHours(date: Date, hours: number): string {
   const newDate = new Date(date.getTime() + hours * 60 * 60 * 1000);
   return newDate.toISOString();
 }
+
+export function parseFormData<T extends Record<string, unknown>>(
+  formData: FormData,
+  schema: z.ZodSchema<T>,
+): T {
+  if (!(schema instanceof z.ZodObject)) {
+    throw new Error("Schema must be a ZodObject");
+  }
+  const keys = Array.from(formData.keys()) as Array<keyof T>;
+  const dataEntries: [keyof T, unknown][] = keys.map((key) => {
+    try {
+      const value = formData.get(key.toString());
+      const parsedValue = schema.shape[key].parse(value);
+      return [key, parsedValue];
+    } catch (error) {
+      const zodError = z.ZodError.create(
+        (error as z.ZodError<T>).issues.map(
+          (issue): z.ZodIssue => ({
+            ...issue,
+            path: [key, ...issue.path],
+          }),
+        ),
+      );
+      console.log(zodError, "zodError");
+      throw zodError;
+    }
+  });
+
+  return Object.fromEntries(dataEntries) as T;
+}

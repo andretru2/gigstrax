@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { FieldError } from "@/components/form/field-error";
 import { useFormFeedback } from "@/components/form/use-form-feedback";
 import { EMPTY_FORM_STATE } from "@/components/form/to-form-state";
-import { update } from "@/app/_actions/gig";
+import { submitGig } from "@/app/_actions/gig";
 import { type Gig as GigProps } from "@prisma/client";
 import { DatePicker } from "../ui/date-picker";
 import { type FocusEvent, useRef, startTransition, useState } from "react";
@@ -18,57 +18,43 @@ import {
   formatPrice,
   getTimeFromDate,
 } from "@/lib/utils";
-import { useQueryState, parseAsBoolean } from "nuqs";
+import { useQueryStates, parseAsBoolean, useQueryState } from "nuqs";
 import { type ClientPickerProps } from "@/types/index";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+import { handleSaveGig, type SaveGigProps } from "@/lib/gig/handle-save-gig";
+
 import { Button } from "../ui/button";
 import { Icons } from "../icons";
 
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { type ParsedSearchParams, fieldErrorParser } from "../search-params";
 
 interface Props {
   id: string;
   gig: Awaited<Partial<GigProps>>;
   client?: Awaited<ClientPickerProps> | undefined;
   clientPicker: React.ReactElement;
+  // searchParams?: ParsedSearchParams;
 }
 
 export function GigForm(props: Props) {
-  const { id, clientPicker } = props;
+  const { id } = props;
   const { gigDate, timeStart, timeEnd, price, amountPaid } = props.gig;
   const { id: clientId, client: clientName } = props.client;
 
-  // console.log(timeStart, timeEnd, calculateTimeDifference(timeStart, timeEnd));
+  // const [fieldError, setFieldError] = useQueryStates(
+  //   { key: props.searchParams?.key, error: props.searchParams?.error },
+  //   fieldErrorParser,
+  // );
+  const [fieldError, setFieldError] = useQueryStates(fieldErrorParser);
 
-  const updateGigWithId = update.bind(null, id);
+  console.log("fieldError", fieldError);
+
+  const submitGigWithId = submitGig.bind(null, id);
 
   const [formState, formAction] = useFormState(
-    updateGigWithId,
+    submitGigWithId,
     EMPTY_FORM_STATE,
   );
-
-  const [fieldError, setFieldError] = useState<
-    Record<string, string | null | undefined>
-  >({});
 
   const datePickerImperativeHandleRef = useRef<{
     reset: () => void;
@@ -95,43 +81,31 @@ export function GigForm(props: Props) {
     if (selectedTime && gigDate) {
       const [hours, minutes] = selectedTime.split(":");
       const gigDateObj = new Date(gigDate);
-      const updatedTime = new Date(
+      const saveGigdTime = new Date(
         gigDateObj.getFullYear(),
         gigDateObj.getMonth(),
         gigDateObj.getDate(),
         Number(hours),
         Number(minutes),
       );
-      void handleUpdate(
-        e.target.name as keyof GigProps,
-        updatedTime.toISOString(),
-      );
+      void handleSaveGigWrapper({
+        id: id,
+        key: e.target.name as keyof GigProps,
+        value: saveGigdTime.toISOString(),
+      });
     }
   }
 
-  const handleUpdate = async (
-    key: keyof GigProps,
-    value: unknown,
-  ): Promise<void> => {
-    if (!key || !value) return;
-    const formData = new FormData();
-    formData.append(key, value);
-    const res = await update(id, formState, formData);
-    if (!res) {
-      return void toast.error("An unknown error occurred");
+  async function handleSaveGigWrapper(props: SaveGigProps) {
+    const resultSave = await handleSaveGig(props);
+    if (resultSave.result === "Error") {
+      void setFieldError({
+        key: props.key,
+        error: resultSave.resultDescription,
+      });
     }
-
-    res?.status === "ERROR"
-      ? startTransition(() => {
-          const error = res?.issues[0];
-          setFieldError({ key, error });
-          toast.error(error);
-        })
-      : startTransition(() => {
-          toast.success(res?.message);
-          setFieldError({});
-        });
-  };
+    void setFieldError({ key: null, error: null });
+  }
 
   const durationHours =
     timeStart && timeEnd ? calculateTimeDifference(timeStart, timeEnd) : null;
@@ -139,7 +113,6 @@ export function GigForm(props: Props) {
   const balance =
     price && amountPaid ? Number(price) - Number(amountPaid) : null;
 
-  /* TODO: Update back to using form after creating a update funciton that maps the gigDate, start/end times.  */
   return (
     <form
       action={formAction}
@@ -151,7 +124,13 @@ export function GigForm(props: Props) {
           id="gigDate"
           name="gigDate"
           defaultValue={gigDate ? formatDate(gigDate, "formal") : ""}
-          onSelect={(date) => void handleUpdate("gigDate", date.toISOString())}
+          onSelect={(date) => {
+            void handleSaveGigWrapper({
+              id: id,
+              key: "gigDate",
+              value: date.toISOString(),
+            });
+          }}
           imperativeHandleRef={datePickerImperativeHandleRef}
         />
         <span>Gig Date</span>
@@ -216,7 +195,11 @@ export function GigForm(props: Props) {
           name="price"
           defaultValue={Number(price)}
           onBlur={(e: FocusEvent<HTMLInputElement>) => {
-            void handleUpdate(e.target.name as keyof GigProps, e.target.value);
+            void handleSaveGigWrapper({
+              id: id,
+              key: e.target.name as keyof GigProps,
+              value: e.target.value,
+            });
           }}
         />
         <span>Price</span>
@@ -234,7 +217,11 @@ export function GigForm(props: Props) {
           name="amountPaid"
           defaultValue={Number(amountPaid)}
           onBlur={(e: FocusEvent<HTMLInputElement>) =>
-            void handleUpdate(e.target.name as keyof GigProps, e.target.value)
+            void handleSaveGigWrapper({
+              id: id,
+              key: e.target.name as keyof GigProps,
+              value: e.target.value,
+            })
           }
         />
         <span>Paid</span>
@@ -264,6 +251,7 @@ export function GigForm(props: Props) {
       </Label>
 
       <Label className="col-span-3 row-start-2">
+        {/* {props.clientPicker} */}
         <ClientPicker {...props} />
         <span>Client</span>
       </Label>

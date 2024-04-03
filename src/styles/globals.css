@@ -110,4 +110,7 @@
   .form > label > span {
     @apply absolute left-2 top-0 -translate-y-1 scale-100 bg-white font-semibold transition-transform;
   }
+  .pill {
+    @apply flex  max-w-40 items-center justify-center truncate  rounded-full bg-primary;
+  }
 }

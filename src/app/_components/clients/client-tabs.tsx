@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // import GigCreateButton from "@/components/gigs/gig-create-button";
-import ClientCreate from "./client-create";
+import ClientCreate from "./client-picker-create";
 import {
   Popover,
   PopoverContent,

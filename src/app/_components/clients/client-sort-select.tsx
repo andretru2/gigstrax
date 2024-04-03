@@ -2,7 +2,7 @@
 
 import { useQueryStates } from "nuqs";
 import { SortSelect, type SortSelectOption } from "@/components/sort-select";
-import { sortParser, sortOptions } from "./search-params";
+import { sortParser, sortOptions } from "../search-params";
 
 interface Props {
   options: SortSelectOption[];

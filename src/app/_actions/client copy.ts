@@ -2,8 +2,47 @@
 
 import { type ClientProps, prisma } from "@/server/db";
 import { revalidatePath } from "next/cache";
+import { type Prisma } from "@prisma/client";
 import { type GetClientsProps } from "@/types/index";
 import { fromUTC } from "@/lib/utils";
+
+export async function getClient(id: string): Promise<ClientProps | null> {
+  if (id.length === 0) return null;
+
+  const data = await prisma.client.findFirst({
+    select: {
+      id: true,
+      client: true,
+      clientType: true,
+      contact: true,
+      phoneCell: true,
+      email: true,
+      addressCity: true,
+      addressState: true,
+      addressStreet: true,
+      addressZip: true,
+      source: true,
+      notes: true,
+      phoneLandline: true,
+      createdAt: true,
+      updatedAt: true,
+      createdBy: true,
+
+      updatedBy: true,
+      status: true,
+      _count: {
+        select: {
+          gigs: true,
+        },
+      },
+    },
+    where: {
+      id: id,
+    },
+  });
+
+  return data;
+}
 
 export async function getClients({
   select = { id: true, client: true },
@@ -40,7 +79,7 @@ function mapClient(client: ClientProps) {
 
 export async function checkIfExists(name: string) {
   name.toLowerCase().trim();
-  const client = await prisma.client.findFirst({
+  const exists = await prisma.client.findFirst({
     where: {
       client: {
         contains: name,
@@ -48,36 +87,24 @@ export async function checkIfExists(name: string) {
     },
   });
 
-  console.log("check if exists", client, !!client, client?.id);
+  if (exists?.id) return true;
 
-  return {
-    result: "Success",
-    resultDescription: client
-      ? "Client already exists."
-      : "Client does not exist.",
-    clientId: client?.id,
-    isDuplicate: !!client,
-  };
+  return;
+
+  // return exists?.id;
+  // if (exists) {
+  //   throw new Error("Client name already taken.");
+  // }
 }
 
-export async function createClient(props: Partial<ClientProps>) {
-  if (!props.client)
-    return { result: "Error", resultDescription: "Client name is required." };
-
-  const resultExists = await checkIfExists(props.client);
-  if (resultExists.isDuplicate) {
-    return resultExists;
+export async function create(data: ClientProps) {
+  const exists = await checkIfExists(data.client);
+  if (exists) {
+    throw new Error("Client name already taken.");
   }
-  console.log(props);
-  const client = await prisma.client.create({ data: props });
-
+  const newRecord = await prisma.client.create({ data: data });
   revalidatePath(`/dashboard/clients/`);
-
-  return {
-    result: "Success",
-    resultDescription: "Client created succesfully",
-    clientId: client?.id,
-  };
+  return newRecord.id;
 }
 
 export async function update(props: Partial<ClientProps>) {
