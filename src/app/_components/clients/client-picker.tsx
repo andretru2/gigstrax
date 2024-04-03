@@ -6,7 +6,7 @@ import { ClientSearchInput } from "./client-search-input";
 import { ClientPickerCreate } from "./client-picker-create";
 import { ClientSortSelect } from "./client-sort-select";
 import { Placeholder } from "../ui/placeholder";
-import { GigClientPickerSelect } from "../gigs/gig-client-picker-select";
+import { ClientPickerSelect } from "./client-picker-select";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 
 interface Props {
@@ -74,25 +74,23 @@ async function Search(props: Props) {
         <div className="flex flex-col gap-2">
           <ClientSearchInput placeholder="Search clients ..." />
 
-          <div className="  flex flex-col gap-2 divide-y truncate rounded-md border bg-white p-4">
-            {clients?.map(
-              (client) =>
-                props.gigId && (
-                  <GigClientPickerSelect
-                    key={client.id}
-                    client={client}
-                    {...props}
-                  />
-                ),
-            )}
+          <div className="flex flex-col gap-2 divide-y ">
+            {clients?.map((client) => (
+              <ClientPickerSelect
+                key={client.id}
+                client={client}
+                {...props}
+                className="justify-start pl-4 text-left"
+              />
+            ))}
           </div>
-
-          {clients?.length === 0 && (
-            <div className="flex h-[166px] w-[420px] flex-col justify-center">
-              <Placeholder label="No clients found" />
-            </div>
-          )}
         </div>
+
+        {clients?.length === 0 && props.searchParams?.search && (
+          <div className="flex h-[166px] w-[420px] flex-col justify-center">
+            <Placeholder label="No clients found" />
+          </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -107,11 +105,11 @@ async function Recent(props: Props) {
       </CardHeader>
       <CardContent className="grid h-full  grid-cols-3  gap-2   ">
         {recent.map((client) => (
-          <GigClientPickerSelect
+          <ClientPickerSelect
             key={client.id}
             client={client}
             {...props}
-            className="pill"
+            className="flex  max-w-32 items-center justify-center truncate  rounded-full border bg-primary/80 hover:bg-primary "
           />
         ))}
       </CardContent>
