@@ -21,6 +21,7 @@ import {
 import { useQueryStates, parseAsBoolean, useQueryState } from "nuqs";
 import { type ClientPickerProps, type SourcePickerProps } from "@/types/index";
 import { handleSaveGig, type SaveGigProps } from "@/lib/gig/handle-save-gig";
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 
 import { Button } from "../ui/button";
 import { Icons } from "../icons";
@@ -42,22 +43,12 @@ interface Props {
 
 export function GigForm(props: Props) {
   const { id } = props;
-  const { gigDate, timeStart, timeEnd, price, amountPaid } = props.gig;
-  // const { id: clientId, client: clientName } = props.client;
-  // const { id: santaId, role: santaRole } = props.santa;
-
   const [fieldError, setFieldError] = useQueryStates(fieldErrorParser);
-
   const submitGigWithId = submitGig.bind(null, id);
-
   const [formState, formAction] = useFormState(
     submitGigWithId,
     EMPTY_FORM_STATE,
   );
-
-  const datePickerImperativeHandleRef = useRef<{
-    reset: () => void;
-  }>(null);
 
   const { ref } = useFormFeedback(formState, {
     onSuccess: ({ formState, reset }) => {
@@ -73,6 +64,82 @@ export function GigForm(props: Props) {
       }
     },
   });
+
+  async function handleSaveGigWrapper(props: SaveGigProps) {
+    const resultSave = await handleSaveGig(props);
+    if (resultSave.result === "Error") {
+      void setFieldError({
+        key: props.key,
+        error: resultSave.resultDescription,
+      });
+    }
+    void setFieldError({ key: null, error: null });
+  }
+
+  return (
+    <form
+      action={formAction}
+      ref={ref}
+      className="  grid  grid-cols-12 items-center justify-center gap-3"
+    >
+      <Card className="col-span-12 p-2">
+        <CardHeader className="">
+          <CardTitle>Gig Details</CardTitle>
+        </CardHeader>
+        <CardContent className=" form mx-auto  grid grid-cols-9 gap-4 pt-4 ">
+          <GigDetails
+            {...props}
+            handleSaveGigWrapper={handleSaveGigWrapper}
+            fieldError={fieldError}
+            setFieldError={setFieldError}
+            formState={formState}
+          />
+        </CardContent>
+      </Card>
+      <Card className="col-span-6 p-2">
+        <CardHeader className="">
+          <CardTitle>Venue</CardTitle>
+        </CardHeader>
+        <CardContent className=" form mx-auto  grid grid-cols-6 gap-4 pt-4 ">
+          <VenueDetails
+            {...props}
+            handleSaveGigWrapper={handleSaveGigWrapper}
+            fieldError={fieldError}
+            setFieldError={setFieldError}
+            formState={formState}
+          />
+        </CardContent>
+      </Card>
+
+      <noscript>
+        {formState.status === "ERROR" && (
+          <div style={{ color: "red" }}>{formState.message}</div>
+        )}
+
+        {formState.status === "SUCCESS" && (
+          <div style={{ color: "green" }}>{formState.message}</div>
+        )}
+      </noscript>
+    </form>
+  );
+}
+
+interface GigFormProps {
+  handleSaveGigWrapper: (props: SaveGigProps) => Promise<void>;
+  fieldError: { key: string | null; error: string | null };
+  setFieldError: (props: { key: string | null; error: string | null }) => void;
+  formState: { status: string; message: string };
+}
+
+function GigDetails({
+  handleSaveGigWrapper,
+  fieldError,
+  setFieldError,
+  formState,
+  ...props
+}: Props & GigFormProps) {
+  const { id, gig } = props;
+  const { gigDate, timeStart, timeEnd, price, amountPaid } = gig;
 
   function handleTimeInputBlur(e: FocusEvent<HTMLInputElement>) {
     const selectedTime = e.target.value;
@@ -94,17 +161,9 @@ export function GigForm(props: Props) {
       });
     }
   }
-
-  async function handleSaveGigWrapper(props: SaveGigProps) {
-    const resultSave = await handleSaveGig(props);
-    if (resultSave.result === "Error") {
-      void setFieldError({
-        key: props.key,
-        error: resultSave.resultDescription,
-      });
-    }
-    void setFieldError({ key: null, error: null });
-  }
+  const datePickerImperativeHandleRef = useRef<{
+    reset: () => void;
+  }>(null);
 
   const durationHours =
     timeStart && timeEnd ? calculateTimeDifference(timeStart, timeEnd) : null;
@@ -113,11 +172,7 @@ export function GigForm(props: Props) {
     price && amountPaid ? Number(price) - Number(amountPaid) : null;
 
   return (
-    <form
-      action={formAction}
-      ref={ref}
-      className="form mx-auto grid  w-full max-w-7xl grid-cols-9 items-center justify-center gap-x-4 gap-y-6"
-    >
+    <>
       <Label className="col-span-3">
         <DatePicker
           id="gigDate"
@@ -264,17 +319,7 @@ export function GigForm(props: Props) {
         <MrsSantaPicker {...props} />
         <span>Mrs Santa</span>
       </Label>
-
-      <noscript>
-        {formState.status === "ERROR" && (
-          <div style={{ color: "red" }}>{formState.message}</div>
-        )}
-
-        {formState.status === "SUCCESS" && (
-          <div style={{ color: "green" }}>{formState.message}</div>
-        )}
-      </noscript>
-    </form>
+    </>
   );
 }
 
@@ -355,5 +400,264 @@ function MrsSantaPicker(props: Props) {
       </SheetTrigger>
       <SheetContent className="">{props.mrsSantaPicker}</SheetContent>
     </Sheet>
+  );
+}
+
+function VenueDetails({
+  handleSaveGigWrapper,
+  fieldError,
+  setFieldError,
+  formState,
+  ...props
+}: Props & GigFormProps) {
+  const { id, gig } = props;
+  const {
+    venueAddressName,
+    contactName,
+    contactPhoneCell,
+    contactPhoneLand,
+    venueType,
+    contactEmail,
+    venueAddressStreet,
+    venueAddressCity,
+    venueAddressState,
+    venueAddressZip,
+    notesVenue,
+  } = gig;
+
+  return (
+    <>
+      <Label className="col-span-6">
+        <Input
+          name="venueAddressName"
+          defaultValue={venueAddressName ? venueAddressName : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveGigWrapper({
+              id: id,
+              key: e.target.name as keyof GigProps,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Venue</span>
+        <FieldError
+          formState={formState}
+          error={
+            fieldError.key === "venueAddressName" ? fieldError.error : null
+          }
+          name="venueAddressName"
+        />
+      </Label>
+
+      <Label className="col-span-6">
+        <Input
+          name="contactName"
+          defaultValue={contactName ? contactName : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveGigWrapper({
+              id: id,
+              key: e.target.name as keyof GigProps,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Contact at Venue</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "contactName" ? fieldError.error : null}
+          name="contactName"
+        />
+      </Label>
+
+      <Label className="col-span-6">
+        <Input
+          name="contactPhoneCell"
+          defaultValue={contactPhoneCell ? contactPhoneCell : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveGigWrapper({
+              id: id,
+              key: e.target.name as keyof GigProps,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Contact Phone (Cell)</span>
+        <FieldError
+          formState={formState}
+          error={
+            fieldError.key === "contactPhoneCell" ? fieldError.error : null
+          }
+          name="contactPhoneCell"
+        />
+      </Label>
+
+      <Label className="col-span-6">
+        <Input
+          name="contactPhoneLand"
+          defaultValue={contactPhoneLand ? contactPhoneLand : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveGigWrapper({
+              id: id,
+              key: e.target.name as keyof GigProps,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Contact Phone (Landline)</span>
+        <FieldError
+          formState={formState}
+          error={
+            fieldError.key === "contactPhoneLand" ? fieldError.error : null
+          }
+          name="contactPhoneLand"
+        />
+      </Label>
+
+      <Label className="col-span-6">
+        <Input
+          name="venueType"
+          defaultValue={venueType ? venueType : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveGigWrapper({
+              id: id,
+              key: e.target.name as keyof GigProps,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Venue Type</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "venueType" ? fieldError.error : null}
+          name="venueType"
+        />
+      </Label>
+
+      <Label className="col-span-6">
+        <Input
+          name="contactEmail"
+          defaultValue={contactEmail ? contactEmail : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveGigWrapper({
+              id: id,
+              key: e.target.name as keyof GigProps,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Contact Email</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "contactEmail" ? fieldError.error : null}
+          name="contactEmail"
+        />
+      </Label>
+
+      <Label className="col-span-6">
+        <Input
+          name="venueAddressStreet"
+          defaultValue={venueAddressStreet ? venueAddressStreet : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveGigWrapper({
+              id: id,
+              key: e.target.name as keyof GigProps,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Venue Address (Street)</span>
+        <FieldError
+          formState={formState}
+          error={
+            fieldError.key === "venueAddressStreet" ? fieldError.error : null
+          }
+          name="venueAddressStreet"
+        />
+      </Label>
+
+      <Label className="col-span-6">
+        <Input
+          name="venueAddressCity"
+          defaultValue={venueAddressCity ? venueAddressCity : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveGigWrapper({
+              id: id,
+              key: e.target.name as keyof GigProps,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Venue Address (City)</span>
+        <FieldError
+          formState={formState}
+          error={
+            fieldError.key === "venueAddressCity" ? fieldError.error : null
+          }
+          name="venueAddressCity"
+        />
+      </Label>
+
+      <Label className="col-span-6">
+        <Input
+          name="venueAddressState"
+          defaultValue={venueAddressState ? venueAddressState : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveGigWrapper({
+              id: id,
+              key: e.target.name as keyof GigProps,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Venue Address (State)</span>
+        <FieldError
+          formState={formState}
+          error={
+            fieldError.key === "venueAddressState" ? fieldError.error : null
+          }
+          name="venueAddressState"
+        />
+      </Label>
+
+      <Label className="col-span-6">
+        <Input
+          name="venueAddressZip"
+          defaultValue={venueAddressZip ? venueAddressZip : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveGigWrapper({
+              id: id,
+              key: e.target.name as keyof GigProps,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Venue Address (Zip)</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "venueAddressZip" ? fieldError.error : null}
+          name="venueAddressZip"
+        />
+      </Label>
+
+      <Label className="col-span-6">
+        <Input
+          name="notesVenue"
+          defaultValue={notesVenue ? notesVenue : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveGigWrapper({
+              id: id,
+              key: e.target.name as keyof GigProps,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Notes for Venue</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "notesVenue" ? fieldError.error : null}
+          name="notesVenue"
+        />
+      </Label>
+    </>
   );
 }

@@ -47,12 +47,12 @@ async function getClient(props: Props) {
     },
   });
 
-  return data;
+  return data[0];
 }
 
 export default function Page(props: Props) {
   return (
-    <Card className="border-0 bg-background [&>*]:px-0 ">
+    <Card className="mx-auto w-full  border-0 bg-background [&>*]:px-0 ">
       <CardContent className="flex flex-col gap-2">
         <BackButton />
         <Suspense fallback={<Spinner />}>
@@ -149,43 +149,36 @@ async function GigFormWrapper(props: Props) {
   const parsedSearchParams = searchParamsCache.parse(props.searchParams);
 
   return (
-    <Card className="mx-auto flex w-full flex-col gap-4 p-4">
-      <CardHeader className="pl-24">
-        <CardTitle>Gig Details</CardTitle>
-      </CardHeader>
-      <CardContent className="   ">
-        <GigForm
-          id={gigId}
-          gig={gig}
-          client={client ? client : undefined}
-          santa={santa ? santa : undefined}
-          mrsSanta={mrsSanta ? mrsSanta : undefined}
-          clientPicker={
-            <ClientPicker
-              key="clientPicker"
-              searchParams={parsedSearchParams}
-              gigId={props.params.gigId}
-            />
-          }
-          santaPicker={
-            <SourcePicker
-              key="santaPicker"
-              searchParams={parsedSearchParams}
-              gigId={props.params.gigId}
-              role="RBS"
-            />
-          }
-          mrsSantaPicker={
-            <SourcePicker
-              key="mrsSantaPicker"
-              searchParams={parsedSearchParams}
-              gigId={props.params.gigId}
-              role="Mrs. Claus"
-            />
-          }
+    <GigForm
+      id={gigId}
+      gig={gig}
+      client={client ? client : undefined}
+      santa={santa ? santa : undefined}
+      mrsSanta={mrsSanta ? mrsSanta : undefined}
+      clientPicker={
+        <ClientPicker
+          key="clientPicker"
+          searchParams={parsedSearchParams}
+          gigId={props.params.gigId}
         />
-      </CardContent>
-    </Card>
+      }
+      santaPicker={
+        <SourcePicker
+          key="santaPicker"
+          searchParams={parsedSearchParams}
+          gigId={props.params.gigId}
+          role="RBS"
+        />
+      }
+      mrsSantaPicker={
+        <SourcePicker
+          key="mrsSantaPicker"
+          searchParams={parsedSearchParams}
+          gigId={props.params.gigId}
+          role="Mrs. Claus"
+        />
+      }
+    />
   );
 }
 
