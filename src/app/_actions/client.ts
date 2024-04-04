@@ -3,7 +3,14 @@
 import { type ClientProps, prisma } from "@/server/db";
 import { revalidatePath } from "next/cache";
 import { type GetClientsProps } from "@/types/index";
-import { fromUTC } from "@/lib/utils";
+import {
+  type FormState,
+  fromErrorToFormState,
+  toFormState,
+} from "@/components/form/to-form-state";
+import { fromUTC, parseFormData } from "@/lib/utils";
+import { clientSchema } from "@/lib/validations/client";
+import { unstable_noStore as noStore } from "next/cache";
 
 export async function getClients({
   select = { id: true, client: true },
@@ -28,16 +35,6 @@ export async function getClients({
   };
 }
 
-function mapClient(client: ClientProps) {
-  if (client.createdAt) {
-    const localCreatedAt = fromUTC(client.createdAt);
-    client.createdAt = localCreatedAt;
-    // console.log(localCreatedAt);
-  }
-
-  return client;
-}
-
 export async function checkIfExists(name: string) {
   name = name.toLowerCase().trim();
   const client = await prisma.client.findFirst({
@@ -47,7 +44,6 @@ export async function checkIfExists(name: string) {
       },
     },
   });
-
   console.log("check if exists", name, client, !!client, client?.id);
 
   return {
@@ -79,24 +75,63 @@ export async function createClient(props: Partial<ClientProps>) {
   };
 }
 
-export async function update(props: Partial<ClientProps>) {
-  const client = await prisma.client.findFirst({
-    where: { id: props.id },
-  });
+export async function saveClient(
+  id: string,
+  formData: FormData,
+): Promise<FormState> {
+  if (!id || !formData) return toFormState("ERROR", "Missing params");
 
-  if (!client) {
-    throw new Error("Client not found.");
+  try {
+    const parsedData = parseFormData(formData, clientSchema);
+
+    if (parsedData)
+      /** TODO: if gig date changes, update timestart/end */
+      await prisma.client.update({
+        where: {
+          id,
+        },
+        data: { id: id, ...parsedData },
+      });
+  } catch (error) {
+    return fromErrorToFormState(error);
+  }
+  revalidatePath(`/dashboard/clients/${id}`);
+
+  return toFormState("SUCCESS", "Client updated");
+}
+
+export async function submitClient(
+  id: string,
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  if (!id || !formData) return toFormState("ERROR", "Missing params");
+
+  try {
+    const parsedData = parseFormData(formData, clientSchema);
+
+    if (parsedData)
+      await prisma.client.update({
+        where: {
+          id,
+        },
+        data: { id: id, ...parsedData },
+      });
+  } catch (error) {
+    return fromErrorToFormState(error);
   }
 
-  await prisma.client.update({
-    data: props,
-    where: { id: props.id },
-  });
+  revalidatePath(`/dashboard/clients/${id}`);
 
-  // console.log("actions", data);
+  return toFormState("SUCCESS", "Client updated");
+}
 
-  revalidatePath(`/dashboard/clients/${client.id}`);
-  revalidatePath(`/dashboard/clients/`);
+function mapClient(client: ClientProps) {
+  if (client.createdAt) {
+    const localCreatedAt = fromUTC(client.createdAt);
+    client.createdAt = localCreatedAt;
+    // console.log(localCreatedAt);
+  }
 
-  // return data;
+  return client;
 }

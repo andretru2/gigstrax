@@ -10,6 +10,9 @@ import {
   toFormState,
 } from "@/components/form/to-form-state";
 import { parseFormData } from "@/lib/utils";
+import { unstable_noStore as noStore } from "next/cache";
+import { redirect } from "next/navigation";
+import { setCookieByKey } from "./cookies";
 
 export async function saveGig(
   id: string,
@@ -31,7 +34,30 @@ export async function saveGig(
   } catch (error) {
     return fromErrorToFormState(error);
   }
+
+  revalidatePath("/dashboard/gigs/");
   revalidatePath(`/dashboard/gigs/${id}`);
+  return toFormState("SUCCESS", "Gig updated");
+
+  if (id) {
+    setCookieByKey("toast", "Gig updated");
+    redirect(`/dashboard/gigs/${id}`);
+  }
+
+  revalidatePath("/dashboard/gigs/");
+  revalidatePath(`/dashboard/gigs/${id}`);
+
+  return toFormState("SUCCESS", "Gig updated");
+
+  // noStore();
+  // const clientId = formData.get("clientId") as string;
+
+  // revalidatePath(`/dashboard/gigs/`);
+  // revalidatePath(`/dashboard/clients/`);
+  revalidatePath(`/dashboard/gigs/${id}`);
+  setCookieByKey("Gig", "Gig updated");
+  redirect(`/dashboard/gigs/${id}`);
+  // if (clientId) revalidatePath(`/dashboard/clients/${clientId}`);
 
   return toFormState("SUCCESS", "Gig updated");
 }
@@ -41,7 +67,7 @@ export async function submitGig(
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  if (!id) return toFormState("ERROR", "Gig not found");
+  if (!id || !formData) return toFormState("ERROR", "Missing params");
 
   try {
     const parsedData = parseFormData(formData, gigSchema);

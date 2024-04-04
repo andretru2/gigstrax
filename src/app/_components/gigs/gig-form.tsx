@@ -8,7 +8,7 @@ import { FieldError } from "@/components/form/field-error";
 import { useFormFeedback } from "@/components/form/use-form-feedback";
 import { EMPTY_FORM_STATE } from "@/components/form/to-form-state";
 import { submitGig } from "@/app/_actions/gig";
-import { type Gig as GigProps } from "@prisma/client";
+import { VenueType, type Gig as GigProps } from "@prisma/client";
 import { DatePicker } from "../ui/date-picker";
 import { type FocusEvent, useRef, type ReactElement } from "react";
 import {
@@ -28,6 +28,15 @@ import { Icons } from "../icons";
 
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { fieldErrorParser } from "../search-params";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { Textarea } from "../ui/textarea";
 
 interface Props {
   id: string;
@@ -38,6 +47,7 @@ interface Props {
   clientPicker: ReactElement;
   santaPicker: ReactElement;
   mrsSantaPicker: ReactElement;
+  clientDetails: ReactElement;
   // searchParams?: ParsedSearchParams;
 }
 
@@ -80,7 +90,7 @@ export function GigForm(props: Props) {
     <form
       action={formAction}
       ref={ref}
-      className="  grid  grid-cols-12 items-center justify-center gap-3"
+      className="  grid  grid-cols-12 items-start justify-start gap-3"
     >
       <Card className="col-span-12 p-2">
         <CardHeader className="">
@@ -96,6 +106,7 @@ export function GigForm(props: Props) {
           />
         </CardContent>
       </Card>
+      <div className="  form col-span-6 ">{props.clientDetails}</div>
       <Card className="col-span-6 p-2">
         <CardHeader className="">
           <CardTitle>Venue</CardTitle>
@@ -124,7 +135,7 @@ export function GigForm(props: Props) {
   );
 }
 
-interface GigFormProps {
+interface FormProps {
   handleSaveGigWrapper: (props: SaveGigProps) => Promise<void>;
   fieldError: { key: string | null; error: string | null };
   setFieldError: (props: { key: string | null; error: string | null }) => void;
@@ -170,6 +181,8 @@ function GigDetails({
 
   const balance =
     price && amountPaid ? Number(price) - Number(amountPaid) : null;
+
+  console.log(durationHours);
 
   return (
     <>
@@ -409,7 +422,7 @@ function VenueDetails({
   setFieldError,
   formState,
   ...props
-}: Props & GigFormProps) {
+}: Props & FormProps) {
   const { id, gig } = props;
   const {
     venueAddressName,
@@ -469,7 +482,7 @@ function VenueDetails({
         />
       </Label>
 
-      <Label className="col-span-6">
+      <Label className="col-span-2">
         <Input
           name="contactPhoneCell"
           defaultValue={contactPhoneCell ? contactPhoneCell : undefined}
@@ -491,7 +504,7 @@ function VenueDetails({
         />
       </Label>
 
-      <Label className="col-span-6">
+      <Label className="col-span-2">
         <Input
           name="contactPhoneLand"
           defaultValue={contactPhoneLand ? contactPhoneLand : undefined}
@@ -513,18 +526,31 @@ function VenueDetails({
         />
       </Label>
 
-      <Label className="col-span-6">
-        <Input
+      <Label className="col-span-2">
+        <Select
           name="venueType"
           defaultValue={venueType ? venueType : undefined}
-          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+          onValueChange={(value: VenueType) => {
             void handleSaveGigWrapper({
               id: id,
-              key: e.target.name as keyof GigProps,
-              value: e.target.value,
-            })
-          }
-        />
+              key: "venueType",
+              value: value,
+            });
+          }}
+        >
+          <SelectTrigger className="bg-white capitalize">
+            <SelectValue placeholder={venueType} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {Object.values(VenueType).map((option) => (
+                <SelectItem key={option} value={option} className="capitalize">
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
         <span>Venue Type</span>
         <FieldError
           formState={formState}
@@ -575,7 +601,7 @@ function VenueDetails({
         />
       </Label>
 
-      <Label className="col-span-6">
+      <Label className="col-span-2">
         <Input
           name="venueAddressCity"
           defaultValue={venueAddressCity ? venueAddressCity : undefined}
@@ -587,7 +613,7 @@ function VenueDetails({
             })
           }
         />
-        <span>Venue Address (City)</span>
+        <span>City</span>
         <FieldError
           formState={formState}
           error={
@@ -597,7 +623,7 @@ function VenueDetails({
         />
       </Label>
 
-      <Label className="col-span-6">
+      <Label className="col-span-2">
         <Input
           name="venueAddressState"
           defaultValue={venueAddressState ? venueAddressState : undefined}
@@ -609,7 +635,7 @@ function VenueDetails({
             })
           }
         />
-        <span>Venue Address (State)</span>
+        <span>State</span>
         <FieldError
           formState={formState}
           error={
@@ -619,7 +645,7 @@ function VenueDetails({
         />
       </Label>
 
-      <Label className="col-span-6">
+      <Label className="col-span-2">
         <Input
           name="venueAddressZip"
           defaultValue={venueAddressZip ? venueAddressZip : undefined}
@@ -631,7 +657,7 @@ function VenueDetails({
             })
           }
         />
-        <span>Venue Address (Zip)</span>
+        <span>Zip</span>
         <FieldError
           formState={formState}
           error={fieldError.key === "venueAddressZip" ? fieldError.error : null}
@@ -640,10 +666,10 @@ function VenueDetails({
       </Label>
 
       <Label className="col-span-6">
-        <Input
+        <Textarea
           name="notesVenue"
           defaultValue={notesVenue ? notesVenue : undefined}
-          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+          onBlur={(e: FocusEvent<HTMLTextAreaElement>) =>
             void handleSaveGigWrapper({
               id: id,
               key: e.target.name as keyof GigProps,

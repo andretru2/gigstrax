@@ -1,42 +1,17 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { clientSchema } from "@/lib/validations/client";
-import { type ClientProps } from "@/server/db";
-import { Prisma, ClientType } from "@prisma/client";
-
-import {
-  catchError,
-  cn,
-  formatDate,
-  formatTime,
-  fromUTC,
-  toUTC,
-  // duration,
-  formatPrice,
-  calculateTimeDifference,
-  formatPhone,
-} from "@/lib/utils";
-import { type FocusEvent, useState, useTransition, useEffect } from "react";
-
-import type * as z from "zod";
-
-// import { type z } from "zod";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  UncontrolledFormMessage,
-} from "@/components/ui/form";
-
+import { useFormState } from "react-dom";
+import { toast } from "sonner";
+import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { FieldError } from "@/components/form/field-error";
+import { useFormFeedback } from "@/components/form/use-form-feedback";
+import { EMPTY_FORM_STATE } from "@/components/form/to-form-state";
+import { ClientType, type Client } from "@prisma/client";
+import { useQueryStates, parseAsBoolean, useQueryState } from "nuqs";
+import { submitClient } from "@/app/_actions/client";
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
+import { fieldErrorParser } from "../search-params";
 import {
   Select,
   SelectContent,
@@ -44,30 +19,92 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Icons } from "@/components/icons";
+} from "../ui/select";
+import { Textarea } from "../ui/textarea";
+import {
+  type SaveClientProps,
+  handleSaveClient,
+} from "@/lib/client/handle-save-client";
+import { type FocusEvent } from "react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+export function ClientForm(props: Awaited<Partial<Client>>) {
+  const { id } = props;
+  const [fieldError, setFieldError] = useQueryStates(fieldErrorParser);
+  const submitClientWithId = submitClient.bind(null, id);
+  const [formState, formAction] = useFormState(
+    submitClientWithId,
+    EMPTY_FORM_STATE,
+  );
 
-import { update } from "@/app/_actions/client";
-import { useGigStore } from "@/app/_store/gig";
+  const { ref } = useFormFeedback(formState, {
+    onSuccess: ({ formState, reset }) => {
+      if (formState.message) {
+        toast.success(formState.message);
+      }
+      reset();
+    },
+    onError: ({ formState }) => {
+      if (formState.message) {
+        toast.error(formState.message);
+      }
+    },
+  });
 
-export default function ClientForm(props?: ClientProps) {
-  const { client, setClient } = useGigStore();
+  async function handleSaveClientWrapper(props: SaveClientProps) {
+    const resultSave = await handleSaveClient(props);
+    if (resultSave.result === "Error") {
+      void setFieldError({
+        key: props.key,
+        error: resultSave.resultDescription,
+      });
+    }
+    void setFieldError({ key: null, error: null });
+  }
 
-  // if (props) setClient(props);
+  return (
+    <form
+      action={formAction}
+      ref={ref}
+      className="  grid  grid-cols-12 items-center justify-center gap-3"
+    >
+      <Card className="col-span-12 p-2">
+        <CardHeader className="">
+          <CardTitle>Client Details</CardTitle>
+        </CardHeader>
+        <CardContent className="form  grid grid-cols-6 gap-4   p-4">
+          <ClientDetails
+            {...props}
+            handleSaveClientWrapper={handleSaveClientWrapper}
+            fieldError={fieldError}
+            setFieldError={setFieldError}
+            formState={formState}
+          />
+        </CardContent>
+      </Card>
+    </form>
+  );
+}
 
-  const router = useRouter();
+interface FormProps {
+  handleSaveClientWrapper: (props: SaveClientProps) => Promise<void>;
+  fieldError: { key: string | null; error: string | null };
+  setFieldError: (props: { key: string | null; error: string | null }) => void;
+  formState: { status: string; message: string };
+}
 
-  // if (!client) return <>Please select a client</>;
-
+function ClientDetails({
+  handleSaveClientWrapper,
+  fieldError,
+  setFieldError,
+  formState,
+  ...props
+}: Partial<Client> & FormProps) {
   const {
     addressCity,
     addressState,
     addressStreet,
     addressZip,
-    client: clientName,
+    client,
     clientType,
     contact,
     email,
@@ -75,387 +112,248 @@ export default function ClientForm(props?: ClientProps) {
     notes,
     phoneCell,
     phoneLandline,
-    source,
     createdAt,
     updatedAt,
     createdBy,
     updatedBy,
-    status,
-  } = (client as ClientProps) || props || {};
+  } = props;
 
-  const defaultValues = {
-    addressCity: addressCity || undefined,
-    addressState: addressState || undefined,
-    addressStreet: addressStreet || undefined,
-    addressZip: addressZip || undefined,
-    client: clientName || undefined,
-    clientType: clientType || undefined,
-    contact: contact || undefined,
-    email: email || undefined,
-    id: id || undefined,
-    notes: notes || undefined,
-    phoneCell: phoneCell || undefined,
-    phoneLandline: phoneLandline || undefined,
-    source: source || undefined,
-    createdAt: createdAt || undefined,
-    updatedAt: updatedAt || undefined,
-    createdBy: createdBy || undefined,
-    updatedBy: updatedBy || undefined,
-    status: status || undefined,
-  };
-
-  // // Remove properties with null or undefined values from the `defaultValues` object
-  // const cleanedDefaultValues = Object.fromEntries(
-  //   Object.entries(defaultValues).filter(
-  //     ([_, value]) => value !== null && value !== undefined
-  //   )
-  // );
-
-  const [isPending, startTransition] = useTransition();
-
-  useEffect(() => {
-    // console.log("client form", client);
-    form.reset(defaultValues);
-    router.refresh();
-    // props && setClient(props);
-  }, [client]);
-
-  const form = useForm<z.infer<typeof clientSchema>>({
-    resolver: zodResolver(clientSchema),
-    // progressive: true,
-    mode: "onBlur",
-    defaultValues: defaultValues,
-  });
+  console.log(client);
 
   return (
-    <Form {...form}>
-      <form
-        className="grid w-full   max-w-4xl gap-2 "
-        // onSubmit={(...args) => void form.handleSubmit(onSubmit)(...args)}
-      >
-        <Card className=" p-4">
-          <CardHeader className="px-0">
-            <CardTitle>Client Details</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-6 items-end gap-2 px-0">
-            <FormField
-              control={form.control}
-              disabled={!client}
-              name="client"
-              render={({ field }) => (
-                <FormItem className="col-span-6 flex flex-col ">
-                  <FormLabel>Client</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type="text"
-                      disabled={!client}
-                      className="bg-white"
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        startTransition(() => {
-                          void update({
-                            id: id,
-                            client: e.target.value,
-                          });
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={form.formState.errors.price?.message}
-                  /> */}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="contact"
-              disabled={!client}
-              render={({ field }) => (
-                <FormItem className="col-span-6 flex flex-col ">
-                  <FormLabel>Contact</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="bg-white"
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: id,
-                          contact: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={form.formState.errors.client?.contact?.message}
-                  /> */}
-                </FormItem>
-              )}
-            />
+    <>
+      <Label className="col-span-6">
+        <Input
+          name="client"
+          defaultValue={client ? client : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveClientWrapper({
+              id: id,
+              key: e.target.name as keyof Client,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Client</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "client" ? fieldError.error : null}
+          name="client"
+        />
+      </Label>
 
-            <FormField
-              control={form.control}
-              name="phoneCell"
-              disabled={!client}
-              render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col ">
-                  <FormLabel>Cell</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      {...field}
-                      className="bg-white "
-                      placeholder="xxx-xxx-xxxx"
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: id,
-                          phoneCell: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={form.formState.errors.client?.phoneCell?.message}
-                  /> */}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="phoneLandline"
-              disabled={!client}
-              render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col ">
-                  <FormLabel>Landline</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="bg-white "
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: id,
-                          phoneLandline: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={
-                      form.formState.errors.client?.addressState?.message
-                    }
-                  /> */}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="clientType"
-              disabled={!client}
-              render={({ field }) => (
-                <FormItem className="col-span-2 w-full ">
-                  <FormLabel>Client Type</FormLabel>
-                  <FormControl>
-                    <Select
-                      disabled={!client}
-                      value={field.value}
-                      onValueChange={(value: ClientType) => {
-                        field.onChange(value);
-                        void update({
-                          id: id,
-                          clientType: value,
-                        });
-                      }}
-                    >
-                      <SelectTrigger className="bg-white capitalize">
-                        <SelectValue placeholder={field.value} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {Object.values(ClientType).map((option) => (
-                            <SelectItem
-                              key={option}
-                              value={option}
-                              className="capitalize"
-                            >
-                              {option}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              disabled={!client}
-              render={({ field }) => (
-                <FormItem className="col-span-6 flex flex-col ">
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="bg-white "
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: id,
-                          email: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={form.formState.errors.client?.email?.message}
-                  /> */}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="addressStreet"
-              disabled={!client}
-              render={({ field }) => (
-                <FormItem className="col-span-6 flex flex-col ">
-                  <FormLabel>Street</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="bg-white "
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: id,
-                          addressStreet: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={
-                      form.formState.errors.client?.addressStreet?.message
-                    }
-                  /> */}
-                </FormItem>
-              )}
-            />
+      <Label className="col-span-6">
+        <Input
+          name="contact"
+          defaultValue={contact ? contact : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveClientWrapper({
+              id: id,
+              key: e.target.name as keyof Client,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Contact</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "contact" ? fieldError.error : null}
+          name="contact"
+        />
+      </Label>
 
-            <FormField
-              control={form.control}
-              name="addressCity"
-              disabled={!client}
-              render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col ">
-                  <FormLabel>City</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="bg-white "
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: id,
-                          addressCity: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={form.formState.errors.client?.addressCity?.message}
-                  /> */}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="addressState"
-              disabled={!client}
-              render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col ">
-                  <FormLabel>State</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="bg-white "
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: id,
-                          addressState: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={
-                      form.formState.errors.client?.addressState?.message
-                    }
-                  /> */}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="addressZip"
-              disabled={!client}
-              render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col ">
-                  <FormLabel>Zip</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="bg-white "
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: id,
-                          addressZip: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={form.formState.errors.client?.addressZip?.message}
-                  /> */}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="notes"
-              disabled={!client}
-              render={({ field }) => (
-                <FormItem className="col-span-6 flex flex-col ">
-                  <FormLabel>Notes</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      className="h-48 bg-white"
-                      onBlur={(e: FocusEvent<HTMLTextAreaElement>) => {
-                        void update({
-                          id: id,
-                          notes: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={form.formState.errors.client?.notes?.message}
-                  /> */}
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
-      </form>
-    </Form>
+      <Label className="col-span-2">
+        <Input
+          name="phoneCell"
+          defaultValue={phoneCell ? phoneCell : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveClientWrapper({
+              id: id,
+              key: e.target.name as keyof Client,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Contact Phone (Cell)</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "phoneCell" ? fieldError.error : null}
+          name="phoneCell"
+        />
+      </Label>
+
+      <Label className="col-span-2">
+        <Input
+          name="phoneLandline"
+          defaultValue={phoneLandline ? phoneLandline : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveClientWrapper({
+              id: id,
+              key: e.target.name as keyof Client,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Contact Phone (Landline)</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "phoneLandline" ? fieldError.error : null}
+          name="phoneLandline"
+        />
+      </Label>
+
+      <Label className="col-span-2">
+        <Select
+          name="clientType"
+          defaultValue={clientType ? clientType : undefined}
+          onValueChange={(value: ClientType) => {
+            void handleSaveClientWrapper({
+              id: id,
+              key: "clientType",
+              value: value,
+            });
+          }}
+        >
+          <SelectTrigger className="bg-white capitalize">
+            <SelectValue placeholder={clientType} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {Object.values(ClientType).map((option) => (
+                <SelectItem key={option} value={option} className="capitalize">
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <span>Client Type</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "clientType" ? fieldError.error : null}
+          name="clientType"
+        />
+      </Label>
+
+      <Label className="col-span-6">
+        <Input
+          name="email"
+          defaultValue={email ? email : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveClientWrapper({
+              id: id,
+              key: e.target.name as keyof Client,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Email</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "email" ? fieldError.error : null}
+          name="email"
+        />
+      </Label>
+
+      <Label className="col-span-6">
+        <Input
+          name="addressStreet"
+          defaultValue={addressStreet ? addressStreet : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveClientWrapper({
+              id: id,
+              key: e.target.name as keyof Client,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Address (Street)</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "addressStreet" ? fieldError.error : null}
+          name="addressStreet"
+        />
+      </Label>
+
+      <Label className="col-span-2">
+        <Input
+          name="addressCity"
+          defaultValue={addressCity ? addressCity : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveClientWrapper({
+              id: id,
+              key: e.target.name as keyof Client,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>City</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "addressCity" ? fieldError.error : null}
+          name="addressCity"
+        />
+      </Label>
+
+      <Label className="col-span-2">
+        <Input
+          name="addressState"
+          defaultValue={addressState ? addressState : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveClientWrapper({
+              id: id,
+              key: e.target.name as keyof Client,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>State</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "addressState" ? fieldError.error : null}
+          name="addressState"
+        />
+      </Label>
+
+      <Label className="col-span-2">
+        <Input
+          name="addressZip"
+          defaultValue={addressZip ? addressZip : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveClientWrapper({
+              id: id,
+              key: e.target.name as keyof Client,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Zip</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "addressZip" ? fieldError.error : null}
+          name="addressZip"
+        />
+      </Label>
+
+      <Label className="col-span-6">
+        <Textarea
+          name="notes"
+          defaultValue={notes ? notes : undefined}
+          onBlur={(e: FocusEvent<HTMLTextAreaElement>) =>
+            void handleSaveClientWrapper({
+              id: id,
+              key: e.target.name as keyof Client,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Notes for Client</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "notes" ? fieldError.error : null}
+          name="notes"
+        />
+      </Label>
+    </>
   );
 }
