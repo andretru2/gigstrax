@@ -13,6 +13,7 @@ export interface SaveSourceProps {
 
 export async function handleSaveSource(props: SaveSourceProps) {
   const { id, key, value } = props;
+  if (!value) return { result: "Error", resultDescription: "Missing value." };
 
   let result;
   const formData = new FormData();

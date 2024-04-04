@@ -14,7 +14,7 @@ export default function Layout({ children }: DashboardLayoutProps) {
   return (
     <>
       {/* <Header heading="Clients" separator={true} /> */}
-      <ClientTabs />
+      {/* <ClientTabs /> */}
       {children}
     </>
   );

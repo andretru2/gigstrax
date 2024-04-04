@@ -13,6 +13,7 @@ export interface SaveClientProps {
 
 export async function handleSaveClient(props: SaveClientProps) {
   const { id, key, value } = props;
+  if (!value) return { result: "Error", resultDescription: "Missing value." };
 
   let result;
   const formData = new FormData();

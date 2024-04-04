@@ -7,6 +7,7 @@ import { searchParamsCache } from "@/components/search-params";
 import { type SearchParams } from "nuqs/server";
 
 import { ClientPicker } from "@/components/clients/client-picker";
+import ClientTabs from "@/components/clients/client-tabs";
 
 // export const dynamic = "force-dynamic";
 // export const cache = "no-store";
@@ -108,6 +109,7 @@ export default async function Page({ params, searchParams }: Props) {
 
   return (
     <>
+      <ClientTabs />
       <DataTable data={data} pageCount={pageCount} />
       {/* <ClientPicker searchParams={searchParamsCache?.parse(searchParams)} /> */}
     </>
