@@ -23,7 +23,7 @@ import { type SearchParams } from "nuqs/server";
 import { searchParamsCache } from "@/components/search-params";
 import { SourcePicker } from "@/components/sources/source-picker";
 import { getSources } from "@/app/_actions/source";
-// import { ClientForm } from "@/components/clients/client-form";
+import { ClientForm } from "@/components/clients/client-form";
 import { type Client, type Gig, type Source } from "@prisma/client";
 
 // export const revalidate = 30;
@@ -121,29 +121,29 @@ async function getSource(id: string) {
   return data[0] as Source;
 }
 
-export default async function Page(props: Props) {
+export default function Page(props: Props) {
   // const client = gig?.clientId && (await getClient(gig?.clientId));
-  noStore();
-  const { gigId } = props.params;
+  // noStore();
+  // const { gigId } = props.params;
 
-  if (!gigId) {
-    return <h1>Please select a gig</h1>;
-  }
-  const gig = await getGig(gigId);
+  // if (!gigId) {
+  //   return <h1>Please select a gig</h1>;
+  // }
+  // const gig = await getGig(gigId);
 
-  if (!gig) return <h1>Gig not found</h1>;
+  // if (!gig) return <h1>Gig not found</h1>;
 
-  const client = gig?.clientId && (await getClient(gig?.clientId));
-  const santa = gig?.santaId && (await getSource(gig?.santaId));
-  const mrsSanta = gig?.mrsSantaId && (await getSource(gig?.mrsSantaId));
+  // const client = gig?.clientId && (await getClient(gig?.clientId));
+  // const santa = gig?.santaId && (await getSource(gig?.santaId));
+  // const mrsSanta = gig?.mrsSantaId && (await getSource(gig?.mrsSantaId));
 
-  const parsedSearchParams = searchParamsCache.parse(props.searchParams);
+  // const parsedSearchParams = searchParamsCache.parse(props.searchParams);
 
   return (
     <Card className="mx-auto w-full  border-0 bg-background [&>*]:px-0 ">
       <CardContent className="flex flex-col gap-2">
         <BackButton />
-        <GigForm
+        {/* <GigForm
           id={gigId}
           gig={gig}
           client={client ? client : undefined}
@@ -173,10 +173,10 @@ export default async function Page(props: Props) {
             />
           }
           // clientDetails={<ClientForm key="clientDetails" {...client} />}
-        />
-        {/* <Suspense fallback={<Spinner />}>
+        /> */}
+        <Suspense fallback={<Spinner />}>
           <GigFormWrapper {...props} />
-        </Suspense> */}
+        </Suspense>
         {/* <Suspense fallback={<Spinner />}>
           <ClientForm />
         </Suspense> */}
@@ -233,7 +233,7 @@ async function GigFormWrapper(props: Props) {
 
   const parsedSearchParams = searchParamsCache.parse(props.searchParams);
 
-  console.log("gig, client", gig, client.id, client.client);
+  // console.log("gig, client", gig, client.id, client.client);
 
   return (
     <GigForm
@@ -265,7 +265,7 @@ async function GigFormWrapper(props: Props) {
           role="Mrs. Claus"
         />
       }
-      // clientDetails={<ClientForm key="clientDetails" {...client} />}
+      clientDetails={<ClientForm key="clientDetails" {...client} />}
     />
   );
 }

@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-// import GigCreateButton from "@/components/gigs/gig-create-button";
+import { GigCreateButton } from "@/components/gigs/gig-create-button";
 
 interface Props {
   className?: string;
@@ -62,7 +62,7 @@ export default function GigTabs(props: Props) {
             {tab.title}
           </TabsTrigger>
         ))}
-        {/* <TabsTrigger // This is the new tab for GigCreateButton
+        <TabsTrigger // This is the new tab for GigCreateButton
           key="createNew"
           value=""
           className={cn(
@@ -74,7 +74,7 @@ export default function GigTabs(props: Props) {
           asChild
         >
           <GigCreateButton />
-        </TabsTrigger> */}
+        </TabsTrigger>
       </TabsList>
     </Tabs>
   );

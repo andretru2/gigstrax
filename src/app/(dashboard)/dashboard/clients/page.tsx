@@ -8,9 +8,9 @@ import { type SearchParams } from "nuqs/server";
 
 import { ClientPicker } from "@/components/clients/client-picker";
 
-export const dynamic = "force-dynamic";
-export const cache = "no-store";
-// export const revalidate = 0;
+// export const dynamic = "force-dynamic";
+// export const cache = "no-store";
+export const revalidate = 0;
 
 interface Props {
   params: {
@@ -22,7 +22,7 @@ interface Props {
   // };
 }
 
-export const revalidate = 120;
+// export const revalidate = 120;
 
 export default async function Page({ params, searchParams }: Props) {
   // const {  tab = "all"} = params;

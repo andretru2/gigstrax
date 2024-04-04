@@ -13,6 +13,7 @@ import { parseFormData } from "@/lib/utils";
 import { unstable_noStore as noStore } from "next/cache";
 import { redirect } from "next/navigation";
 import { setCookieByKey } from "./cookies";
+import { Gig } from "@prisma/client";
 
 export async function saveGig(
   id: string,
@@ -109,4 +110,17 @@ export async function getGigs({
     data: data,
     totalCount,
   };
+}
+
+export async function createGig() {
+  // let data = {};
+  // if (props) {
+  //   data = { data: props };
+  // }
+
+  const gig = await prisma.gig.create({ data: { id: undefined } });
+
+  revalidatePath(`/dashboard/gigs/`);
+  redirect(`/dashboard/gigs/${gig.id}`);
+  return gig;
 }

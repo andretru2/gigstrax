@@ -1,23 +1,33 @@
 "use client";
 
 import { Button } from "../ui/button";
-import { create } from "@/app/_actions/gig";
-import { useTransition, useState } from "react";
+import { createGig } from "@/app/_actions/gig";
+import { useTransition } from "react";
 import { Icons } from "../icons";
 import { useRouter } from "next/navigation";
-import { useGigStore } from "@/app/_store/gig";
 
-export default function GigCreateButton() {
+export function GigCreateButton() {
   const [isPending, startTransition] = useTransition();
 
   const router = useRouter();
 
+  // const handleClick = () => {
+  //   startTransition(async () => {
+  //     try {
+  //       const id = await createGig();
+  //       useGigStore.setState({ client: undefined });
+  //       router.push(`/dashboard/gigs/${id}`);
+  //     } catch (error) {
+  //       console.error("Error creating gig:", error);
+  //     }
+  //   });
+  // };
+
   const handleClick = () => {
-    startTransition(async () => {
+    startTransition(() => {
       try {
-        const id = await create();
-        useGigStore.setState({ client: undefined });
-        router.push(`/dashboard/gigs/${id}`);
+        void createGig();
+        // router.push(`/dashboard/gigs/${res.id}`);
       } catch (error) {
         console.error("Error creating gig:", error);
       }

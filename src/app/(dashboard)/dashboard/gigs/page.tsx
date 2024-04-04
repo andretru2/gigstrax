@@ -19,10 +19,12 @@ interface Props {
 
 export default function Page(props: Props) {
   return (
-    <Suspense fallback={<Spinner />}>
+    <>
       <GigTabs />
-      <Gigs {...props} />
-    </Suspense>
+      <Suspense fallback={<Spinner />}>
+        <Gigs {...props} />
+      </Suspense>
+    </>
   );
 }
 
