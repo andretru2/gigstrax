@@ -1,9 +1,16 @@
 "use server";
 
-import { prisma, type SourceProps } from "@/server/db";
+import { prisma } from "@/server/db";
 import { revalidatePath } from "next/cache";
-import { type Source } from "@prisma/client";
-import { type GetSourcesProps } from "@/types/index";
+
+import type { Source } from "@prisma/client";
+import {
+  toFormState,
+  type FormState,
+  fromErrorToFormState,
+} from "@/components/form/to-form-state";
+import { parseFormData } from "@/lib/utils";
+import { sourceSchema } from "@/lib/validations/source";
 
 export async function getSource(id: string) {
   if (id.length === 0) return null;
@@ -36,6 +43,7 @@ export async function getSource(id: string) {
       videoUrl: true,
       gender: true,
       costume: true,
+      gigMastersAccount: true,
     },
     where: {
       id: id,
@@ -44,7 +52,6 @@ export async function getSource(id: string) {
 
   return data;
 }
-
 export async function getSources({
   select = { id: true, nameFirst: true, nameLast: true },
   whereClause = {},
@@ -117,24 +124,53 @@ export async function createSource(props: Partial<Source>) {
   };
 }
 
-export async function update(props: Partial<SourceProps>) {
-  const source = await prisma.source.findFirst({
-    where: { id: props.id },
-  });
+export async function saveSource(
+  id: string,
+  formData: FormData,
+): Promise<FormState> {
+  if (!id || !formData) return toFormState("ERROR", "Missing params");
 
-  if (!source) {
-    throw new Error("Source not found.");
+  try {
+    const parsedData = parseFormData(formData, sourceSchema);
+
+    if (parsedData)
+      /** TODO: if gig date changes, update timestart/end */
+      await prisma.source.update({
+        where: {
+          id,
+        },
+        data: { id: id, ...parsedData },
+      });
+  } catch (error) {
+    return fromErrorToFormState(error);
+  }
+  revalidatePath(`/dashboard/sources/${id}`);
+
+  return toFormState("SUCCESS", "Source updated");
+}
+
+export async function submitSource(
+  id: string,
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  if (!id || !formData) return toFormState("ERROR", "Missing params");
+
+  try {
+    const parsedData = parseFormData(formData, sourceSchema);
+
+    if (parsedData)
+      await prisma.source.update({
+        where: {
+          id,
+        },
+        data: { id: id, ...parsedData },
+      });
+  } catch (error) {
+    return fromErrorToFormState(error);
   }
 
-  await prisma.source.update({
-    data: props,
-    where: { id: props.id },
-  });
+  revalidatePath(`/dashboard/sources/${id}`);
 
-  // console.log("actions", data);
-
-  revalidatePath(`/dashboard/sources/${source.id}`);
-  revalidatePath(`/dashboard/sources/`);
-
-  // return data;
+  return toFormState("SUCCESS", "Source updated");
 }

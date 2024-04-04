@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // import GigCreateButton from "@/components/gigs/gig-create-button";
-import ClientCreate from "./client-picker-create";
+import { ClientPickerCreate } from "./client-picker-create";
 import {
   Popover,
   PopoverContent,
@@ -17,7 +17,7 @@ interface Props {
   className?: string;
 }
 
-export default function ClientTabs(props: Props) {
+export function ClientTabs(props: Props) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -80,7 +80,7 @@ export default function ClientTabs(props: Props) {
               </div>
             </PopoverTrigger>
             <PopoverContent>
-              <ClientCreate goto={true} />
+              <ClientPickerCreate goto={true} />
             </PopoverContent>
           </Popover>
         </TabsTrigger>

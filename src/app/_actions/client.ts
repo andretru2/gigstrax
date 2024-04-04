@@ -11,6 +11,45 @@ import {
 import { fromUTC, parseFormData } from "@/lib/utils";
 import { clientSchema } from "@/lib/validations/client";
 import { unstable_noStore as noStore } from "next/cache";
+import { redirect } from "next/navigation";
+
+export async function getClient(id: string): Promise<ClientProps | null> {
+  if (id.length === 0) return null;
+
+  const data = await prisma.client.findFirst({
+    select: {
+      id: true,
+      client: true,
+      clientType: true,
+      contact: true,
+      phoneCell: true,
+      email: true,
+      addressCity: true,
+      addressState: true,
+      addressStreet: true,
+      addressZip: true,
+      source: true,
+      notes: true,
+      phoneLandline: true,
+      createdAt: true,
+      updatedAt: true,
+      createdBy: true,
+
+      updatedBy: true,
+      status: true,
+      _count: {
+        select: {
+          gigs: true,
+        },
+      },
+    },
+    where: {
+      id: id,
+    },
+  });
+
+  return data;
+}
 
 export async function getClients({
   select = { id: true, client: true },
@@ -56,17 +95,23 @@ export async function checkIfExists(name: string) {
   };
 }
 
-export async function createClient(props: Partial<ClientProps>) {
+interface CreateClientProps {
+  client: Partial<ClientProps>;
+  goto?: boolean | undefined;
+}
+export async function createClient(props: CreateClientProps) {
   if (!props.client)
     return { result: "Error", resultDescription: "Client name is required." };
 
-  const resultExists = await checkIfExists(props.client);
+  const resultExists = await checkIfExists(props.client.client);
   if (resultExists.isDuplicate) {
     return resultExists;
   }
-  const client = await prisma.client.create({ data: props });
+  const client = await prisma.client.create({ data: props.client });
 
   revalidatePath(`/dashboard/clients/`);
+
+  if (props.goto) redirect(`/dashboard/clients/${client?.id}`);
 
   return {
     result: "Success",

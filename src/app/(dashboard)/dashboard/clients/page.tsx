@@ -6,8 +6,7 @@ import { PER_PAGE } from "@/lib/constants";
 import { searchParamsCache } from "@/components/search-params";
 import { type SearchParams } from "nuqs/server";
 
-import { ClientPicker } from "@/components/clients/client-picker";
-import ClientTabs from "@/components/clients/client-tabs";
+import { ClientTabs } from "@/components/clients/client-tabs";
 
 // export const dynamic = "force-dynamic";
 // export const cache = "no-store";

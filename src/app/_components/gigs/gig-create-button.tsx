@@ -4,12 +4,12 @@ import { Button } from "../ui/button";
 import { createGig } from "@/app/_actions/gig";
 import { useTransition } from "react";
 import { Icons } from "../icons";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 
 export function GigCreateButton() {
   const [isPending, startTransition] = useTransition();
 
-  const router = useRouter();
+  // const router = useRouter();
 
   // const handleClick = () => {
   //   startTransition(async () => {

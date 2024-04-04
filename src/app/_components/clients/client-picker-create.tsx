@@ -19,6 +19,7 @@ import { handleSaveGig } from "@/lib/gig/handle-save-gig";
 interface Props {
   searchParams?: ParsedSearchParams;
   gigId?: string | undefined;
+  goto?: boolean | undefined;
 }
 
 export function ClientPickerCreate(props: Props) {
@@ -32,7 +33,10 @@ export function ClientPickerCreate(props: Props) {
 
   const handleCreate = () => {
     startTransition(async () => {
-      const { clientId } = await createClient({ client });
+      const { clientId } = await createClient({
+        client: { client: client },
+        goto: props?.goto,
+      });
       props.gigId &&
         void handleSaveGig({
           id: props.gigId,
@@ -50,7 +54,7 @@ export function ClientPickerCreate(props: Props) {
       </CardHeader>
       <CardContent className="flex w-full flex-col gap-4">
         <Label className="font-medium">
-          <Input name="clientId" value={client} onChange={handleInputChange} />
+          <Input name="client" value={client} onChange={handleInputChange} />
         </Label>
         <Button
           type="button"

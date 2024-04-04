@@ -1,27 +1,17 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { sourceSchema } from "@/lib/validations/source";
-import { type SourceProps } from "@/server/db";
-import { Gender, SourceStatus } from "@prisma/client";
-
-import { type FocusEvent, useState, useTransition } from "react";
-
-import type * as z from "zod";
-
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  UncontrolledFormMessage,
-} from "@/components/ui/form";
-
+import { useFormState } from "react-dom";
+import { toast } from "sonner";
+import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { FieldError } from "@/components/form/field-error";
+import { useFormFeedback } from "@/components/form/use-form-feedback";
+import { EMPTY_FORM_STATE } from "@/components/form/to-form-state";
+import { Gender, SourceStatus, type Source } from "@prisma/client";
+import { useQueryStates } from "nuqs";
+import { submitSource } from "@/app/_actions/source";
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
+import { fieldErrorParser } from "../search-params";
 import {
   Select,
   SelectContent,
@@ -29,17 +19,86 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+} from "../ui/select";
+import { Textarea } from "../ui/textarea";
+import {
+  type SaveSourceProps,
+  handleSaveSource,
+} from "@/lib/source/handle-save-source";
+import { type FocusEvent } from "react";
 
-import { update } from "@/app/_actions/source";
+export function SourceForm(props: Awaited<Partial<Source>>) {
+  const { id } = props;
+  const [fieldError, setFieldError] = useQueryStates(fieldErrorParser);
+  const submitSourceWithId = submitSource.bind(null, id);
+  const [formState, formAction] = useFormState(
+    submitSourceWithId,
+    EMPTY_FORM_STATE,
+  );
 
-export default function SourceForm(props: Partial<SourceProps>) {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isPending, startTransition] = useTransition();
-  const [errors, setErrors] = useState();
+  const { ref } = useFormFeedback(formState, {
+    onSuccess: ({ formState, reset }) => {
+      if (formState.message) {
+        toast.success(formState.message);
+      }
+      reset();
+    },
+    onError: ({ formState }) => {
+      if (formState.message) {
+        toast.error(formState.message);
+      }
+    },
+  });
 
+  async function handleSaveSourceWrapper(props: SaveSourceProps) {
+    const resultSave = await handleSaveSource(props);
+    if (resultSave.result === "Error") {
+      void setFieldError({
+        key: props.key,
+        error: resultSave.resultDescription,
+      });
+    }
+    void setFieldError({ key: null, error: null });
+  }
+
+  return (
+    <form
+      action={formAction}
+      ref={ref}
+      className="  grid  grid-cols-12 items-center justify-center gap-3"
+    >
+      <Card className="col-span-12 p-2">
+        <CardHeader className="">
+          <CardTitle>Source Details</CardTitle>
+        </CardHeader>
+        <CardContent className="form  grid grid-cols-6 gap-4   p-4">
+          <SourceDetails
+            {...props}
+            handleSaveSourceWrapper={handleSaveSourceWrapper}
+            fieldError={fieldError}
+            setFieldError={setFieldError}
+            formState={formState}
+          />
+        </CardContent>
+      </Card>
+    </form>
+  );
+}
+
+interface FormProps {
+  handleSaveSourceWrapper: (props: SaveSourceProps) => Promise<void>;
+  fieldError: { key: string | null; error: string | null };
+  setFieldError: (props: { key: string | null; error: string | null }) => void;
+  formState: { status: string; message: string };
+}
+
+function SourceDetails({
+  handleSaveSourceWrapper,
+  fieldError,
+  setFieldError,
+  formState,
+  ...props
+}: Partial<Source> & FormProps) {
   const {
     id,
     role,
@@ -50,6 +109,7 @@ export default function SourceForm(props: Partial<SourceProps>) {
     addressState,
     addressStreet,
     addressZip,
+    gigMastersAccount,
     notes,
     createdAt,
     updatedAt,
@@ -57,9 +117,7 @@ export default function SourceForm(props: Partial<SourceProps>) {
     dob,
     updatedBy,
     status,
-
     entity,
-
     phone,
     resource,
     website,
@@ -69,564 +127,375 @@ export default function SourceForm(props: Partial<SourceProps>) {
     costume,
   } = props;
 
-  console.log(props);
-
-  const form = useForm<z.infer<typeof sourceSchema>>({
-    resolver: zodResolver(sourceSchema),
-    mode: "onBlur",
-
-    defaultValues: {
-      addressCity: addressCity ? addressCity : undefined,
-      addressState: addressState ? addressState : undefined,
-      addressStreet: addressStreet ? addressStreet : undefined,
-      addressZip: addressZip ? addressZip : undefined,
-      role: role ? role : undefined,
-      nameFirst: nameFirst ? nameFirst : undefined,
-      nameLast: nameLast ? nameLast : undefined,
-      email: email ? email : undefined,
-      id: id ? id : undefined,
-      notes: notes ? notes : undefined,
-      phone: phone ? phone : undefined,
-      dob: dob ? dob : undefined,
-      entity: entity ? entity : undefined,
-      createdAt: createdAt ? createdAt : undefined,
-      updatedAt: updatedAt ? updatedAt : undefined,
-      createdBy: createdBy ? createdBy : undefined,
-      updatedBy: updatedBy ? updatedBy : undefined,
-      status: status ? status : undefined,
-      resource: resource ? resource : undefined,
-      website: website ? website : undefined,
-      ssn: ssn ? ssn : undefined,
-      videoUrl: videoUrl ? videoUrl : undefined,
-      gender: gender ? gender : undefined,
-      costume: costume ? costume : undefined,
-    },
-  });
-
-  console.log("errors", form.formState.errors, errors);
-
-  // const onBlur = (id, e) => {
-  //   console.log("onblur", e.target.value, id);
-  //   startTransition(async () => {
-  //     console.log("errors", form.formState.errors, errors);
-
-  //     try {
-  //       if (form.formState.errors.phone?.message) {
-  //         return false;
-  //       }
-  //       await update({
-  //         id: id,
-  //         phone: e.target.value, // Assuming 'data' is accessible here
-  //       });
-
-  //       // toast.success("Product updated successfully");
-  //       // setFiles(null);
-  //     } catch (err) {
-  //       // catchError(err);
-  //     }
-  //   });
-  // };
-
   return (
-    <Form {...form}>
-      <form
-        className="grid w-full max-w-4xl  gap-2 "
-        // onSubmit={(...args) => void form.handleSubmit(onBlur)(...args)}
-        // onBlur={(...args) => void form.handleSubmit(onBlur)(...args)}
-      >
-        <Card className=" p-4">
-          <CardHeader className="px-0">
-            <CardTitle>Source Details</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-6 items-end gap-2 px-0">
-            <FormField
-              control={form.control}
-              name="nameFirst"
-              render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col ">
-                  <FormLabel>First Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type="text"
-                      className="bg-white"
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: id,
-                          nameFirst: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={form.formState.errors.price?.message}
-                  /> */}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="nameLast"
-              render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col ">
-                  <FormLabel>Last Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="bg-white"
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: id,
-                          nameLast: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={form.formState.errors.source?.contact?.message}
-                  /> */}
-                </FormItem>
-              )}
-            />
+    <>
+      <Label className="col-span-2">
+        <Input
+          name="nameFirst"
+          defaultValue={nameFirst ? nameFirst : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveSourceWrapper({
+              id: id,
+              key: e.target.name as keyof Source,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>First</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "nameFirst" ? fieldError.error : null}
+          name="nameFirst"
+        />
+      </Label>
 
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col ">
-                  <FormLabel>Phone</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      {...field}
-                      {...form.register("phone")}
-                      className="bg-white "
-                      placeholder="xxx-xxx-xxxx"
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void form.trigger(["phone"]);
-                        void update({
-                          id: id,
-                          phone: e.target.value,
-                        });
-                        // handlePhoneBlur(id, e.target.value);
-                      }}
+      <Label className="col-span-2">
+        <Input
+          name="nameLast"
+          defaultValue={nameLast ? nameLast : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveSourceWrapper({
+              id: id,
+              key: e.target.name as keyof Source,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Last</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "nameLast" ? fieldError.error : null}
+          name="nameLast"
+        />
+      </Label>
 
-                      // if (!form.formState.errors.phone?.message) {
-                      //   console.log(
-                      //     form.formState.errors.phone,
-                      //     form.getFieldState("phone"),
-                      //     "hpone errors"
-                      //   );
-                      //   void update({
-                      //     id: id,
-                      //     phone: e.target.value,
-                      //   });
-                      // }
-                    />
-                  </FormControl>
-                  <FormMessage />
+      <Label className="col-span-2">
+        <Input
+          name="phone"
+          defaultValue={phone ? phone : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveSourceWrapper({
+              id: id,
+              key: e.target.name as keyof Source,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Phone</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "phone" ? fieldError.error : null}
+          name="phone"
+        />
+      </Label>
 
-                  {/* <UncontrolledFormMessage
-                    // message={form.formState.errors.source?.phone?.message}
-                    message={form.formState.errors.phone?.message}
-                  /> */}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col ">
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="bg-white "
-                      {...form.register("email")}
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void form.trigger(["email"]);
+      <Label className="col-span-2">
+        <Input
+          name="email"
+          defaultValue={email ? email : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveSourceWrapper({
+              id: id,
+              key: e.target.name as keyof Source,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Email</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "email" ? fieldError.error : null}
+          name="email"
+        />
+      </Label>
 
-                        void update({
-                          id: id,
-                          email: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={
-                      form.formState.errors.source?.addressState?.message
-                    }
-                  /> */}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="gender"
-              render={({ field }) => (
-                <FormItem className="col-span-2 w-full ">
-                  <FormLabel>Gender</FormLabel>
-                  <FormControl>
-                    <Select
-                      value={field.value}
-                      onValueChange={(value: Gender) => {
-                        field.onChange(value);
-                        void update({
-                          id: id,
-                          gender: value,
-                        });
-                      }}
-                    >
-                      <SelectTrigger className="bg-white capitalize">
-                        <SelectValue placeholder={field.value} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {Object.values(Gender).map((option) => (
-                            <SelectItem
-                              key={option}
-                              value={option}
-                              className="capitalize"
-                            >
-                              {option}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="role"
-              render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col ">
-                  <FormLabel>Role</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="bg-white "
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: id,
-                          role: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={form.formState.errors.source?.email?.message}
-                  /> */}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="ssn"
-              render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col ">
-                  <FormLabel>SSN</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="bg-white "
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: id,
-                          ssn: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={form.formState.errors.source?.email?.message}
-                  /> */}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem className="col-span-2 w-full ">
-                  <FormLabel>Status</FormLabel>
-                  <FormControl>
-                    <Select
-                      value={field.value}
-                      onValueChange={(value: SourceStatus) => {
-                        field.onChange(value);
-                        void update({
-                          id: id,
-                          status: value,
-                        });
-                      }}
-                    >
-                      <SelectTrigger className="bg-white capitalize">
-                        <SelectValue placeholder={field.value} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {Object.values(SourceStatus).map((option) => (
-                            <SelectItem
-                              key={option}
-                              value={option}
-                              className="capitalize"
-                            >
-                              {option}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="gigMastersAccount"
-              render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col ">
-                  <FormLabel>Gig Masters Account</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="bg-white "
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: id,
-                          gigMastersAccount: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={form.formState.errors.source?.email?.message}
-                  /> */}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="videoUrl"
-              render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col ">
-                  <FormLabel>Video Url</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="bg-white "
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: id,
-                          videoUrl: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={form.formState.errors.source?.email?.message}
-                  /> */}
-                </FormItem>
-              )}
-            />
+      <Label className="col-span-2">
+        <Select
+          name="gender"
+          defaultValue={gender ? gender : undefined}
+          onValueChange={(value: Gender) => {
+            void handleSaveSourceWrapper({
+              id: id,
+              key: "gender",
+              value: value,
+            });
+          }}
+        >
+          <SelectTrigger className="bg-white capitalize">
+            <SelectValue placeholder={gender} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {Object.values(Gender).map((option) => (
+                <SelectItem key={option} value={option} className="capitalize">
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <span>Gender</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "gender" ? fieldError.error : null}
+          name="gender"
+        />
+      </Label>
 
-            <FormField
-              control={form.control}
-              name="website"
-              render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col ">
-                  <FormLabel>Website</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="bg-white "
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: id,
-                          website: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={form.formState.errors.source?.email?.message}
-                  /> */}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="costume"
-              render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col ">
-                  <FormLabel>Costume</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="bg-white "
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: id,
-                          costume: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={form.formState.errors.source?.email?.message}
-                  /> */}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="addressStreet"
-              render={({ field }) => (
-                <FormItem className="col-span-6 flex flex-col ">
-                  <FormLabel>Street</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="bg-white "
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: id,
-                          addressStreet: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={
-                      form.formState.errors.source?.addressStreet?.message
-                    }
-                  /> */}
-                </FormItem>
-              )}
-            />
+      <Label className="col-span-2">
+        <Input
+          name="role"
+          defaultValue={role ? role : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveSourceWrapper({
+              id: id,
+              key: e.target.name as keyof Source,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Role</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "role" ? fieldError.error : null}
+          name="role"
+        />
+      </Label>
 
-            <FormField
-              control={form.control}
-              name="addressCity"
-              render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col ">
-                  <FormLabel>City</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="bg-white "
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: id,
-                          addressCity: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={form.formState.errors.source?.addressCity?.message}
-                  /> */}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="addressState"
-              render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col ">
-                  <FormLabel>State</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="bg-white "
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: id,
-                          addressState: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={
-                      form.formState.errors.source?.addressState?.message
-                    }
-                  /> */}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="addressZip"
-              render={({ field }) => (
-                <FormItem className="col-span-2 flex flex-col ">
-                  <FormLabel>Zip</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      className="bg-white "
-                      onBlur={(e: FocusEvent<HTMLInputElement>) => {
-                        void update({
-                          id: id,
-                          addressZip: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={form.formState.errors.source?.addressZip?.message}
-                  /> */}
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem className="col-span-6 flex flex-col ">
-                  <FormLabel>Notes</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      className="h-48 bg-white"
-                      onBlur={(e: FocusEvent<HTMLTextAreaElement>) => {
-                        void update({
-                          id: id,
-                          notes: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  {/* <UncontrolledFormMessage
-                    message={form.formState.errors.source?.notes?.message}
-                  /> */}
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
-      </form>
-    </Form>
+      <Label className="col-span-2">
+        <Input
+          name="ssn"
+          defaultValue={ssn ? ssn : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveSourceWrapper({
+              id: id,
+              key: e.target.name as keyof Source,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>SSN</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "ssn" ? fieldError.error : null}
+          name="ssn"
+        />
+      </Label>
+
+      <Label className="col-span-2">
+        <Select
+          name="status"
+          defaultValue={status ? status : undefined}
+          onValueChange={(value: SourceStatus) => {
+            void handleSaveSourceWrapper({
+              id: id,
+              key: "status",
+              value: value,
+            });
+          }}
+        >
+          <SelectTrigger className="bg-white capitalize">
+            <SelectValue placeholder={status} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {Object.values(SourceStatus).map((option) => (
+                <SelectItem key={option} value={option} className="capitalize">
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <span>Status</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "status" ? fieldError.error : null}
+          name="status"
+        />
+      </Label>
+
+      <Label className="col-span-2">
+        <Input
+          name="gigMastersAccount"
+          defaultValue={gigMastersAccount ? gigMastersAccount : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveSourceWrapper({
+              id: id,
+              key: e.target.name as keyof Source,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Gig Masters Account</span>
+        <FieldError
+          formState={formState}
+          error={
+            fieldError.key === "gigMastersAccount" ? fieldError.error : null
+          }
+          name="gigMastersAccount"
+        />
+      </Label>
+
+      <Label className="col-span-2">
+        <Input
+          name="videoUrl"
+          defaultValue={videoUrl ? videoUrl : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveSourceWrapper({
+              id: id,
+              key: e.target.name as keyof Source,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Video Url</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "videoUrl" ? fieldError.error : null}
+          name="videoUrl"
+        />
+      </Label>
+
+      <Label className="col-span-2">
+        <Input
+          name="website"
+          defaultValue={website ? website : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveSourceWrapper({
+              id: id,
+              key: e.target.name as keyof Source,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Website</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "website" ? fieldError.error : null}
+          name="website"
+        />
+      </Label>
+
+      <Label className="col-span-2">
+        <Input
+          name="costume"
+          defaultValue={costume ? costume : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveSourceWrapper({
+              id: id,
+              key: e.target.name as keyof Source,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Costume</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "costume" ? fieldError.error : null}
+          name="costume"
+        />
+      </Label>
+
+      <Label className="col-span-6">
+        <Input
+          name="addressStreet"
+          defaultValue={addressStreet ? addressStreet : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveSourceWrapper({
+              id: id,
+              key: e.target.name as keyof Source,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Address (Street)</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "addressStreet" ? fieldError.error : null}
+          name="addressStreet"
+        />
+      </Label>
+
+      <Label className="col-span-2">
+        <Input
+          name="addressCity"
+          defaultValue={addressCity ? addressCity : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveSourceWrapper({
+              id: id,
+              key: e.target.name as keyof Source,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>City</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "addressCity" ? fieldError.error : null}
+          name="addressCity"
+        />
+      </Label>
+
+      <Label className="col-span-2">
+        <Input
+          name="addressState"
+          defaultValue={addressState ? addressState : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveSourceWrapper({
+              id: id,
+              key: e.target.name as keyof Source,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>State</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "addressState" ? fieldError.error : null}
+          name="addressState"
+        />
+      </Label>
+
+      <Label className="col-span-2">
+        <Input
+          name="addressZip"
+          defaultValue={addressZip ? addressZip : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveSourceWrapper({
+              id: id,
+              key: e.target.name as keyof Source,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Zip</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "addressZip" ? fieldError.error : null}
+          name="addressZip"
+        />
+      </Label>
+
+      <Label className="col-span-6">
+        <Textarea
+          name="notes"
+          defaultValue={notes ? notes : undefined}
+          onBlur={(e: FocusEvent<HTMLTextAreaElement>) =>
+            void handleSaveSourceWrapper({
+              id: id,
+              key: e.target.name as keyof Source,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Notes</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "notes" ? fieldError.error : null}
+          name="notes"
+        />
+      </Label>
+    </>
   );
 }
