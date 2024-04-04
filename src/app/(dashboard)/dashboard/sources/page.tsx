@@ -3,6 +3,7 @@ import { type GetSourcesProps, type Tab } from "@/types/index";
 import { getSources } from "@/app/_actions/source";
 import { PER_PAGE } from "@/lib/constants";
 import { type SourceStatus } from "@prisma/client";
+import SourceTabs from "@/components/sources/source-tabs";
 
 interface Props {
   params: {
@@ -113,5 +114,10 @@ export default async function Page({ params, searchParams }: Props) {
 
   const pageCount = Math.ceil(totalCount / limit);
 
-  return <DataTable data={data} pageCount={pageCount} />;
+  return (
+    <>
+      <SourceTabs />
+      <DataTable data={data} pageCount={pageCount} />
+    </>
+  );
 }

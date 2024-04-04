@@ -10,7 +10,7 @@ interface Props {
   className?: string;
 }
 
-export default function SourceDetailTabs({ id, ...props }: Props) {
+export function SourceDetailTabs({ id, ...props }: Props) {
   const router = useRouter();
   const pathname = usePathname();
 

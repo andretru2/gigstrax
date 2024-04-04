@@ -10,7 +10,7 @@ interface Props {
   className?: string;
 }
 
-export default function GigDetailTabs({ gigId, ...props }: Props) {
+export function GigDetailTabs({ gigId, ...props }: Props) {
   const router = useRouter();
   const pathname = usePathname();
 

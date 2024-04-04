@@ -3,11 +3,9 @@ import { type Metadata } from "next";
 import { env } from "@/env.mjs";
 import { Card, CardContent } from "@/components/ui/card";
 import { ClientForm } from "@/components/clients/client-form";
-import ClientDetailTabs from "@/components/clients/client-detail-tabs";
-
-import { getClients } from "@/app/_actions/client";
+import { ClientDetailTabs } from "@/components/clients/client-detail-tabs";
+import { getClient } from "@/app/_actions/client";
 import { BackButton } from "@/components/ui/back-button";
-import { type Client } from "@prisma/client";
 import { Suspense } from "react";
 import { Spinner } from "@/components/spinner";
 
@@ -28,6 +26,7 @@ export default function Page(props: Props) {
     <Card className="mx-auto w-full  border-0 bg-background [&>*]:px-0 ">
       <CardContent className="flex flex-col gap-2">
         <BackButton />
+        <ClientDetailTabs id={props.params.clientId} />
         <Suspense fallback={<Spinner />}>
           <ClientFormWrapper {...props} />
         </Suspense>
@@ -37,34 +36,6 @@ export default function Page(props: Props) {
 }
 
 async function ClientFormWrapper(props: Props) {
-  const { clientId } = props.params;
-
-  const { data } = await getClients({
-    select: {
-      id: true,
-      client: true,
-      clientType: true,
-      contact: true,
-      phoneCell: true,
-      email: true,
-      addressCity: true,
-      addressState: true,
-      addressStreet: true,
-      addressZip: true,
-      phoneLandline: true,
-      createdAt: true,
-      status: true,
-      updatedAt: true,
-      createdBy: true,
-      updatedBy: true,
-      notes: true,
-    },
-    whereClause: {
-      id: clientId,
-    },
-  });
-
-  const client = data[0] as Client;
-
+  const client = await getClient(props.params.clientId);
   return <ClientForm {...client} />;
 }

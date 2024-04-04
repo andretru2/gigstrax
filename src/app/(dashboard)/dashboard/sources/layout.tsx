@@ -1,5 +1,3 @@
-import SourceTabs from "@/components/sources/source-tabs";
-import Header from "@/components/header";
 import { type Metadata } from "next";
 
 interface DashboardLayoutProps {
@@ -12,11 +10,5 @@ export const metadata: Metadata = {
 };
 
 export default function Layout({ children }: DashboardLayoutProps) {
-  return (
-    <>
-      {/* <Header heading="Sources" separator={true} /> */}
-      <SourceTabs />
-      {children}
-    </>
-  );
+  return <>{children}</>;
 }

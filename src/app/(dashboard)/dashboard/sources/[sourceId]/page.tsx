@@ -3,11 +3,9 @@ import { type Metadata } from "next";
 import { env } from "@/env.mjs";
 import { Card, CardContent } from "@/components/ui/card";
 import { SourceForm } from "@/components/sources/source-form";
-// import ClientDetailTabs from "@/components/clients/client-detail-tabs";
-
+import { SourceDetailTabs } from "@/components/sources/source-detail-tabs";
 import { getSource } from "@/app/_actions/source";
 import { BackButton } from "@/components/ui/back-button";
-import { type Source } from "@prisma/client";
 import { Suspense } from "react";
 import { Spinner } from "@/components/spinner";
 
@@ -28,6 +26,7 @@ export default function Page(props: Props) {
     <Card className="mx-auto w-full  border-0 bg-background [&>*]:px-0 ">
       <CardContent className="flex flex-col gap-2">
         <BackButton />
+        <SourceDetailTabs id={props.params.sourceId} />
         <Suspense fallback={<Spinner />}>
           <SourceFormWrapper {...props} />
         </Suspense>
