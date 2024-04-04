@@ -8,7 +8,7 @@ import { FieldError } from "@/components/form/field-error";
 import { useFormFeedback } from "@/components/form/use-form-feedback";
 import { EMPTY_FORM_STATE } from "@/components/form/to-form-state";
 import { ClientType, type Client } from "@prisma/client";
-import { useQueryStates, parseAsBoolean, useQueryState } from "nuqs";
+import { useQueryStates } from "nuqs";
 import { submitClient } from "@/app/_actions/client";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { fieldErrorParser } from "../search-params";
@@ -125,6 +125,7 @@ function ClientDetails({
       <Label className="col-span-6">
         <Input
           name="client"
+          disabled={!client}
           defaultValue={client ? client : undefined}
           onBlur={(e: FocusEvent<HTMLInputElement>) =>
             void handleSaveClientWrapper({
@@ -145,6 +146,7 @@ function ClientDetails({
       <Label className="col-span-6">
         <Input
           name="contact"
+          disabled={!client}
           defaultValue={contact ? contact : undefined}
           onBlur={(e: FocusEvent<HTMLInputElement>) =>
             void handleSaveClientWrapper({
@@ -165,6 +167,7 @@ function ClientDetails({
       <Label className="col-span-2">
         <Input
           name="phoneCell"
+          disabled={!client}
           defaultValue={phoneCell ? phoneCell : undefined}
           onBlur={(e: FocusEvent<HTMLInputElement>) =>
             void handleSaveClientWrapper({
@@ -185,6 +188,7 @@ function ClientDetails({
       <Label className="col-span-2">
         <Input
           name="phoneLandline"
+          disabled={!client}
           defaultValue={phoneLandline ? phoneLandline : undefined}
           onBlur={(e: FocusEvent<HTMLInputElement>) =>
             void handleSaveClientWrapper({
@@ -205,6 +209,7 @@ function ClientDetails({
       <Label className="col-span-2">
         <Select
           name="clientType"
+          disabled={!client}
           defaultValue={clientType ? clientType : undefined}
           onValueChange={(value: ClientType) => {
             void handleSaveClientWrapper({
@@ -238,6 +243,7 @@ function ClientDetails({
       <Label className="col-span-6">
         <Input
           name="email"
+          disabled={!client}
           defaultValue={email ? email : undefined}
           onBlur={(e: FocusEvent<HTMLInputElement>) =>
             void handleSaveClientWrapper({
@@ -258,6 +264,7 @@ function ClientDetails({
       <Label className="col-span-6">
         <Input
           name="addressStreet"
+          disabled={!client}
           defaultValue={addressStreet ? addressStreet : undefined}
           onBlur={(e: FocusEvent<HTMLInputElement>) =>
             void handleSaveClientWrapper({
@@ -278,6 +285,7 @@ function ClientDetails({
       <Label className="col-span-2">
         <Input
           name="addressCity"
+          disabled={!client}
           defaultValue={addressCity ? addressCity : undefined}
           onBlur={(e: FocusEvent<HTMLInputElement>) =>
             void handleSaveClientWrapper({
@@ -298,6 +306,7 @@ function ClientDetails({
       <Label className="col-span-2">
         <Input
           name="addressState"
+          disabled={!client}
           defaultValue={addressState ? addressState : undefined}
           onBlur={(e: FocusEvent<HTMLInputElement>) =>
             void handleSaveClientWrapper({
@@ -318,6 +327,7 @@ function ClientDetails({
       <Label className="col-span-2">
         <Input
           name="addressZip"
+          disabled={!client}
           defaultValue={addressZip ? addressZip : undefined}
           onBlur={(e: FocusEvent<HTMLInputElement>) =>
             void handleSaveClientWrapper({
@@ -338,6 +348,7 @@ function ClientDetails({
       <Label className="col-span-6">
         <Textarea
           name="notes"
+          disabled={!client}
           defaultValue={notes ? notes : undefined}
           onBlur={(e: FocusEvent<HTMLTextAreaElement>) =>
             void handleSaveClientWrapper({
