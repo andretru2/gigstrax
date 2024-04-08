@@ -1,9 +1,16 @@
 "use server";
 
-import { prisma, type SourceProps } from "@/server/db";
-import { type z } from "zod";
+import { prisma } from "@/server/db";
 import { revalidatePath } from "next/cache";
-import { type Prisma } from "@prisma/client";
+
+import type { Source } from "@prisma/client";
+import {
+  toFormState,
+  type FormState,
+  fromErrorToFormState,
+} from "@/components/form/to-form-state";
+import { parseFormData } from "@/lib/utils";
+import { sourceSchema } from "@/lib/validations/source";
 import { type GetSourcesProps } from "@/types/index";
 
 export async function getSource(id: string) {
@@ -37,6 +44,7 @@ export async function getSource(id: string) {
       videoUrl: true,
       gender: true,
       costume: true,
+      gigMastersAccount: true,
     },
     where: {
       id: id,
@@ -45,13 +53,11 @@ export async function getSource(id: string) {
 
   return data;
 }
-
 export async function getSources({
   select = { id: true, nameFirst: true, nameLast: true },
   whereClause = {},
-  // orderBy = [{ nameLast: "asc" }, { nameFirst: "asc" }],
   orderBy = [],
-  limit = 10,
+  limit = 20,
   skip = 0,
 }: GetSourcesProps) {
   const totalCount = await prisma.source.count({ where: whereClause });
@@ -70,42 +76,6 @@ export async function getSources({
   };
 }
 
-export async function getSantas() {
-  return await prisma.source.findMany({
-    select: {
-      id: true,
-      role: true,
-    },
-    where: {
-      status: "Active",
-      role: {
-        contains: "RBS",
-      },
-    },
-    orderBy: {
-      role: "asc",
-    },
-  });
-}
-
-export async function getMrsSantas() {
-  return await prisma.source.findMany({
-    select: {
-      id: true,
-      nameFirst: true,
-    },
-    where: {
-      status: "Active",
-      role: {
-        contains: "Mrs",
-      },
-    },
-    orderBy: {
-      role: "asc",
-    },
-  });
-}
-
 export async function checkIfExists({
   nameFirst,
   nameLast,
@@ -113,8 +83,8 @@ export async function checkIfExists({
   nameFirst: string;
   nameLast: string;
 }) {
-  nameFirst.toLowerCase().trim();
-  nameLast.toLowerCase().trim();
+  nameFirst = nameFirst.toLowerCase().trim();
+  nameLast = nameLast.toLowerCase().trim();
 
   const exists = await prisma.source.findFirst({
     where: {
@@ -130,7 +100,7 @@ export async function checkIfExists({
   if (exists?.id) return true;
 }
 
-export async function create(data: SourceProps) {
+export async function createSource(props: Partial<Source>) {
   // const exists = await checkIfExists({
   //   nameFirst: data.nameFirst,
   //   nameLast: data.nameFirst,
@@ -139,30 +109,69 @@ export async function create(data: SourceProps) {
   //   throw new Error("Source name already exists.");
   // }
   // console.log(data);
-  const newRecord = await prisma.source.create({ data: data });
+
+  if (!props.role || !props.nameFirst || !props.nameLast)
+    return {
+      result: "Error",
+      resultDescription: "Role, First Name and Last Name are required.",
+    };
+  const source = await prisma.source.create({ data: props });
   revalidatePath(`/dashboard/sources/`);
-  // console.log(newRecord);
-  return newRecord.id;
+
+  return {
+    result: "Success",
+    resultDescription: "Source created succesfully",
+    sourceId: source?.id,
+  };
 }
 
-export async function update(props: Partial<SourceProps>) {
-  const source = await prisma.source.findFirst({
-    where: { id: props.id },
-  });
+export async function saveSource(
+  id: string,
+  formData: FormData,
+): Promise<FormState> {
+  if (!id || !formData) return toFormState("ERROR", "Missing params");
 
-  if (!source) {
-    throw new Error("Source not found.");
+  try {
+    const parsedData = parseFormData(formData, sourceSchema);
+
+    if (parsedData)
+      /** TODO: if gig date changes, update timestart/end */
+      await prisma.source.update({
+        where: {
+          id,
+        },
+        data: { id: id, ...parsedData },
+      });
+  } catch (error) {
+    return fromErrorToFormState(error);
+  }
+  revalidatePath(`/dashboard/sources/${id}`);
+
+  return toFormState("SUCCESS", "Source updated");
+}
+
+export async function submitSource(
+  id: string,
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  if (!id || !formData) return toFormState("ERROR", "Missing params");
+
+  try {
+    const parsedData = parseFormData(formData, sourceSchema);
+
+    if (parsedData)
+      await prisma.source.update({
+        where: {
+          id,
+        },
+        data: { id: id, ...parsedData },
+      });
+  } catch (error) {
+    return fromErrorToFormState(error);
   }
 
-  await prisma.source.update({
-    data: props,
-    where: { id: props.id },
-  });
+  revalidatePath(`/dashboard/sources/${id}`);
 
-  // console.log("actions", data);
-
-  revalidatePath(`/dashboard/sources/${source.id}`);
-  revalidatePath(`/dashboard/sources/`);
-
-  // return data;
+  return toFormState("SUCCESS", "Source updated");
 }

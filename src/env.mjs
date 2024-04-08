@@ -8,7 +8,9 @@ export const env = createEnv({
    */
   server: {
     DATABASE_URL: z.string().url(),
-    NODE_ENV: z.enum(["development", "test", "production"]),
+    NODE_ENV: z
+      .enum(["development", "test", "production"])
+      .default("development"),
     POSTGRES_URL: z.string().url(),
     POSTGRES_PRISMA_URL: z.string().url(),
     POSTGRES_URL_NON_POOLING: z.string().url(),
@@ -74,4 +76,10 @@ export const env = createEnv({
    * This is especially useful for Docker builds.
    */
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
+
+  /**
+   * Makes it so that empty strings are treated as undefined. `SOME_VAR: z.string()` and
+   * `SOME_VAR=''` will throw an error.
+   */
+  emptyStringAsUndefined: true,
 });

@@ -6,16 +6,16 @@ type State = {
 };
 
 type Actions = {
-  setClient: (client: Partial<ClientProps>) => void;
+  setClient: (client: Partial<ClientProps> | undefined) => void;
 };
 
 const initalState: State = {
   client: undefined,
 };
 
-export const useGigStore = create<State & Actions>((set, get) => ({
+export const useGigStore = create<State & Actions>((set) => ({
   ...initalState,
-  setClient: (props: Partial<ClientProps>) => {
+  setClient: (props: Partial<ClientProps> | undefined) => {
     set({ client: props });
   },
 }));

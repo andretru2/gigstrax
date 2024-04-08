@@ -4,7 +4,7 @@
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
  * This is especially useful for Docker builds.
  */
-import million from "million/compiler";
+// import million from "million/compiler";
 
 !process.env.SKIP_ENV_VALIDATION && (await import("./src/env.mjs"));
 
@@ -18,9 +18,7 @@ const nextConfig = {
     // !! WARN !!
     ignoreBuildErrors: true,
   },
-  experimental: {
-    serverActions: true,
-  },
+
   /**
    * If you have the "experimental: { appDir: true }" setting enabled, then you
    * must comment the below `i18n` config out.
@@ -42,4 +40,6 @@ const millionConfig = {
   auto: { rsc: true },
 };
 
-export default million.next(nextConfig, millionConfig);
+// export default million.next(nextConfig, millionConfig);
+
+export default nextConfig;

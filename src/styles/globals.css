@@ -91,6 +91,26 @@
   }
   body {
     @apply bg-background text-xs text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
+  }
+  /* h4 {
+    @apply text-xs font-semibold;
+  } */
+}
+
+@layer components {
+  .form > label {
+    @apply relative block h-full;
+  }
+  .form > label > * {
+    @apply bg-white font-normal transition-shadow;
+  }
+  .form > label > span {
+    @apply absolute left-2 top-0 -translate-y-1 scale-100 bg-white font-semibold transition-transform;
+  }
+  .pill {
+    @apply flex  max-w-40 items-center justify-center truncate  rounded-full bg-primary;
   }
 }

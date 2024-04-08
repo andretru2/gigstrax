@@ -1,33 +1,41 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    /* base */
+    "target": "es2022",
     "allowJs": true,
-    "checkJs": true,
     "skipLibCheck": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
     "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
     "resolveJsonModule": true,
+    "moduleDetection": "force",
     "isolatedModules": true,
+
+    /* Strictness */
+    "strict": true,
+    "checkJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUncheckedIndexedAccess": true,
+
+    /* Bundled projects */
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "jsx": "preserve",
     "incremental": true,
-    "noUncheckedIndexedAccess": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/components/*": ["./src/components/*"],
-      "@/config/*": ["./src/config/*"],
-      "@/types/*": ["./src/types/*"],
-      "@/*": ["./src/*"]
-    },
     "plugins": [
       {
         "name": "next"
       }
-    ]
+    ],
+
+    /* Path Aliases */
+    "baseUrl": ".",
+    "paths": {
+      "@/components/*": ["src/app/_components/*"],
+      "@/config/*": ["./src/config/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/*": ["./src/*"]
+    }
   },
   "include": [
     ".eslintrc.cjs",

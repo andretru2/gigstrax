@@ -1,5 +1,3 @@
-import GigTabs from "@/components/gigs/gig-tabs";
-import Header from "@/components/header";
 import { type Metadata } from "next";
 
 interface DashboardLayoutProps {
@@ -15,7 +13,6 @@ export default function Layout({ children }: DashboardLayoutProps) {
   return (
     <>
       {/* <Header heading="Gigs" separator={true} /> */}
-      <GigTabs />
       {children}
     </>
   );

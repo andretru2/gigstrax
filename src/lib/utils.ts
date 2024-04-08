@@ -11,7 +11,7 @@ export function cn(...inputs: ClassValue[]) {
 export function formatPrice(
   price: number | string,
   currency: "USD" | "EUR" | "GBP" | "BDT" = "USD",
-  notation: "compact" | "engineering" | "scientific" | "standard" = "standard"
+  notation: "compact" | "engineering" | "scientific" | "standard" = "standard",
 ) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -21,27 +21,9 @@ export function formatPrice(
 }
 export function formatDate(
   input: string | number | Date,
-  format?: "friendly" | "formal"
+  format?: "friendly" | "formal",
 ) {
   const date = new Date(input);
-
-  // const year = date.getFullYear();
-  // const month = String(date.getMonth() + 1).padStart(2, "0");
-  // const day = String(date.getDate()).padStart(2, "0");
-
-  // if (format === "friendly") {
-  //   const options = {
-  //     weekday: "short",
-  //     month: "short",
-  //     day: "numeric",
-  //     year: "2-digit",
-  //   };
-  //   return date.toLocaleDateString("en-US", options);
-  // }
-
-  // if (format === "formal" || !format) {
-  //   return `${month}/${day}/${year}`;
-  // }
 
   if (format === "friendly") {
     return date.toLocaleDateString("en-US", {
@@ -92,18 +74,33 @@ export function catchError(err: unknown) {
 
 export function calculateTimeDifference(
   timeStart: Date,
-  timeEnd: Date
-): number {
+  timeEnd: Date,
+): string {
   const startTime = new Date(timeStart);
   const endTime = new Date(timeEnd);
   const timeDiffInMilliseconds = Math.abs(
-    startTime.getTime() - endTime.getTime()
+    startTime.getTime() - endTime.getTime(),
   );
-  const timeDiffInHours = timeDiffInMilliseconds / (1000 * 60 * 60);
-  const roundedTimeDiff = Math.round(timeDiffInHours * 100) / 100;
 
-  return roundedTimeDiff;
+  // Calculate hours and minutes
+  const hours = Math.floor(timeDiffInMilliseconds / (1000 * 60 * 60));
+  const minutes = Math.floor(
+    (timeDiffInMilliseconds % (1000 * 60 * 60)) / (1000 * 60),
+  );
+
+  // Construct the friendly string representation
+  let timeDiffString = "";
+  if (hours > 0) {
+    timeDiffString += hours + "h ";
+  }
+  if (minutes > 0) {
+    timeDiffString += minutes + "m";
+  }
+
+  // Return the friendly string representation
+  return timeDiffString.trim();
 }
+
 export function slugify(str: string) {
   return str
     .toLowerCase()
@@ -133,21 +130,21 @@ export function formatAddress({
 export function toTitleCase(str: string) {
   return str.replace(
     /\w\S*/g,
-    (txt) => txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase()
+    (txt) => txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase(),
   );
 }
 
-export function isValidDate(date: any): date is Date {
-  if (!(date instanceof Date)) {
-    return false;
-  }
+// export function isValidDate(date: any): date is Date {
+//   if (!(date instanceof Date)) {
+//     return false;
+//   }
 
-  if (isNaN(date.getTime())) {
-    return false;
-  }
+//   if (isNaN(date.getTime())) {
+//     return false;
+//   }
 
-  return true;
-}
+//   return true;
+// }
 
 export function isValidTime(time: string) {
   // Regex to match HH:MM format
@@ -243,7 +240,7 @@ export function getTimeFromDate(dateTime: Date, friendly?: boolean): string {
 export function fromUTC(dateTimeString: string | Date): Date {
   const utcDate = new Date(dateTimeString);
   const localDate = new Date(
-    utcDate.getTime() - utcDate.getTimezoneOffset() * 60000
+    utcDate.getTime() - utcDate.getTimezoneOffset() * 60000,
   );
 
   // console.log("from utc local", localDate);
@@ -264,17 +261,6 @@ export function fromUTC(dateTimeString: string | Date): Date {
   // return local;
 }
 
-// export function fromUTC(utcTimestamp: Date): string {
-//   const options: Intl.DateTimeFormatOptions = {
-//     timeZone: "UTC",
-//     hour12: true,
-//     hour: "numeric",
-//     minute: "2-digit",
-//   };
-
-//   const utcDate = new Date(utcTimestamp);
-//   return utcDate.toLocaleString("en-US", options);
-// }
 export function toUTC(dateTimeString: string): Date {
   const local = new Date(dateTimeString);
   const offset = local.getTimezoneOffset();
@@ -295,7 +281,7 @@ export function convertTimeToISOString(selectedTime: string) {
     Number(hours),
     Number(minutes),
     0,
-    0
+    0,
   );
 
   // Adjust the local time by subtracting the UTC offset
@@ -306,31 +292,48 @@ export function convertTimeToISOString(selectedTime: string) {
   return isoTime;
 }
 
-// Convert UTC date to local time
-// export function convertUTCtoLocalTime(utcTime: Date): Date {
-//   const utcDate = new Date(utcTime);
-//   utcDate.setSeconds(0);
-//   utcDate.setMilliseconds(0);
-//   const localTime = new Date(
-//     utcDate.getTime() + utcDate.getTimezoneOffset() * 60000
-//   );
-//   return localTime;
-// }
-
 export function isMacOs() {
   return window.navigator.userAgent.includes("Mac");
 }
 
-// const [hours, minutes] = time.split(":");
-// const date = new Date();
-// date.setHours(Number(hours));
-// date.setMinutes(Number(minutes));
-// return date;
-
-export function subHours(date: Date, hours: number): Date {
-  return new Date(date.getTime() - hours * 60 * 60 * 1000);
+export function subHours(date: Date, hours: number): string {
+  // return new Date(date.getTime() - hours * 60 * 60 * 1000);
+  const newDate = new Date(date.getTime() - hours * 60 * 60 * 1000);
+  return newDate.toISOString();
 }
 
-export function addHours(date: Date, hours: number): Date {
-  return new Date(date.getTime() + hours * 60 * 60 * 1000);
+export function addHours(date: Date, hours: number): string {
+  const newDate = new Date(date.getTime() + hours * 60 * 60 * 1000);
+  return newDate.toISOString();
+}
+
+export function parseFormData<T extends Record<string, unknown>>(
+  formData: FormData,
+  schema: z.ZodSchema<T>,
+): T {
+  if (!(schema instanceof z.ZodObject)) {
+    throw new Error("Schema must be a ZodObject");
+  }
+  const keys = Array.from(formData.keys()) as Array<keyof T>;
+  const dataEntries: [keyof T, unknown][] = keys.map((key) => {
+    try {
+      const value = formData.get(key.toString());
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      const parsedValue = schema.shape[key].parse(value);
+      return [key, parsedValue];
+    } catch (error) {
+      const zodError = z.ZodError.create(
+        (error as z.ZodError<T>).issues.map(
+          (issue): z.ZodIssue => ({
+            ...issue,
+            path: [key, ...issue.path],
+          }),
+        ),
+      );
+      console.log(zodError, "zodError");
+      throw zodError;
+    }
+  });
+
+  return Object.fromEntries(dataEntries) as T;
 }

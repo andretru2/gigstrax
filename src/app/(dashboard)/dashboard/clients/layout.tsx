@@ -1,5 +1,3 @@
-import ClientTabs from "@/components/clients/client-tabs";
-import Header from "@/components/header";
 import { type Metadata } from "next";
 
 interface DashboardLayoutProps {
@@ -15,7 +13,7 @@ export default function Layout({ children }: DashboardLayoutProps) {
   return (
     <>
       {/* <Header heading="Clients" separator={true} /> */}
-      <ClientTabs />
+      {/* <ClientTabs /> */}
       {children}
     </>
   );

@@ -1,31 +1,41 @@
 import DataTable from "@/components/gigs/data-table";
-import { type GigTab } from "@/types/index";
-import type { GigProps } from "@/server/db";
+import type { Gig as GigProps } from "@prisma/client";
 import type { GetGigsProps } from "@/types/index";
 import { PER_PAGE } from "@/lib/constants";
-
 import { getGigs } from "@/app/_actions/gig";
+import { Suspense } from "react";
+import { Spinner } from "@/components/spinner";
+import GigTabs from "@/components/gigs/gig-tabs";
+import type { SearchParams } from "nuqs/parsers";
+import { type GigTab } from "@/types/index";
 
 interface Props {
   params: {
     tab: GigTab;
   };
-  searchParams: {
-    [key: string]: string | string[] | undefined;
-  };
+  searchParams: SearchParams;
 }
 
-export const revalidate = 120;
+export default function Page(props: Props) {
+  return (
+    <>
+      <GigTabs />
+      <Suspense fallback={<Spinner />}>
+        <Gigs {...props} />
+      </Suspense>
+    </>
+  );
+}
 
-export default async function Page({ params, searchParams }: Props) {
+async function Gigs(props: Props) {
   const {
     page,
     per_page = PER_PAGE,
     sort,
     clientId,
     santaId,
-    tab = "upcoming",
-  } = searchParams ?? {};
+    tab = "recentlyCreated",
+  } = props.searchParams ?? {};
 
   let { whereClause, select, limit, orderBy }: GetGigsProps = {};
 
@@ -99,7 +109,7 @@ export default async function Page({ params, searchParams }: Props) {
     typeof sort === "string"
       ? (sort.split(".") as [
           keyof GigProps | undefined,
-          "asc" | "desc" | undefined
+          "asc" | "desc" | undefined,
         ])
       : [];
 

@@ -1,39 +1,28 @@
 // "use client";
 import { type Metadata } from "next";
-// import { prisma, type GigProps } from "@/server/db";
 import { env } from "@/env.mjs";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import GigForm from "@/components/gigs/gig-form";
-import {
-  formatDate,
-  formatTime,
-  formatAddress,
-  fromUTC,
-  toUTC,
-  calculateTimeDifference,
-  getTimeFromDate,
-} from "@/lib/utils";
-import { Icons } from "@/components/icons";
-import { Button } from "@/components/ui/button";
-import { getGig, getGigs } from "@/app/_actions/gig";
-import { Separator } from "@/components/ui/separator";
-import GigDetailTabs from "@/components/gigs/gig-detail-tabs";
-import { getSantas, getMrsSantas } from "@/app/_actions/source";
+import { Card, CardContent } from "@/components/ui/card";
+import { GigForm } from "@/components/gigs/gig-form";
+
+import { getGig } from "@/app/_actions/gig";
 import { getClient } from "@/app/_actions/client";
-import { notFound } from "next/navigation";
-import { useGigStore } from "@/app/_store/gig";
-import ClientForm from "@/components/clients/client-form";
-import StoreInitializer from "@/components/gigs/store-initializer";
-import SectionHeaderInfo from "@/components/ui/section-header-info";
-import MultiEventCreate from "@/components/gigs/mulit-event";
-import { type GetGigsProps } from "@/types/index";
-// import dynamic from "next/dynamic";
+
+import { BackButton } from "@/components/ui/back-button";
+
+import { Suspense } from "react";
+import { Spinner } from "@/components/spinner";
+import { ClientPicker } from "@/components/clients/client-picker";
+import { type SearchParams } from "nuqs/server";
+import { searchParamsCache } from "@/components/search-params";
+import { SourcePicker } from "@/components/sources/source-picker";
+import { getSource } from "@/app/_actions/source";
+import { ClientForm } from "@/components/clients/client-form";
+import { GigDetailTabs } from "@/components/gigs/gig-detail-tabs";
+
+// export const revalidate = 30;
+export const revalidate = 0;
+// export const dynamic = "force-dynamic";
+// export const cache = "no-store";
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -41,132 +30,75 @@ export const metadata: Metadata = {
   description: "Manage your gig",
 };
 
-// export const revalidate = 30;
-export const dynamic = "force-dynamic";
-// export const dynamic = true;
-export const cache = "no-store";
-
-const showSummary = false;
-
-// const MultiEvent = await import("@/components/gigs/multi-event");
-
-// const MultiEvent = dynamic(() => import("@/components/gigs/multi-event"));
-
 interface Props {
   params: {
     gigId: string;
   };
+  searchParams: SearchParams;
 }
 
-export default async function Page({ params }: Props) {
-  const gigId = params.gigId;
-  if (!gigId) return <h1>Please select a gig. </h1>;
-
-  const gig = await getGig(gigId);
-
-  if (!gig) return;
-
-  const [client, santas, mrsSantas] = await Promise.all([
-    gig.clientId ? getClient(gig.clientId) : undefined,
-    getSantas(),
-    getMrsSantas(),
-  ]);
-
-  client && useGigStore.setState({ client });
-
-  const formattedDate = gig.gigDate && formatDate(gig.gigDate, "friendly");
-
-  const clientName = client?.client ?? "";
-  const addressFull =
-    gig?.venueAddressName &&
-    formatAddress({
-      name: gig?.venueAddressName,
-      addressLine1: gig?.venueAddressStreet ?? "",
-      addressLine2: gig?.venueAddressStreet2 ?? "",
-      city: gig?.venueAddressCity ?? "",
-      state: gig?.venueAddressState ?? "",
-      zip: gig?.venueAddressZip ?? "",
-    });
-
-  const durationHours =
-    gig.timeStart && gig.timeEnd
-      ? calculateTimeDifference(gig.timeStart, gig.timeEnd)
-      : null;
-
-  // let timeFormat;
-  // if (gig?.timeStart && gig?.timeEnd) {
-  //   timeFormat = `${getTimeFromDate(gig?.timeStart, true)} - ${getTimeFromDate(
-  //     gig?.timeEnd,
-  //     true
-  //   )}`;
-  //   if (durationHours) {
-  //     timeFormat += ` (${durationHours} hours)`;
-  //   }
-  // } else {
-  //   timeFormat = "incomplete";
-  // }
+export default function Page(props: Props) {
+  // const client = gig?.clientId && (await getClient(gig?.clientId));
 
   return (
-    <Card className="border-0 bg-background [&>*]:px-0 ">
-      {showSummary && (
-        <CardHeader className="space-y-1">
-          <Card className="flex  flex-col  border-b-2   border-b-primary p-4 shadow-md ">
-            <CardHeader className="px-0">
-              <CardTitle>Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-row gap-12 px-0  ">
-              <div className="flex flex-col gap-2">
-                <div className="flex flex-row items-center gap-2 ">
-                  <SectionHeaderInfo
-                    icon="calendar"
-                    data={formattedDate ? formattedDate : "incomplete"}
-                  />
-                </div>
-
-                {/* <div className="flex flex-row items-center gap-2">
-                <SectionHeaderInfo icon="clock" data={timeFormat} />
-              </div> */}
-              </div>
-              <div className="flex flex-col gap-2">
-                <div className="flex flex-row items-center gap-2">
-                  <SectionHeaderInfo
-                    icon="user"
-                    data={client ? clientName : "incomplete"}
-                  />
-                </div>
-
-                <div className="flex flex-row items-center gap-2">
-                  <SectionHeaderInfo
-                    icon="map"
-                    data={addressFull ? addressFull : "incomplete"}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </CardHeader>
-      )}
+    <Card className="mx-auto w-full  border-0 bg-background [&>*]:px-0 ">
       <CardContent className="flex flex-col gap-2">
-        {/* <Separator className="mb-4 " /> */}
-        {/* {client ? <StoreInitializer client={client} /> : null} */}
-
-        <GigDetailTabs gigId={gig.id} />
-        <GigForm
-          gig={gig}
-          santas={santas}
-          mrsSantas={mrsSantas}
-          // clients={clients.data}
-          // clientSuggestions={clientSuggestions.data}
-        >
-          {client && (
-            <>
-              <StoreInitializer client={client} />
-              <ClientForm {...client} />
-            </>
-          )}
-        </GigForm>
-        {/* <MultiEventCreate {...gig} /> */}
+        <BackButton />
+        <GigDetailTabs gigId={props.params.gigId} />
+        <Suspense fallback={<Spinner />}>
+          <GigFormWrapper {...props} />
+        </Suspense>
       </CardContent>
     </Card>
+  );
+}
+
+async function GigFormWrapper(props: Props) {
+  // noStore();
+  const { gigId } = props.params;
+
+  if (!gigId) {
+    return <h1>Please select a gig</h1>;
+  }
+  const gig = await getGig(gigId);
+
+  const client = gig?.clientId && (await getClient(gig?.clientId));
+  const santa = gig?.santaId && (await getSource(gig?.santaId));
+  const mrsSanta = gig?.mrsSantaId && (await getSource(gig?.mrsSantaId));
+
+  const parsedSearchParams = searchParamsCache.parse(props.searchParams);
+
+  return (
+    <GigForm
+      id={gigId}
+      gig={gig}
+      client={client ? client : undefined}
+      santa={santa ? santa : undefined}
+      mrsSanta={mrsSanta ? mrsSanta : undefined}
+      clientPicker={
+        <ClientPicker
+          key="clientPicker"
+          searchParams={parsedSearchParams}
+          gigId={props.params.gigId}
+        />
+      }
+      santaPicker={
+        <SourcePicker
+          key="santaPicker"
+          searchParams={parsedSearchParams}
+          gigId={props.params.gigId}
+          role="RBS"
+        />
+      }
+      mrsSantaPicker={
+        <SourcePicker
+          key="mrsSantaPicker"
+          searchParams={parsedSearchParams}
+          gigId={props.params.gigId}
+          role="Mrs. Claus"
+        />
+      }
+      clientDetails={<ClientForm key="clientDetails" {...client} />}
+    />
   );
 }

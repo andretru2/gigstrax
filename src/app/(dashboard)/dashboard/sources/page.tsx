@@ -1,26 +1,24 @@
 import DataTable from "@/components/sources/data-table";
-import { type GetSourcesProps, type Tab } from "@/types/index";
-import { redirect } from "next/navigation";
+import { type GetSourcesProps } from "@/types/index";
 import { getSources } from "@/app/_actions/source";
 import { PER_PAGE } from "@/lib/constants";
+import { type SourceStatus } from "@prisma/client";
+import SourceTabs from "@/components/sources/source-tabs";
+import type { SearchParams } from "nuqs/parsers";
 
 interface Props {
-  params: {
-    tab: Tab;
-  };
-  searchParams: {
-    [key: string]: string | string[] | undefined;
-  };
+  searchParams: SearchParams;
 }
 export const revalidate = 120;
 
-export default async function Page({ params, searchParams }: Props) {
+export default async function Page({ searchParams }: Props) {
   const {
     page,
     per_page = PER_PAGE,
     sort,
     nameFirst,
     nameLast,
+    status,
     tab = "all",
   } = searchParams ?? {};
 
@@ -94,6 +92,14 @@ export default async function Page({ params, searchParams }: Props) {
     };
   }
 
+  if (status) {
+    const statuses = (status as string).split(".");
+
+    whereClause.status = {
+      in: statuses.map((s) => s as SourceStatus),
+    };
+  }
+
   const { data, totalCount } = await getSources({
     whereClause,
     select,
@@ -104,5 +110,10 @@ export default async function Page({ params, searchParams }: Props) {
 
   const pageCount = Math.ceil(totalCount / limit);
 
-  return <DataTable data={data} pageCount={pageCount} />;
+  return (
+    <>
+      <SourceTabs />
+      <DataTable data={data} pageCount={pageCount} />
+    </>
+  );
 }

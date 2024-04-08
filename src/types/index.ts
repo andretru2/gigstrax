@@ -1,5 +1,3 @@
-import { type z } from "zod";
-
 // import type {
 //   cartItemSchema,
 //   checkoutItemSchema,
@@ -64,9 +62,9 @@ export interface Option {
   value: string;
   icon?: React.ComponentType<{ className?: string }>;
 }
-export type FileWithPreview = FileWithPath & {
-  preview: string;
-};
+// export type FileWithPreview = FileWithPath & {
+//   preview: string;
+// };
 
 export type StoredFile = {
   id: string;
@@ -97,13 +95,17 @@ export interface Address {
 }
 
 export type SantaProps = Pick<SourceProps, "id" | "role">;
-export type MrsSantaProps = Pick<SourceProps, "id" | "nameFirst">;
+export type SourcePickerProps = Pick<
+  SourceProps,
+  "id" | "role" | "nameFirst" | "nameLast"
+>;
 export type ClientPickerProps = Pick<ClientProps, "id" | "client">;
+export type SantaType = "RBS" | "Mrs. Claus";
 
 export type GigExtendedProps = Partial<GigProps> & {
   client?: Partial<ClientProps>;
-  santa?: Pick<SourceProps, "id" | "role">;
-  mrsSanta?: Pick<SourceProps, "id" | "nameFirst">;
+  santa?: SantaProps;
+  mrsSanta?: SantaProps;
 };
 
 export type GetGigsProps = {
@@ -112,6 +114,7 @@ export type GetGigsProps = {
   orderBy?: Prisma.GigOrderByWithRelationInput[];
   limit?: Prisma.GigFindManyArgs["take"];
   skip?: Prisma.GigFindManyArgs["skip"];
+  distinct?: Prisma.GigScalarFieldEnum[];
 };
 
 export type GetClientsProps = {
