@@ -14,7 +14,7 @@ export default function SignIn() {
   // const [isPending, startTransition] = useTransition();
 
   return (
-    <div className="flex max-w-xs flex-col items-center justify-center gap-0 text-base ">
+    <div className="flex max-w-xs flex-col items-center justify-center gap-0  ">
       <Button
         type="button"
         variant="default"
@@ -28,13 +28,13 @@ export default function SignIn() {
           });
           setIsLoading(false);
         }}
-        className=" align-center flex w-full flex-row items-center gap-1"
+        className=" align-center flex w-full flex-row items-center gap-1 text-base"
       >
         Sign In
         <Icons.logIn className="h-5 w-5" />
       </Button>
       <svg
-        className="mt-2 w-full"
+        className="mt-2 w-full opacity-60"
         // width="242"
         // height="10"
         fill="none"
