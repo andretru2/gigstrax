@@ -10,6 +10,6 @@ interface Props {
 
 export function ClientSortSelect({ options }: Props) {
   const [sort, setSort] = useQueryStates(sortParser, sortOptions);
-
+  //eslint-disable-next-line @typescript-eslint/no-misused-promises
   return <SortSelect value={sort} onChange={setSort} options={options} />;
 }

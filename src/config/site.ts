@@ -1,7 +1,4 @@
-import type { MainNavItem, NavItem } from "@/types";
-import { slugify } from "@/lib/utils";
-
-const today = new Date().toISOString().slice(0, 10); // Get the current date in YYYY-MM-DD format
+import type { MainNavItem } from "@/types";
 
 export type DashboardConfig = {
   mainNav: MainNavItem[];

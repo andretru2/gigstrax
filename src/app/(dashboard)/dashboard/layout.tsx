@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 
 // import { dashboardConfig } from "@/config/site";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import SidebarNav from "@/components/layouts/sidebar-nav";
 import { type Metadata } from "next";
 import { siteConfig } from "@/config/site";
 // import { SiteFooter } from "@/components/layouts/site-footer";

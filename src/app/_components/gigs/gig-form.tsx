@@ -66,7 +66,6 @@ export function GigForm(props: Props) {
         toast.success(formState.message);
       }
       reset();
-      datePickerImperativeHandleRef.current?.reset();
     },
     onError: ({ formState }) => {
       if (formState.message) {
@@ -77,6 +76,7 @@ export function GigForm(props: Props) {
 
   async function handleSaveGigWrapper(props: SaveGigProps) {
     const resultSave = await handleSaveGig(props);
+    if (!resultSave) return;
     if (resultSave.result === "Error") {
       void setFieldError({
         key: props.key,
@@ -101,7 +101,6 @@ export function GigForm(props: Props) {
             {...props}
             handleSaveGigWrapper={handleSaveGigWrapper}
             fieldError={fieldError}
-            setFieldError={setFieldError}
             formState={formState}
           />
         </CardContent>
@@ -116,7 +115,6 @@ export function GigForm(props: Props) {
             {...props}
             handleSaveGigWrapper={handleSaveGigWrapper}
             fieldError={fieldError}
-            setFieldError={setFieldError}
             formState={formState}
           />
         </CardContent>
@@ -138,17 +136,16 @@ export function GigForm(props: Props) {
 interface FormProps {
   handleSaveGigWrapper: (props: SaveGigProps) => Promise<void>;
   fieldError: { key: string | null; error: string | null };
-  setFieldError: (props: { key: string | null; error: string | null }) => void;
+  setFieldError?: (props: { key: string | null; error: string | null }) => void;
   formState: { status: string; message: string };
 }
 
 function GigDetails({
   handleSaveGigWrapper,
   fieldError,
-  setFieldError,
   formState,
   ...props
-}: Props & GigFormProps) {
+}: Props & FormProps) {
   const { id, gig } = props;
   const { gigDate, timeStart, timeEnd, price, amountPaid } = gig;
 
@@ -419,7 +416,6 @@ function MrsSantaPicker(props: Props) {
 function VenueDetails({
   handleSaveGigWrapper,
   fieldError,
-  setFieldError,
   formState,
   ...props
 }: Props & FormProps) {

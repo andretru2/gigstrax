@@ -52,6 +52,7 @@ export function ClientForm(props: Awaited<Partial<Client>>) {
 
   async function handleSaveClientWrapper(props: SaveClientProps) {
     const resultSave = await handleSaveClient(props);
+    if (!resultSave) return;
     if (resultSave.result === "Error") {
       void setFieldError({
         key: props.key,
@@ -76,7 +77,6 @@ export function ClientForm(props: Awaited<Partial<Client>>) {
             {...props}
             handleSaveClientWrapper={handleSaveClientWrapper}
             fieldError={fieldError}
-            setFieldError={setFieldError}
             formState={formState}
           />
         </CardContent>
@@ -95,7 +95,6 @@ interface FormProps {
 function ClientDetails({
   handleSaveClientWrapper,
   fieldError,
-  setFieldError,
   formState,
   ...props
 }: Partial<Client> & FormProps) {
@@ -112,10 +111,10 @@ function ClientDetails({
     notes,
     phoneCell,
     phoneLandline,
-    createdAt,
-    updatedAt,
-    createdBy,
-    updatedBy,
+    // createdAt,
+    // updatedAt,
+    // createdBy,
+    // updatedBy,
   } = props;
 
   console.log(client);

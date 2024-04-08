@@ -5,7 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // import GigCreateButton from "@/components/gigs/gig-create-button";
-import SourceCreate from "./source-create";
+// import SourceCreate from "./source-create-old";
+import { SourcePickerCreate } from "./source-picker-create";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Icons } from "../icons";
 
@@ -71,7 +72,7 @@ export default function SourceTabs(props: Props) {
               </div>
             </PopoverTrigger>
             <PopoverContent>
-              <SourceCreate goto={true} />
+              <SourcePickerCreate goto={true} role="RBS" />
             </PopoverContent>
           </Popover>
         </TabsTrigger>

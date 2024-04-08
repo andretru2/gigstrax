@@ -1,4 +1,3 @@
-import ClientTabs from "@/components/clients/client-tabs";
 import { type Metadata } from "next";
 
 interface DashboardLayoutProps {

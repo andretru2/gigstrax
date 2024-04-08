@@ -14,6 +14,8 @@ export default function GigTabs(props: Props) {
   const router = useRouter();
   const pathname = usePathname();
 
+  console.log(router, pathname);
+
   const tabs = [
     {
       title: "All",

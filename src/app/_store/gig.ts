@@ -13,7 +13,7 @@ const initalState: State = {
   client: undefined,
 };
 
-export const useGigStore = create<State & Actions>((set, get) => ({
+export const useGigStore = create<State & Actions>((set) => ({
   ...initalState,
   setClient: (props: Partial<ClientProps> | undefined) => {
     set({ client: props });

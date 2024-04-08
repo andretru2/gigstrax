@@ -17,10 +17,10 @@ import {
 } from "@/components/ui/command";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Icons } from "@/components/icons";
-import { type GetGigsProps } from "../types";
+// import { type GetGigsProps } from "../types";
 import { getGigs } from "@/app/_actions/gig";
 
-import { type GigExtendedProps } from "../types";
+import { type GigExtendedProps } from "@/types/index";
 
 export function Combobox() {
   const router = useRouter();
@@ -28,7 +28,7 @@ export function Combobox() {
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 300);
   const [data, setData] = useState<
-    Pick<GigExtendedProps, "id" | "gigDate" | "client.client">[] | null
+    Pick<GigExtendedProps, "id" | "gigDate" | "client">[] | null
   >(null);
   const [isPending, startTransition] = useTransition();
 

@@ -20,6 +20,7 @@ export function SourceSearchInput({ placeholder, role }: Props) {
   return (
     <SearchInput
       value={search}
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onChange={setSearch}
       placeholder={placeholder}
     />

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { type DialogProps } from "@radix-ui/react-alert-dialog";
 // import { CircleIcon, FileIcon, LaptopIcon } from "@radix-ui/react-icons";
 
@@ -14,15 +14,12 @@ import { Button } from "@/components/ui/button";
 import {
   CommandDialog,
   CommandEmpty,
-  CommandGroup,
   CommandInput,
-  CommandItem,
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
 
 export function CommandMenu({ ...props }: DialogProps) {
-  const router = useRouter();
   const [open, setOpen] = React.useState(false);
   // const { setTheme } = useTheme()
 
@@ -38,10 +35,10 @@ export function CommandMenu({ ...props }: DialogProps) {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  const runCommand = React.useCallback((command: () => unknown) => {
-    setOpen(false);
-    command();
-  }, []);
+  // const runCommand = React.useCallback((command: () => unknown) => {
+  //   setOpen(false);
+  //   command();
+  // }, []);
 
   return (
     <>

@@ -76,7 +76,6 @@ export function SourceForm(props: Awaited<Partial<Source>>) {
             {...props}
             handleSaveSourceWrapper={handleSaveSourceWrapper}
             fieldError={fieldError}
-            setFieldError={setFieldError}
             formState={formState}
           />
         </CardContent>
@@ -88,14 +87,13 @@ export function SourceForm(props: Awaited<Partial<Source>>) {
 interface FormProps {
   handleSaveSourceWrapper: (props: SaveSourceProps) => Promise<void>;
   fieldError: { key: string | null; error: string | null };
-  setFieldError: (props: { key: string | null; error: string | null }) => void;
+  setFieldError?: (props: { key: string | null; error: string | null }) => void;
   formState: { status: string; message: string };
 }
 
 function SourceDetails({
   handleSaveSourceWrapper,
   fieldError,
-  setFieldError,
   formState,
   ...props
 }: Partial<Source> & FormProps) {
@@ -111,15 +109,15 @@ function SourceDetails({
     addressZip,
     gigMastersAccount,
     notes,
-    createdAt,
-    updatedAt,
-    createdBy,
-    dob,
-    updatedBy,
+    // createdAt,
+    // updatedAt,
+    // createdBy,
+    // dob,
+    // updatedBy,
     status,
-    entity,
+    // entity,
     phone,
-    resource,
+    // resource,
     website,
     ssn,
     videoUrl,

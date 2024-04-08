@@ -1,5 +1,4 @@
 import DataTable from "@/components/gigs/data-table";
-import { type GigTab } from "@/types/index";
 import type { Gig as GigProps } from "@prisma/client";
 import type { GetGigsProps } from "@/types/index";
 import { PER_PAGE } from "@/lib/constants";
@@ -7,14 +6,14 @@ import { getGigs } from "@/app/_actions/gig";
 import { Suspense } from "react";
 import { Spinner } from "@/components/spinner";
 import GigTabs from "@/components/gigs/gig-tabs";
+import type { SearchParams } from "nuqs/parsers";
+import { type GigTab } from "@/types/index";
 
 interface Props {
   params: {
     tab: GigTab;
   };
-  searchParams: {
-    [key: string]: string | string[] | undefined;
-  };
+  searchParams: SearchParams;
 }
 
 export default function Page(props: Props) {

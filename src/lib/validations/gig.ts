@@ -1,7 +1,6 @@
 import * as z from "zod";
-import { isValidDate, isValidTime, isValidPrice } from "../utils";
-import { clientSchema } from "./client";
-import { VenueType, type Gig } from "@prisma/client";
+import { isValidTime, isValidPrice } from "../utils";
+import { VenueType } from "@prisma/client";
 
 const timeSchema = z.string().refine(isValidTime, {
   message: "Must be a valid date",
@@ -10,11 +9,11 @@ const priceSchema = z.string().refine(isValidPrice, {
   message: "Price must be a number",
 });
 
-const dateTimeSchema = z
-  .string()
-  .datetime({ offset: true })
-  .pipe(z.coerce.date())
-  .optional();
+// const dateTimeSchema = z
+//   .string()
+//   .datetime({ offset: true })
+//   .pipe(z.coerce.date())
+//   .optional();
 
 export const gigSchema = z.object({
   // gigDate: dateTimeSchema,
@@ -101,17 +100,18 @@ export const gigSchema = z.object({
 // type gigMultiEventSchema = z.infer<typeof gigMultiEventSchema>;
 
 export const gigMultiEventSchema = z.object({
-  gigDate: z.date().refine(
-    (date) => {
-      if (!isValidDate(date)) {
-        return false;
-      }
-      return true;
-    },
-    {
-      message: "Must be a valid date",
-    },
-  ),
+  // gigDate: z.date().refine(
+  //   (date) => {
+  //     if (!isValidDate(date)) {
+  //       return false;
+  //     }
+  //     return true;
+  //   },
+  //   {
+  //     message: "Must be a valid date",
+  //   },
+  // ),
+  gigDate: z.any(),
   timeStart: timeSchema,
   timeEnd: timeSchema,
 });

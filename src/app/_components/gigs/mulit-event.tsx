@@ -1,6 +1,5 @@
 "use client";
 
-import { type GigProps } from "@/server/db";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "../ui/calendar";
 import { useForm } from "react-hook-form";
@@ -11,26 +10,26 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { usePathname, useRouter } from "next/navigation";
+// import { usePathname, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type * as z from "zod";
 import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
 import { Icons } from "../icons";
-import { useTransition, type FocusEvent } from "react";
+import { useTransition } from "react";
 
 import { gigMultiEventSchema } from "@/lib/validations/gig";
 
 import {
   Form,
   FormControl,
-  FormDescription,
+  // FormDescription,
   FormField,
   FormItem,
-  FormLabel,
+  // FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { toast } from "@/hooks/use-toast";
-import { cn, formatDate, catchError } from "@/lib/utils";
+// import { toast } from "@/hooks/use-toast";
+import { cn, formatDate } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
@@ -55,10 +54,10 @@ const SLOTS_PER_TAB = 10;
 //   return {};
 // }
 
-export default function MultiEventCreate(props: Partial<GigProps>) {
+export default function MultiEventCreate() {
   //   const router = useRouter();
   //   const pathname = usePathname();
-  const [isPending, startTransition] = useTransition();
+  const [isPending] = useTransition();
 
   const form = useForm<z.infer<typeof gigMultiEventSchema>>({
     resolver: zodResolver(gigMultiEventSchema),
@@ -180,6 +179,7 @@ export default function MultiEventCreate(props: Partial<GigProps>) {
                                       )}
                                     >
                                       {field.value &&
+                                        //eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                                         formatDate(field.value, "friendly")}
                                       <Icons.calendar className="ml-auto h-4 w-4 opacity-50" />
                                     </Button>
@@ -191,6 +191,7 @@ export default function MultiEventCreate(props: Partial<GigProps>) {
                                 >
                                   <Calendar
                                     mode="single"
+                                    //eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                                     selected={field.value}
                                     initialFocus
                                     onSelect={(selectedDate) => {

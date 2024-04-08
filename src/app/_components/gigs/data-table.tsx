@@ -12,7 +12,7 @@ import {
   toTitleCase,
   getTimeFromDate,
 } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+// import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -221,13 +221,15 @@ export default function Datatable({ data, pageCount }: Props) {
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => {
-                  // startTransition(() => {
-                  //   row.toggleSelected(false)
-                  //   toast.promise(
-                  //     deleteProductAction({
-                  //       id: row.original.id,
-                  //       storeId,
-                  //     }),
+                  startTransition(() => {
+                    console.log("deleted");
+                  });
+                  // row.toggleSelected(false)
+                  // toast.promise(
+                  //   deleteProductAction({
+                  //     id: row.original.id,
+                  //     storeId,
+                  //   }),
                   //     {
                   //       loading: "Deleting...",
                   //       success: () => "Product deleted successfully.",

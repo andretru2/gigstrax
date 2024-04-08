@@ -4,13 +4,13 @@ import * as React from "react";
 import Link from "next/link";
 // import { products, type Product } from "@/db/schema"
 import { type ColumnDef } from "@tanstack/react-table";
-import { toast } from "@/hooks/use-toast";
+// import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
 import { formatAddress, formatPhone } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+// import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+// import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,8 +32,8 @@ interface Props {
 }
 
 export default function Datatable({ data, pageCount }: Props) {
-  const [isPending, startTransition] = React.useTransition();
-  const [selectedRowIds, setSelectedRowIds] = React.useState<number[]>([]);
+  // const [isPending, startTransition] = React.useTransition();
+  // const [selectedRowIds, setSelectedRowIds] = React.useState<number[]>([]);
   const router = useRouter();
 
   const classNameTableRow =
@@ -169,7 +169,7 @@ export default function Datatable({ data, pageCount }: Props) {
                   //   )
                   // })
                 }}
-                disabled={isPending}
+                // disabled={isPending}
               >
                 Delete
                 <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
@@ -179,7 +179,7 @@ export default function Datatable({ data, pageCount }: Props) {
         ),
       },
     ],
-    [isPending],
+    [],
   );
 
   return (

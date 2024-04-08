@@ -8,7 +8,7 @@ import { SourcePickerCreate } from "./source-picker-create";
 import { Placeholder } from "../ui/placeholder";
 import { SourcePickerSelect } from "./source-picker-select";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
-import { getGigs } from "@/app/_actions/gig";
+import { getGig, getGigs } from "@/app/_actions/gig";
 import { addHours, subHours } from "@/lib/utils";
 
 interface Props {
@@ -69,24 +69,16 @@ async function fetchSources({ searchParams, role }: Props) {
   return data as SourcePickerProps[];
 }
 
-async function fetchAvailableSourcesForGig(props: Props) {
+async function fetchAvailableSourcesForGig(props: Props): Promise<{
+  available: SourcePickerProps[];
+  unavailable: SourcePickerProps[];
+}> {
   const { gigId, role } = props;
 
-  const { data } = await getGigs({
-    select: {
-      gigDate: true,
-      timeStart: true,
-      timeEnd: true,
-    },
-    whereClause: { id: gigId },
-    limit: 1,
-  });
+  const gig = gigId && (await getGig(gigId));
 
-  if (!data) {
-    return { result: "Error", resultDescription: "Gig not found" };
-  }
-
-  const { gigDate, timeStart, timeEnd } = data[0];
+  if (!gig) return [];
+  const { gigDate, timeStart, timeEnd } = gig;
 
   if (!gigDate || !timeStart || !timeEnd) {
     return { available: [], unavailable: [] };
@@ -147,12 +139,28 @@ async function fetchAvailableSourcesForGig(props: Props) {
 
   const available = santas
     .filter((santa) => availableIds.includes(santa.id))
-    .sort((a, b) => a.role.localeCompare(b.role));
+    .sort((a, b) => (a.role && b.role ? a.role.localeCompare(b?.role) : 1))
+    .map(
+      (santa): SourcePickerProps => ({
+        ...santa,
+      }),
+    );
+
   const unavailable = santas
     .filter((santa) => unavailableIds.includes(santa.id))
-    .sort((a, b) => a.role.localeCompare(b.role));
+    .sort((a, b) => (a.role && b.role ? a.role.localeCompare(b.role) : 1))
+    .map(
+      (santa): SourcePickerProps => ({
+        ...santa,
+      }),
+    );
 
-  return { available, unavailable };
+  return {
+    available: available,
+    unavailable: unavailable,
+  };
+
+  // return { available, unavailable };
 }
 
 export function SourcePicker(props: Props) {

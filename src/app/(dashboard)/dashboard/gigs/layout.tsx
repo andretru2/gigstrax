@@ -1,5 +1,3 @@
-import GigTabs from "@/components/gigs/gig-tabs";
-import Header from "@/components/header";
 import { type Metadata } from "next";
 
 interface DashboardLayoutProps {

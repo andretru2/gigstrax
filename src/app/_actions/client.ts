@@ -10,7 +10,6 @@ import {
 } from "@/components/form/to-form-state";
 import { fromUTC, parseFormData } from "@/lib/utils";
 import { clientSchema } from "@/lib/validations/client";
-import { unstable_noStore as noStore } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function getClient(id: string): Promise<ClientProps | null> {

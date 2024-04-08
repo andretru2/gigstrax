@@ -62,9 +62,9 @@ export interface Option {
   value: string;
   icon?: React.ComponentType<{ className?: string }>;
 }
-export type FileWithPreview = FileWithPath & {
-  preview: string;
-};
+// export type FileWithPreview = FileWithPath & {
+//   preview: string;
+// };
 
 export type StoredFile = {
   id: string;

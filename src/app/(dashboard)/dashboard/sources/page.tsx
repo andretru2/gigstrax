@@ -1,21 +1,17 @@
 import DataTable from "@/components/sources/data-table";
-import { type GetSourcesProps, type Tab } from "@/types/index";
+import { type GetSourcesProps } from "@/types/index";
 import { getSources } from "@/app/_actions/source";
 import { PER_PAGE } from "@/lib/constants";
 import { type SourceStatus } from "@prisma/client";
 import SourceTabs from "@/components/sources/source-tabs";
+import type { SearchParams } from "nuqs/parsers";
 
 interface Props {
-  params: {
-    tab: Tab;
-  };
-  searchParams: {
-    [key: string]: string | string[] | undefined;
-  };
+  searchParams: SearchParams;
 }
 export const revalidate = 120;
 
-export default async function Page({ params, searchParams }: Props) {
+export default async function Page({ searchParams }: Props) {
   const {
     page,
     per_page = PER_PAGE,

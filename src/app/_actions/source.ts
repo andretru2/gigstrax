@@ -11,6 +11,7 @@ import {
 } from "@/components/form/to-form-state";
 import { parseFormData } from "@/lib/utils";
 import { sourceSchema } from "@/lib/validations/source";
+import { type GetSourcesProps } from "@/types/index";
 
 export async function getSource(id: string) {
   if (id.length === 0) return null;

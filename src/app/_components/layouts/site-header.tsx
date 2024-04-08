@@ -4,13 +4,10 @@ import Link from "next/link";
 import { type User } from "next-auth";
 
 import { siteConfig } from "@/config/site";
-import { cn } from "@/lib/utils";
 // import { CommandMenu } from "@/components/command-menu";
-import { Combobox } from "../combobox";
 import { Icons } from "@/components/icons";
 // import { MainNav } from "@/components/main-nav"
 // import { MobileNav } from "@/components/mobile-nav"
-import { ModeToggle } from "@/components/mode-toggle";
 import { MainNav } from "@/components/layouts/main-nav";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {

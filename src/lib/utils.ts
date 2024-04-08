@@ -134,17 +134,17 @@ export function toTitleCase(str: string) {
   );
 }
 
-export function isValidDate(date: any): date is Date {
-  if (!(date instanceof Date)) {
-    return false;
-  }
+// export function isValidDate(date: any): date is Date {
+//   if (!(date instanceof Date)) {
+//     return false;
+//   }
 
-  if (isNaN(date.getTime())) {
-    return false;
-  }
+//   if (isNaN(date.getTime())) {
+//     return false;
+//   }
 
-  return true;
-}
+//   return true;
+// }
 
 export function isValidTime(time: string) {
   // Regex to match HH:MM format
@@ -318,6 +318,7 @@ export function parseFormData<T extends Record<string, unknown>>(
   const dataEntries: [keyof T, unknown][] = keys.map((key) => {
     try {
       const value = formData.get(key.toString());
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       const parsedValue = schema.shape[key].parse(value);
       return [key, parsedValue];
     } catch (error) {

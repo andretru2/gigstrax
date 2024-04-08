@@ -21,6 +21,7 @@ interface Props {
   searchParams?: ParsedSearchParams;
   gigId?: string | undefined;
   role: SantaType;
+  goto?: boolean | undefined;
 }
 
 export function SourcePickerCreate(props: Props) {

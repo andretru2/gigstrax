@@ -4,7 +4,7 @@ import { type ClientPickerProps } from "@/types/index";
 import { type ParsedSearchParams } from "../search-params";
 import { ClientSearchInput } from "./client-search-input";
 import { ClientPickerCreate } from "./client-picker-create";
-import { ClientSortSelect } from "./client-sort-select";
+// import { ClientSortSelect } from "./client-sort-select";
 import { Placeholder } from "../ui/placeholder";
 import { ClientPickerSelect } from "./client-picker-select";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";

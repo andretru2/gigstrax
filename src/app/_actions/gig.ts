@@ -10,10 +10,9 @@ import {
   toFormState,
 } from "@/components/form/to-form-state";
 import { parseFormData } from "@/lib/utils";
-import { unstable_noStore as noStore } from "next/cache";
 import { redirect } from "next/navigation";
 import { setCookieByKey } from "./cookies";
-import { Gig } from "@prisma/client";
+// import { type Gig } from "@prisma/client";
 
 export async function getGig(id: string) {
   if (id.length === 0) return null;
@@ -62,6 +61,7 @@ export async function getGig(id: string) {
     },
   });
 
+  // return data as Gig[];
   return data;
 }
 

@@ -50,8 +50,6 @@ export function ClientTabs(props: Props) {
             value={tab.href}
             className={cn(
               "grid  w-32 grid-cols-4 self-center rounded-md  text-foreground",
-
-              // pathname === tab.href && "bg-background text-foreground shadow-sm"
               pathname?.includes(tab.href) &&
                 "bg-primary text-foreground shadow-sm",
               "",

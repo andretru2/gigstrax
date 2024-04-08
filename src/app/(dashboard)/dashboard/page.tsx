@@ -1,115 +1,104 @@
-// "use client";
-import { prisma } from "@/server/db";
-// import Sources from "../lib/sources.json";
-// import Clients from "../lib/clients.json";
+// import { prisma } from "@/server/db";
+// import GigsTimeFix from "../../../lib/fmData/gigs-timefix.json";
 // import Gigs from "../../../lib/fmData/gigs.json";
-import GigsTimeFix from "../../../lib/fmData/gigs-timefix.json";
-// import Clients from "../../../lib/fmData/clients.json";
-// import Sources from "../../../lib/fmData/sources.json";
-// import { parse } from "date-fns";
-import Header from "@/components/header";
-import { Separator } from "@/components/ui/separator";
-import { redirect } from "next/navigation";
-import { type Gender } from "@prisma/client";
-import { getGigs, update } from "@/app/_actions/gig";
-// import { useSession } from "next-auth/react";
+// import { getGigs } from "@/app/_actions/gig";
 
-export default async function Page() {
+export default function Page() {
   // const { data } = useSession();
   // return (
   //   <>Hello {data?.user?.name}. Dashboard will be developed on next phase. </>
   // );
 
-  if (false) {
-    GigsTimeFix.map(async (gig) => {
-      const res = await prisma.gig.update({
-        where: {
-          id: gig.id,
-        },
-        data: {
-          gigDate: new Date(gig.gigDate),
-          timeStart: new Date(gig.timeStart),
-          timeEnd: new Date(gig.timeEnd),
-          createdAt: new Date(gig.createdAt),
-          // updatedAt: new Date(gig.updatedAt),
-        },
-      });
-      console.log(res);
-    });
-  }
+  // if (false) {
+  //   GigsTimeFix.map(async (gig) => {
+  //     const res = await prisma.gig.update({
+  //       where: {
+  //         id: gig.id,
+  //       },
+  //       data: {
+  //         gigDate: new Date(gig.gigDate),
+  //         timeStart: new Date(gig.timeStart),
+  //         timeEnd: new Date(gig.timeEnd),
+  //         createdAt: new Date(gig.createdAt),
+  //         // updatedAt: new Date(gig.updatedAt),
+  //       },
+  //     });
+  //     console.log(res);
+  //   });
+  // }
 
-  if (false) {
-    const today = new Date();
-    const { data } = await getGigs({
-      select: {
-        id: true,
-        timeStart: true,
-        timeEnd: true,
-        gigDate: true,
-      },
-      whereClause: {
-        gigDate: { gte: today },
-        id: "F1CEB335-1106-254C-ABCE-95C6F7A51431",
-      },
-      limit: 100,
-    });
-    console.log(data);
+  // if (false) {
+  //   const today = new Date();
+  //   const { data } = await getGigs({
+  //     select: {
+  //       id: true,
+  //       timeStart: true,
+  //       timeEnd: true,
+  //       gigDate: true,
+  //     },
+  //     whereClause: {
+  //       gigDate: { gte: today },
+  //       id: "F1CEB335-1106-254C-ABCE-95C6F7A51431",
+  //     },
+  //     limit: 100,
+  //   });
+  //   console.log(data);
 
-    // Add 5 hours to each timeStart and timeEnd
-    const gigsUpcomingUpdatedTime = data.map((gig) => {
-      let updatedStart = null;
-      let updatedEnd = null;
+  //   // Add 5 hours to each timeStart and timeEnd
+  //   const gigsUpcomingUpdatedTime = data.map((gig) => {
+  //     let updatedStart = null;
+  //     let updatedEnd = null;
 
-      if (!gig.gigDate || !gig.timeStart || !gig.timeEnd) return gig;
+  //     if (!gig.gigDate || !gig.timeStart || !gig.timeEnd) return gig;
 
-      const gigDate = new Date(gig.gigDate);
+  //     const gigDate = new Date(gig.gigDate);
 
-      const gigYear = gigDate.getFullYear();
-      const gigMonth = gigDate.getMonth();
-      const gigDay = gigDate.getDate();
+  //     const gigYear = gigDate.getFullYear();
+  //     const gigMonth = gigDate.getMonth();
+  //     const gigDay = gigDate.getDate();
 
-      updatedStart = new Date(gigYear, gigMonth, gigDay);
-      updatedStart.setHours(
-        gig.timeStart.getHours(),
-        gig.timeStart.getMinutes(),
-      );
+  //     updatedStart = new Date(gigYear, gigMonth, gigDay);
+  //     updatedStart.setHours(
+  //       gig.timeStart.getHours(),
+  //       gig.timeStart.getMinutes(),
+  //     );
 
-      // Initialize Date object with those parts
-      updatedEnd = new Date(gigYear, gigMonth, gigDay);
-      updatedEnd.setHours(gig.timeEnd.getHours(), gig.timeEnd.getMinutes());
+  //     // Initialize Date object with those parts
+  //     updatedEnd = new Date(gigYear, gigMonth, gigDay);
+  //     updatedEnd.setHours(gig.timeEnd.getHours(), gig.timeEnd.getMinutes());
 
-      // const res = update({
-      //   id: gig.id,
-      //   timeStart: updatedStart,
-      //   timeEnd: updatedEnd,
-      // });
+  //     // const res = update({
+  //     //   id: gig.id,
+  //     //   timeStart: updatedStart,
+  //     //   timeEnd: updatedEnd,
+  //     // });
 
-      // console.log(res);
+  //     // console.log(res);
 
-      return {
-        ...gig,
-        timeStart: updatedStart ?? null,
-        timeEnd: updatedEnd ?? null,
-      };
-    });
+  //     return {
+  //       ...gig,
+  //       timeStart: updatedStart ?? null,
+  //       timeEnd: updatedEnd ?? null,
+  //     };
+  //   });
 
-    console.log(gigsUpcomingUpdatedTime);
+  //   console.log(gigsUpcomingUpdatedTime);
 
-    if (gigsUpcomingUpdatedTime.length) return;
-    // Update gigs with new timeStart and timeEnd
+  //   if (gigsUpcomingUpdatedTime.length) return;
+  //   // Update gigs with new timeStart and timeEnd
 
-    const res = await prisma.gig.updateMany({
-      data: gigsUpcomingUpdatedTime,
-    });
+  //   const res = await prisma.gig.updateMany({
+  //     data: gigsUpcomingUpdatedTime,
+  //   });
 
-    // const res = await update({
-    //   id: gigsUpcomingUpdatedTime[0].id,
-    //   timeStart: gigsUpcomingUpdatedTime[0].timeStart,
-    //   timeEnd: gigsUpcomingUpdatedTime[0].timeEnd,
-    // });
+  //   // const res = await update({
+  //   //   id: gigsUpcomingUpdatedTime[0].id,
+  //   //   timeStart: gigsUpcomingUpdatedTime[0].timeStart,
+  //   //   timeEnd: gigsUpcomingUpdatedTime[0].timeEnd,
+  //   // });
 
-    console.log(res);
-  }
+  //   console.log(res);
+  // }
 
   //if (false) {
   //   const res = await prisma.gig.create({

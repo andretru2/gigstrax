@@ -1,11 +1,8 @@
 import DataTable from "@/components/clients/data-table";
-import { type Tab } from "@/types/index";
 import { getClients } from "@/app/_actions/client";
 import { type GetClientsProps } from "@/types/index";
 import { PER_PAGE } from "@/lib/constants";
-import { searchParamsCache } from "@/components/search-params";
 import { type SearchParams } from "nuqs/server";
-
 import { ClientTabs } from "@/components/clients/client-tabs";
 
 // export const dynamic = "force-dynamic";
@@ -13,18 +10,12 @@ import { ClientTabs } from "@/components/clients/client-tabs";
 export const revalidate = 0;
 
 interface Props {
-  params: {
-    tab: Tab;
-  };
   searchParams: SearchParams;
-  // searchParams: {
-  //   [key: string]: string | string[] | undefined;
-  // };
 }
 
 // export const revalidate = 120;
 
-export default async function Page({ params, searchParams }: Props) {
+export default async function Page({ searchParams }: Props) {
   // const {  tab = "all"} = params;
   const {
     page,

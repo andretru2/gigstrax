@@ -1,18 +1,11 @@
 // "use client";
 import { type Metadata } from "next";
 import { env } from "@/env.mjs";
-import { unstable_noStore as noStore } from "next/cache";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { GigForm } from "@/components/gigs/gig-form";
 
-import { getGig, getGigs } from "@/app/_actions/gig";
-import { getClient, getClients } from "@/app/_actions/client";
+import { getGig } from "@/app/_actions/gig";
+import { getClient } from "@/app/_actions/client";
 
 import { BackButton } from "@/components/ui/back-button";
 
@@ -22,9 +15,8 @@ import { ClientPicker } from "@/components/clients/client-picker";
 import { type SearchParams } from "nuqs/server";
 import { searchParamsCache } from "@/components/search-params";
 import { SourcePicker } from "@/components/sources/source-picker";
-import { getSource, getSources } from "@/app/_actions/source";
+import { getSource } from "@/app/_actions/source";
 import { ClientForm } from "@/components/clients/client-form";
-import { type Client, type Gig, type Source } from "@prisma/client";
 import { GigDetailTabs } from "@/components/gigs/gig-detail-tabs";
 
 // export const revalidate = 30;
