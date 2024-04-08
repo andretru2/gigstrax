@@ -1,10 +1,10 @@
 import { ErrorCard } from "@/components/error-card";
 
-interface Props {
-  params: {
-    gigId: string;
-  };
-}
+// interface Props {
+//   params: {
+//     gigId: string;
+//   };
+// }
 
 export default function NotFound() {
   // const gigId = params.gigId;

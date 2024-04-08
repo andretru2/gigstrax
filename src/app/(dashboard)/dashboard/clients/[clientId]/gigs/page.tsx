@@ -1,7 +1,3 @@
-function page(props) {
-  return <div>page</div>;
+export default function Page() {
+  return <div>gigs</div>;
 }
-
-page.propTypes = {};
-
-export default page;
