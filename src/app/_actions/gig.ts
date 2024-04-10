@@ -183,19 +183,20 @@ export async function createGig() {
 }
 
 export async function submitMultiEventForm(
-  idCopyFrom: string,
+  copyFromId: string,
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  if (idCopyFrom || !formData) return toFormState("ERROR", "Missing params");
+  if (!copyFromId || !formData) return toFormState("ERROR", "Missing params");
 
-  const gig = await getGig(idCopyFrom);
+  const gig = await getGig(copyFromId);
 
   if (!gig) {
     return toFormState("ERROR", "Gig not found ");
   }
+  console.log(gig);
 
-  formData.forEach((gig) => {
-    console.log("form", gig);
+  formData.forEach((form) => {
+    console.log("form", form);
   });
 }

@@ -37,6 +37,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
+import { Separator } from "../ui/separator";
 
 interface Props {
   id: string;
@@ -92,10 +93,11 @@ export function GigForm(props: Props) {
       ref={ref}
       className="  grid  grid-cols-12 items-start justify-start gap-3"
     >
-      <Card className="col-span-12 p-2">
+      <Card className="col-span-12 p-4">
         <CardHeader className="">
           <CardTitle>Gig Details</CardTitle>
         </CardHeader>
+        <Separator />
         <CardContent className=" form mx-auto  grid grid-cols-9 gap-4 pt-4 ">
           <GigDetails
             {...props}
@@ -106,11 +108,12 @@ export function GigForm(props: Props) {
         </CardContent>
       </Card>
       <ClientDetails {...props} />
-      <Card className="col-span-6 p-2">
+      <Card className="col-span-6 p-4">
         <CardHeader className="">
           <CardTitle>Venue</CardTitle>
         </CardHeader>
-        <CardContent className=" form mx-auto  grid grid-cols-6 gap-4 pt-4 ">
+        <Separator />
+        <CardContent className=" form mx-auto  grid grid-cols-6 gap-4  ">
           <VenueDetails
             {...props}
             handleSaveGigWrapper={handleSaveGigWrapper}

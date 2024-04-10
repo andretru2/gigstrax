@@ -7,8 +7,6 @@ import { GigForm } from "@/components/gigs/gig-form";
 import { getGig } from "@/app/_actions/gig";
 import { getClient } from "@/app/_actions/client";
 
-import { BackButton } from "@/components/ui/back-button";
-
 import { Suspense } from "react";
 import { Spinner } from "@/components/spinner";
 import { ClientPicker } from "@/components/clients/client-picker";
@@ -17,7 +15,6 @@ import { searchParamsCache } from "@/components/search-params";
 import { SourcePicker } from "@/components/sources/source-picker";
 import { getSource } from "@/app/_actions/source";
 import { ClientForm } from "@/components/clients/client-form";
-import { GigDetailTabs } from "@/components/gigs/gig-detail-tabs";
 
 // export const revalidate = 30;
 export const revalidate = 0;

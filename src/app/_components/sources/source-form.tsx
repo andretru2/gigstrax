@@ -26,6 +26,7 @@ import {
   handleSaveSource,
 } from "@/lib/source/handle-save-source";
 import { type FocusEvent } from "react";
+import { Separator } from "../ui/separator";
 
 export function SourceForm(props: Awaited<Partial<Source>>) {
   const { id } = props;
@@ -67,11 +68,12 @@ export function SourceForm(props: Awaited<Partial<Source>>) {
       ref={ref}
       className="  grid  grid-cols-12 items-center justify-center gap-3"
     >
-      <Card className="col-span-12 p-2">
+      <Card className="col-span-12 p-4">
         <CardHeader className="">
           <CardTitle>Source Details</CardTitle>
         </CardHeader>
-        <CardContent className="form  grid grid-cols-6 gap-4   p-4">
+        <Separator />
+        <CardContent className="form  grid grid-cols-6 gap-4   ">
           <SourceDetails
             {...props}
             handleSaveSourceWrapper={handleSaveSourceWrapper}
