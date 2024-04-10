@@ -12,9 +12,12 @@ import {
 import { parseFormData } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import { setCookieByKey } from "./cookies";
+import { unstable_noStore as noStore } from "next/cache";
+
 // import { type Gig } from "@prisma/client";
 
 export async function getGig(id: string) {
+  noStore();
   if (id.length === 0) return null;
 
   const data = await prisma.gig.findFirst({
@@ -72,6 +75,7 @@ export async function getGigs({
   limit = 10,
   skip = 0,
 }: GetGigsProps) {
+  noStore();
   const totalCount = await prisma.gig.count({ where: whereClause });
 
   const data = await prisma.gig.findMany({
@@ -108,9 +112,12 @@ export async function saveGig(
   } catch (error) {
     return fromErrorToFormState(error);
   }
-
+  noStore();
+  console.log("save");
+  revalidatePath(`/`);
   revalidatePath("/dashboard/gigs/");
   revalidatePath(`/dashboard/gigs/${id}`);
+  redirect(`/dashboard/gigs/${id}`);
   return toFormState("SUCCESS", "Gig updated");
 
   if (id) {
@@ -173,4 +180,22 @@ export async function createGig() {
   revalidatePath(`/dashboard/gigs/`);
   redirect(`/dashboard/gigs/${gig.id}`);
   return gig;
+}
+
+export async function submitMultiEventForm(
+  idCopyFrom: string,
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  if (idCopyFrom || !formData) return toFormState("ERROR", "Missing params");
+
+  const gig = await getGig(idCopyFrom);
+
+  if (!gig) {
+    return toFormState("ERROR", "Gig not found ");
+  }
+
+  formData.forEach((gig) => {
+    console.log("form", gig);
+  });
 }

@@ -12,6 +12,7 @@ import {
 import { parseFormData } from "@/lib/utils";
 import { sourceSchema } from "@/lib/validations/source";
 import { type GetSourcesProps } from "@/types/index";
+import { redirect } from "next/navigation";
 
 export async function getSource(id: string) {
   if (id.length === 0) return null;
@@ -151,27 +152,24 @@ export async function saveSource(
 }
 
 export async function submitSource(
-  id: string,
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  if (!id || !formData) return toFormState("ERROR", "Missing params");
+  if (!formData) return toFormState("ERROR", "Missing params");
 
+  let source;
   try {
     const parsedData = parseFormData(formData, sourceSchema);
-
-    if (parsedData)
-      await prisma.source.update({
-        where: {
-          id,
-        },
-        data: { id: id, ...parsedData },
+    if (parsedData) {
+      source = await prisma.source.create({
+        data: { ...parsedData },
       });
+    }
   } catch (error) {
     return fromErrorToFormState(error);
   }
-
-  revalidatePath(`/dashboard/sources/${id}`);
-
-  return toFormState("SUCCESS", "Source updated");
+  revalidatePath(`/dashboard/sources/`);
+  source && revalidatePath(`/dashboard/sources/${source.id}`);
+  source && redirect(`/dashboard/sources/${source.id}`);
+  return toFormState("SUCCESS", "Source created");
 }

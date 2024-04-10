@@ -105,7 +105,7 @@ export function GigForm(props: Props) {
           />
         </CardContent>
       </Card>
-      <div className="  form col-span-6 ">{props.clientDetails}</div>
+      <ClientDetails {...props} />
       <Card className="col-span-6 p-2">
         <CardHeader className="">
           <CardTitle>Venue</CardTitle>
@@ -179,8 +179,6 @@ function GigDetails({
   const balance =
     price && amountPaid ? Number(price) - Number(amountPaid) : null;
 
-  console.log(durationHours);
-
   return (
     <>
       <Label className="col-span-3">
@@ -211,7 +209,6 @@ function GigDetails({
           disabled={gigDate == null}
           name="timeStart"
           defaultValue={timeStart ? getTimeFromDate(timeStart) : undefined}
-          className="text-right"
           onBlur={(e: FocusEvent<HTMLInputElement>) =>
             void handleTimeInputBlur(e)
           }
@@ -230,7 +227,6 @@ function GigDetails({
           disabled={gigDate == null}
           name="timeEnd"
           defaultValue={timeEnd ? getTimeFromDate(timeEnd) : undefined}
-          className="text-right"
           onBlur={(e: FocusEvent<HTMLInputElement>) =>
             void handleTimeInputBlur(e)
           }
@@ -411,6 +407,11 @@ function MrsSantaPicker(props: Props) {
       <SheetContent className="">{props.mrsSantaPicker}</SheetContent>
     </Sheet>
   );
+}
+
+function ClientDetails(props: Props) {
+  // TOOD: Cloneelement instead?
+  return <div className="form col-span-6">{props.clientDetails}</div>;
 }
 
 function VenueDetails({

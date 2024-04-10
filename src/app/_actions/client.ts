@@ -11,8 +11,10 @@ import {
 import { fromUTC, parseFormData } from "@/lib/utils";
 import { clientSchema } from "@/lib/validations/client";
 import { redirect } from "next/navigation";
+import { unstable_noStore as noStore } from "next/cache";
 
 export async function getClient(id: string): Promise<ClientProps | null> {
+  noStore();
   if (id.length === 0) return null;
 
   const data = await prisma.client.findFirst({
@@ -57,6 +59,7 @@ export async function getClients({
   limit = 10,
   skip = 0,
 }: GetClientsProps) {
+  noStore();
   const totalCount = await prisma.client.count({ where: whereClause });
 
   const data = await prisma.client.findMany({
@@ -139,6 +142,7 @@ export async function saveClient(
   } catch (error) {
     return fromErrorToFormState(error);
   }
+  revalidatePath(`/`);
   revalidatePath(`/dashboard/clients/${id}`);
 
   return toFormState("SUCCESS", "Client updated");

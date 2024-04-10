@@ -7,11 +7,11 @@ import { Icons } from "../icons";
 import { Button } from "../ui/button";
 
 type SubmitButtonProps = {
-  label: string;
+  label?: string;
   suffixIcon?: React.ReactElement;
 };
 
-const SubmitButton = ({ label, suffixIcon }: SubmitButtonProps) => {
+const SubmitButton = ({ label = "Create", suffixIcon }: SubmitButtonProps) => {
   const { pending } = useFormStatus();
 
   return (
