@@ -7,7 +7,6 @@ import { useFormFeedback } from "@/components/form/use-form-feedback";
 import { EMPTY_FORM_STATE } from "@/components/form/to-form-state";
 import { submitMultiEventForm } from "@/app/_actions/gig";
 import { SubmitButton } from "../form/submit-button";
-import { gigSchema } from "@/lib/validations/gig";
 import {
   Card,
   CardContent,
@@ -15,10 +14,9 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { useQueryStates } from "nuqs";
-import { fieldErrorParser } from "../search-params";
+// import { useQueryStates } from "nuqs";
+// import { fieldErrorParser } from "../search-params";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { cn, formatDate } from "@/lib/utils";
 import { useRef } from "react";
 
 const TABS = [
@@ -38,15 +36,15 @@ const TABS = [
 const SLOTS_PER_TAB = 10;
 
 interface Props {
-  idCopyFrom: string;
+  copiedFromId: string;
 }
 
-export function CreateMultiEventForm(props: Props) {
-  const [fieldError, setFieldError] = useQueryStates(fieldErrorParser);
+export function MultiEventCreateForm(props: Props) {
+  // const [fieldError, setFieldError] = useQueryStates(fieldErrorParser);
 
   const submitMultiEventFormWithId = submitMultiEventForm.bind(
     null,
-    props.idCopyFrom,
+    props.copiedFromId,
   );
   const [formState, formAction] = useFormState(
     submitMultiEventFormWithId,
@@ -92,7 +90,7 @@ export function CreateMultiEventForm(props: Props) {
         <CardContent className=" ">
           <Tabs
             defaultValue="tab-1"
-            className={cn("relative w-full overflow-x-auto")}
+            className="relative w-full overflow-x-auto"
             orientation="horizontal"
           >
             <TabsList>

@@ -43,8 +43,8 @@ export default function Page(props: Props) {
   return (
     <Card className="mx-auto w-full  border-0 bg-background [&>*]:px-0 ">
       <CardContent className="flex flex-col gap-2">
-        <BackButton />
-        <GigDetailTabs gigId={props.params.gigId} />
+        {/* <BackButton /> */}
+        {/* <GigDetailTabs gigId={props.params.gigId} /> */}
         <Suspense fallback={<Spinner />}>
           <GigFormWrapper {...props} />
         </Suspense>
