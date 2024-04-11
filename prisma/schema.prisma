@@ -204,6 +204,7 @@ enum VenueType {
   Public
   PublicSpace
   Restaurant
+  School
   Retail
   Theatre
   TV_Studio

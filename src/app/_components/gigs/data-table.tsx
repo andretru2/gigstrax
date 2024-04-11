@@ -158,7 +158,7 @@ export default function Datatable({ data, pageCount }: Props) {
         ),
         cell: ({ row }) => {
           return (
-            <div className=" truncate px-2 text-left">
+            <div className=" max-w-60 truncate px-2 text-left ">
               {row.original?.client?.client &&
                 toTitleCase(row.original?.client?.client)}
             </div>
@@ -177,7 +177,7 @@ export default function Datatable({ data, pageCount }: Props) {
         ),
         cell: ({ row }) => {
           return (
-            <div className="   truncate pr-4 text-left">
+            <div className="   max-w-xl  truncate pr-4 text-left">
               {formatAddress({
                 name: row.original.venueAddressName ?? "",
                 addressLine1: row.original.venueAddressStreet ?? "",
