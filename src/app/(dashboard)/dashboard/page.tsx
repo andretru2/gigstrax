@@ -1,240 +1,240 @@
-import { prisma } from "@/server/db";
+// import { prisma } from "@/server/db";
 // import GigsTimeFix from "../../../lib/fmData/gigs-timefix.json";
 // import Gigs from "../../../lib/fmData/gigs.json";
 // import { getGigs } from "@/app/_actions/gig";
-import Sources from "../../../lib/fmData/sources-2024-04-04.json";
-import Clients from "../../../lib/fmData/clients-2024-04-04.json";
-import Gigs from "../../../lib/fmData/gigs-2024-04-04.json";
-import {
-  type SourceStatus,
-  type Gender,
-  ClientType,
-  type VenueType,
-} from "@prisma/client";
+// import Sources from "../../../lib/fmData/sources-2024-04-04.json";
+// import Clients from "../../../lib/fmData/clients-2024-04-04.json";
+// import Gigs from "../../../lib/fmData/gigs-2024-04-04.json";
+// import {
+//   type SourceStatus,
+//   type Gender,
+//   ClientType,
+//   type VenueType,
+// } from "@prisma/client";
 
-function getClientType(clientTypeStr: string | undefined): ClientType | null {
-  switch (clientTypeStr) {
-    case "Event/Party Planner":
-      return ClientType.Event_Party_Planner;
-    case "agency":
-      return ClientType.Agency;
-    case "Country Club":
-      return ClientType.Country_Club;
-    case "fundraiser":
-      return ClientType.Fundraiser;
-    case "NGO":
-      return ClientType.NGO;
-    case "other":
-      return ClientType.Other;
-    case "":
-      return null;
-    default:
-      return clientTypeStr as ClientType;
-  }
-}
+// function getClientType(clientTypeStr: string | undefined): ClientType | null {
+//   switch (clientTypeStr) {
+//     case "Event/Party Planner":
+//       return ClientType.Event_Party_Planner;
+//     case "agency":
+//       return ClientType.Agency;
+//     case "Country Club":
+//       return ClientType.Country_Club;
+//     case "fundraiser":
+//       return ClientType.Fundraiser;
+//     case "NGO":
+//       return ClientType.NGO;
+//     case "other":
+//       return ClientType.Other;
+//     case "":
+//       return null;
+//     default:
+//       return clientTypeStr as ClientType;
+//   }
+// }
 
-export default async function Page() {
+export default function Page() {
   //2024-04-11 gigs
 
   //2024-04-11 clients
 
-  if (false) {
-    const formattedGigs = Gigs.map((gig, index) => {
-      try {
-        return {
-          ...gig,
-          venueAddressZip: gig?.venueAddressZip?.toString(),
-          serial: parseInt(gig?.serial),
-          venueType:
-            gig?.venueType === "Event Space"
-              ? "Event_Space"
-              : gig?.venueType === "other"
-                ? "Other"
-                : gig?.venueType === "Retail Space"
-                  ? "Retail_Space"
-                  : gig?.venueType === "Photo Studio"
-                    ? "PhotoStudio"
-                    : gig?.venueType === "pre-school"
-                      ? "Preschool"
-                      : gig?.venueType === "Private Club"
-                        ? "PrivateClub"
-                        : gig?.venueType === "Public Space"
-                          ? "PublicSpace"
-                          : gig?.venueType === "Public"
-                            ? "Public"
-                            : gig?.venueType == ""
-                              ? null
-                              : gig?.venueType === "TV Studio"
-                                ? "TV_Studio"
-                                : (gig?.venueType as VenueType),
-          gigDate: gig.gigDate ? new Date(gig.gigDate) : null,
-          timeStart:
-            gig.gigDate && gig.timeStart
-              ? new Date(`${gig.gigDate} ${gig.timeStart}`)
-              : null,
-          timeEnd:
-            gig.gigDate && gig.timeEnd
-              ? new Date(`${gig.gigDate} ${gig.timeEnd}`)
-              : null,
-          createdAt: gig.createdAt ? new Date(gig.createdAt) : null,
-          updatedAt: gig.updatedAt ? new Date(gig.updatedAt) : null,
-          createdBy: gig.createdBy ? gig.createdBy : null,
-          notesVenue: Buffer.from(gig.notesVenue, "binary").toString("utf8"),
-          notesGig: Buffer.from(gig.notesGig, "binary").toString("utf8"),
-          isSoftHold: gig.isSoftHold == "" ? null : gig.isSoftHold,
-          amountPaid: gig.amountPaid == "" ? null : gig.amountPaid,
-          price: gig.price == "" ? null : gig.price,
-          // driveId: gig.driverId == "" ? null : gig.driverId,
-          clientId: gig.clientId == "" ? null : gig.clientId,
-          santaId: gig.santaId == "" ? null : gig.santaId,
-          calendarId: gig.calendarId == "" ? null : gig.calendarId,
-          mrsSantaId: gig.mrsSantaId == "" ? null : gig.mrsSantaId,
+  // if (false) {
+  //   const formattedGigs = Gigs.map((gig, index) => {
+  //     try {
+  //       return {
+  //         ...gig,
+  //         venueAddressZip: gig?.venueAddressZip?.toString(),
+  //         serial: parseInt(gig?.serial),
+  //         venueType:
+  //           gig?.venueType === "Event Space"
+  //             ? "Event_Space"
+  //             : gig?.venueType === "other"
+  //               ? "Other"
+  //               : gig?.venueType === "Retail Space"
+  //                 ? "Retail_Space"
+  //                 : gig?.venueType === "Photo Studio"
+  //                   ? "PhotoStudio"
+  //                   : gig?.venueType === "pre-school"
+  //                     ? "Preschool"
+  //                     : gig?.venueType === "Private Club"
+  //                       ? "PrivateClub"
+  //                       : gig?.venueType === "Public Space"
+  //                         ? "PublicSpace"
+  //                         : gig?.venueType === "Public"
+  //                           ? "Public"
+  //                           : gig?.venueType == ""
+  //                             ? null
+  //                             : gig?.venueType === "TV Studio"
+  //                               ? "TV_Studio"
+  //                               : (gig?.venueType as VenueType),
+  //         gigDate: gig.gigDate ? new Date(gig.gigDate) : null,
+  //         timeStart:
+  //           gig.gigDate && gig.timeStart
+  //             ? new Date(`${gig.gigDate} ${gig.timeStart}`)
+  //             : null,
+  //         timeEnd:
+  //           gig.gigDate && gig.timeEnd
+  //             ? new Date(`${gig.gigDate} ${gig.timeEnd}`)
+  //             : null,
+  //         createdAt: gig.createdAt ? new Date(gig.createdAt) : null,
+  //         updatedAt: gig.updatedAt ? new Date(gig.updatedAt) : null,
+  //         createdBy: gig.createdBy ? gig.createdBy : null,
+  //         notesVenue: Buffer.from(gig.notesVenue, "binary").toString("utf8"),
+  //         notesGig: Buffer.from(gig.notesGig, "binary").toString("utf8"),
+  //         isSoftHold: gig.isSoftHold == "" ? null : gig.isSoftHold,
+  //         amountPaid: gig.amountPaid == "" ? null : gig.amountPaid,
+  //         price: gig.price == "" ? null : gig.price,
+  //         // driveId: gig.driverId == "" ? null : gig.driverId,
+  //         clientId: gig.clientId == "" ? null : gig.clientId,
+  //         santaId: gig.santaId == "" ? null : gig.santaId,
+  //         calendarId: gig.calendarId == "" ? null : gig.calendarId,
+  //         mrsSantaId: gig.mrsSantaId == "" ? null : gig.mrsSantaId,
 
-          travelType:
-            gig?.travelType === "Public Transport"
-              ? "PublicTransport"
-              : gig?.travelType == ""
-                ? null
-                : gig.travelType,
-        };
-      } catch (error) {
-        console.error(`Error creating gig at row ${index + 1}:`, error);
-        return null; // Skip the row
-      }
-    })
-      .slice(86, 100)
-      .filter(Boolean);
+  //         travelType:
+  //           gig?.travelType === "Public Transport"
+  //             ? "PublicTransport"
+  //             : gig?.travelType == ""
+  //               ? null
+  //               : gig.travelType,
+  //       };
+  //     } catch (error) {
+  //       console.error(`Error creating gig at row ${index + 1}:`, error);
+  //       return null; // Skip the row
+  //     }
+  //   })
+  //     .slice(86, 100)
+  //     .filter(Boolean);
 
-    console.log(formattedGigs);
+  //   console.log(formattedGigs);
 
-    // Prepare an array of upsert operations for each client
-    const upsertOperations = formattedGigs.map((gig) => {
-      const { clientId, driverId, santaId, mrsSantaId, ...gigWithoutClientId } =
-        gig;
-      return prisma.gig.upsert({
-        where: { id: gig.id },
-        update: {
-          ...gigWithoutClientId,
-          ...(clientId && {
-            client: {
-              connect: {
-                id: clientId,
-              },
-            },
-          }),
-          ...(santaId && {
-            santa: {
-              connect: {
-                id: santaId,
-              },
-            },
-          }),
-          ...(driverId && {
-            driver: {
-              connect: {
-                id: driverId,
-              },
-            },
-          }),
-          ...(mrsSantaId && {
-            mrsSanta: {
-              connect: {
-                id: mrsSantaId,
-              },
-            },
-          }),
-        },
-        create: {
-          ...gigWithoutClientId,
-          ...(clientId && {
-            client: {
-              connect: {
-                id: clientId,
-              },
-            },
-          }),
-          ...(santaId && {
-            santa: {
-              connect: {
-                id: santaId,
-              },
-            },
-          }),
-          ...(driverId && {
-            driver: {
-              connect: {
-                id: driverId,
-              },
-            },
-          }),
-          ...(mrsSantaId && {
-            mrsSanta: {
-              connect: {
-                id: mrsSantaId,
-              },
-            },
-          }),
-        },
-      });
-    });
+  //   // Prepare an array of upsert operations for each client
+  //   const upsertOperations = formattedGigs.map((gig) => {
+  //     const { clientId, driverId, santaId, mrsSantaId, ...gigWithoutClientId } =
+  //       gig;
+  //     return prisma.gig.upsert({
+  //       where: { id: gig.id },
+  //       update: {
+  //         ...gigWithoutClientId,
+  //         ...(clientId && {
+  //           client: {
+  //             connect: {
+  //               id: clientId,
+  //             },
+  //           },
+  //         }),
+  //         ...(santaId && {
+  //           santa: {
+  //             connect: {
+  //               id: santaId,
+  //             },
+  //           },
+  //         }),
+  //         ...(driverId && {
+  //           driver: {
+  //             connect: {
+  //               id: driverId,
+  //             },
+  //           },
+  //         }),
+  //         ...(mrsSantaId && {
+  //           mrsSanta: {
+  //             connect: {
+  //               id: mrsSantaId,
+  //             },
+  //           },
+  //         }),
+  //       },
+  //       create: {
+  //         ...gigWithoutClientId,
+  //         ...(clientId && {
+  //           client: {
+  //             connect: {
+  //               id: clientId,
+  //             },
+  //           },
+  //         }),
+  //         ...(santaId && {
+  //           santa: {
+  //             connect: {
+  //               id: santaId,
+  //             },
+  //           },
+  //         }),
+  //         ...(driverId && {
+  //           driver: {
+  //             connect: {
+  //               id: driverId,
+  //             },
+  //           },
+  //         }),
+  //         ...(mrsSantaId && {
+  //           mrsSanta: {
+  //             connect: {
+  //               id: mrsSantaId,
+  //             },
+  //           },
+  //         }),
+  //       },
+  //     });
+  //   });
 
-    // Execute all upsert operations in a single transaction
-    const res = await prisma.$transaction(upsertOperations);
-    console.log(res);
-  }
+  //   // Execute all upsert operations in a single transaction
+  //   const res = await prisma.$transaction(upsertOperations);
+  //   console.log(res);
+  // }
 
-  if (false) {
-    const formattedClients = Clients.map((client) => ({
-      ...client,
-      addressZip: client?.addressZip?.toString(),
-      clientType: getClientType(client?.clientType),
+  // if (false) {
+  //   const formattedClients = Clients.map((client) => ({
+  //     ...client,
+  //     addressZip: client?.addressZip?.toString(),
+  //     clientType: getClientType(client?.clientType),
 
-      createdAt: client.createdAt ? new Date(client.createdAt) : null,
-      updatedAt: client.updatedAt ? new Date(client.updatedAt) : null,
-      notes: Buffer.from(client.notes, "binary").toString("utf8"),
-    }));
+  //     createdAt: client.createdAt ? new Date(client.createdAt) : null,
+  //     updatedAt: client.updatedAt ? new Date(client.updatedAt) : null,
+  //     notes: Buffer.from(client.notes, "binary").toString("utf8"),
+  //   }));
 
-    console.log(formattedClients);
+  //   console.log(formattedClients);
 
-    // Prepare an array of upsert operations for each client
-    const upsertOperations = formattedClients.map((client) =>
-      prisma.client.upsert({
-        where: { id: client.id }, // Assuming 'id' is the unique identifier for each client
-        update: client,
-        create: client,
-      }),
-    );
+  //   // Prepare an array of upsert operations for each client
+  //   const upsertOperations = formattedClients.map((client) =>
+  //     prisma.client.upsert({
+  //       where: { id: client.id }, // Assuming 'id' is the unique identifier for each client
+  //       update: client,
+  //       create: client,
+  //     }),
+  //   );
 
-    // Execute all upsert operations in a single transaction
-    const res = await prisma.$transaction(upsertOperations);
-    console.log(res);
-  }
+  //   // Execute all upsert operations in a single transaction
+  //   const res = await prisma.$transaction(upsertOperations);
+  //   console.log(res);
+  // }
 
-  //2024-04-11 sources
-  if (false) {
-    const formattedSources = Sources.map((source) => ({
-      ...source,
-      dob: source.dob ? new Date(source.dob) : null,
-      createdAt: source.createdAt ? new Date(source.createdAt) : null,
-      updatedAt: source.updatedAt ? new Date(source.updatedAt) : null,
-      gender: source.gender == "" ? null : (source.gender as Gender),
-      status: source.status == "" ? null : (source.status as SourceStatus),
-    }));
+  // //2024-04-11 sources
+  // if (false) {
+  //   const formattedSources = Sources.map((source) => ({
+  //     ...source,
+  //     dob: source.dob ? new Date(source.dob) : null,
+  //     createdAt: source.createdAt ? new Date(source.createdAt) : null,
+  //     updatedAt: source.updatedAt ? new Date(source.updatedAt) : null,
+  //     gender: source.gender == "" ? null : (source.gender as Gender),
+  //     status: source.status == "" ? null : (source.status as SourceStatus),
+  //   }));
 
-    // Prepare an array of upsert operations for each source
-    const upsertOperations = formattedSources.map((source) =>
-      prisma.source.upsert({
-        where: { id: source.id }, // Assuming 'id' is the unique identifier for each source
-        update: source,
-        create: source,
-      }),
-    );
+  //   // Prepare an array of upsert operations for each source
+  //   const upsertOperations = formattedSources.map((source) =>
+  //     prisma.source.upsert({
+  //       where: { id: source.id }, // Assuming 'id' is the unique identifier for each source
+  //       update: source,
+  //       create: source,
+  //     }),
+  //   );
 
-    // Execute all upsert operations in a single transaction
-    const res = await prisma.$transaction(upsertOperations);
+  //   // Execute all upsert operations in a single transaction
+  //   const res = await prisma.$transaction(upsertOperations);
 
-    console.log("source upload", res);
-  }
+  //   console.log("source upload", res);
+  // }
 
   // const { data } = useSession();
   // return (

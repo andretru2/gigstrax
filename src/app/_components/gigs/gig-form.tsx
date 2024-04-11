@@ -7,10 +7,15 @@ import { Input } from "@/components/ui/input";
 import { FieldError } from "@/components/form/field-error";
 import { useFormFeedback } from "@/components/form/use-form-feedback";
 import { EMPTY_FORM_STATE } from "@/components/form/to-form-state";
-import { submitGig } from "@/app/_actions/gig";
+import { submitGig, copyInfoFromClient } from "@/app/_actions/gig";
 import { VenueType, type Gig as GigProps } from "@prisma/client";
 import { DatePicker } from "../ui/date-picker";
-import { type FocusEvent, useRef, type ReactElement } from "react";
+import {
+  type FocusEvent,
+  useRef,
+  type ReactElement,
+  useTransition,
+} from "react";
 import {
   calculateTimeDifference,
   cn,
@@ -60,6 +65,7 @@ export function GigForm(props: Props) {
     submitGigWithId,
     EMPTY_FORM_STATE,
   );
+  const [isPending, startTransition] = useTransition();
 
   const { ref } = useFormFeedback(formState, {
     onSuccess: ({ formState, reset }) => {
@@ -77,6 +83,7 @@ export function GigForm(props: Props) {
 
   async function handleSaveGigWrapper(props: SaveGigProps) {
     const resultSave = await handleSaveGig(props);
+
     if (!resultSave) return;
     if (resultSave.result === "Error") {
       void setFieldError({
@@ -87,6 +94,12 @@ export function GigForm(props: Props) {
     void setFieldError({ key: null, error: null });
   }
 
+  const handleCopy = () => {
+    startTransition(() => {
+      void copyInfoFromClient(id);
+    });
+  };
+
   return (
     <form
       action={formAction}
@@ -94,7 +107,7 @@ export function GigForm(props: Props) {
       className="  grid  grid-cols-12 items-start justify-start gap-3"
     >
       <Card className="col-span-12 p-4">
-        <CardHeader className="">
+        <CardHeader className="flex flex-row gap-4">
           <CardTitle>Gig Details</CardTitle>
         </CardHeader>
         <Separator />
@@ -109,8 +122,18 @@ export function GigForm(props: Props) {
       </Card>
       <ClientDetails {...props} />
       <Card className="col-span-6 p-4">
-        <CardHeader className="">
-          <CardTitle>Venue</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-start gap-4">
+          <CardTitle>Venue Details</CardTitle>
+          <Button
+            size="sm"
+            type="button"
+            isLoading={isPending}
+            variant={"ghost"}
+            className="h-0 w-max  space-y-0 p-0 text-xs underline hover:text-secondary-500"
+            onClick={handleCopy}
+          >
+            Same as client?
+          </Button>
         </CardHeader>
         <Separator />
         <CardContent className=" form mx-auto  grid grid-cols-6 gap-4  ">

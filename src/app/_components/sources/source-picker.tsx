@@ -178,8 +178,6 @@ async function Search(props: Props) {
 
   const sources = search ? await fetchSources(props) : [];
 
-  console.log(search, sources);
-
   return (
     <Card className=" p-4">
       <CardHeader>

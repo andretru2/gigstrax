@@ -14,6 +14,7 @@ import { redirect } from "next/navigation";
 import { setCookieByKey } from "./cookies";
 import { unstable_noStore as noStore } from "next/cache";
 import { type Gig } from "@prisma/client";
+import { getClient } from "./client";
 
 // import { type Gig } from "@prisma/client";
 
@@ -252,4 +253,36 @@ export async function submitMultiEventForm(
 
   return toFormState("SUCCESS", "Gig created successfully");
   // return toFormState("ERROR", "Missing required form data");
+}
+
+export async function copyInfoFromClient(id: string) {
+  const gig = await getGig(id);
+
+  if (!gig?.clientId)
+    return { result: "Error", resultDescription: "No client assigned to gig" };
+
+  const client = await getClient(gig?.clientId);
+
+  await prisma.gig.update({
+    where: {
+      id,
+    },
+    data: {
+      venueAddressCity: client?.addressCity,
+      venueAddressState: client?.addressState,
+      venueAddressStreet: client?.addressStreet,
+      venueAddressZip: client?.addressZip,
+      contactName: client?.contact,
+      contactPhoneCell: client?.phoneCell,
+      contactPhoneLand: client?.phoneLandline,
+      contactEmail: client?.email,
+      notesVenue: client?.notes,
+    },
+  });
+
+  revalidatePath(`/dashboard/gigs/`);
+  revalidatePath(`/dashboard/gigs/${id}`);
+  // redirect(`/dashboard/gigs/${id}`);
+
+  return { result: "Success", resultDescription: "Gig updated. " };
 }
