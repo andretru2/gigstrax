@@ -9,19 +9,11 @@ import { useFormFeedback } from "@/components/form/use-form-feedback";
 import { EMPTY_FORM_STATE } from "@/components/form/to-form-state";
 import { submitMultiEventForm } from "@/app/_actions/gig";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 // import { useQueryStates } from "nuqs";
 // import { fieldErrorParser } from "../search-params";
 import { useRef } from "react";
 import { Separator } from "../ui/separator";
-import { MultiEventSubmit } from "./multi-event-submit-button";
 import { SubmitButton } from "../form/submit-button";
 
 interface Props {

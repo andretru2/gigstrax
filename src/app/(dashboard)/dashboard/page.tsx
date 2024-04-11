@@ -1,9 +1,37 @@
-// import { prisma } from "@/server/db";
+import { prisma } from "@/server/db";
 // import GigsTimeFix from "../../../lib/fmData/gigs-timefix.json";
 // import Gigs from "../../../lib/fmData/gigs.json";
 // import { getGigs } from "@/app/_actions/gig";
+import Sources from "../../../lib/fmData/sources-2024-04-04.json";
+import { type SourceStatus, type Gender } from "@prisma/client";
 
-export default function Page() {
+export default async function Page() {
+  //2024-04-11 sources
+  if (true) {
+    const formattedSources = Sources.map((source) => ({
+      ...source,
+      dob: source.dob ? new Date(source.dob) : null,
+      createdAt: source.createdAt ? new Date(source.createdAt) : null,
+      updatedAt: source.updatedAt ? new Date(source.updatedAt) : null,
+      gender: source.gender == "" ? null : (source.gender as Gender),
+      status: source.status == "" ? null : (source.status as SourceStatus),
+    }));
+
+    // Prepare an array of upsert operations for each source
+    const upsertOperations = formattedSources.map((source) =>
+      prisma.source.upsert({
+        where: { id: source.id }, // Assuming 'id' is the unique identifier for each source
+        update: source,
+        create: source,
+      }),
+    );
+
+    // Execute all upsert operations in a single transaction
+    const res = await prisma.$transaction(upsertOperations);
+
+    console.log("source upload", res);
+  }
+
   // const { data } = useSession();
   // return (
   //   <>Hello {data?.user?.name}. Dashboard will be developed on next phase. </>
