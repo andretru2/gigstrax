@@ -9,8 +9,8 @@ import {
 } from "../ui/card";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { type ParsedSearchParams, modalOpenParser } from "../search-params";
-import { useQueryState } from "nuqs";
+import { type ParsedSearchParams } from "../search-params";
+// import { useQueryState } from "nuqs";
 import { submitSource } from "@/app/_actions/source";
 import { type SantaType } from "@/types/index";
 import { useFormState } from "react-dom";
@@ -19,7 +19,6 @@ import { EMPTY_FORM_STATE } from "@/components/form/to-form-state";
 import { useFormFeedback } from "../form/use-form-feedback";
 import { toast } from "sonner";
 import { SubmitButton } from "../form/submit-button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 // import { useQueryStates } from "nuqs";
 
@@ -31,10 +30,11 @@ interface Props {
 }
 
 export function SourcePickerCreate(props: Props) {
-  const [open, setOpen] = useQueryState(
-    props.role === "RBS" ? "modalOpenSanta" : "modalOpenMrsSanta",
-    modalOpenParser,
-  );
+  console.log(props);
+  // const [open, setOpen] = useQueryState(
+  //   props.role === "RBS" ? "modalOpenSanta" : "modalOpenMrsSanta",
+  //   modalOpenParser,
+  // );
   // const submitWithProps = props.goto
   //   ? submitSource.bind(null, props.goto )
   //   : submitSource;
