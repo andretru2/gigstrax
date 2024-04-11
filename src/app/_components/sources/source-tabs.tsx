@@ -72,7 +72,7 @@ export default function SourceTabs(props: Props) {
               </div>
             </PopoverTrigger>
             <PopoverContent>
-              <SourcePickerCreate goto={true} role="RBS" />
+              <SourcePickerCreate goto={true} />
             </PopoverContent>
           </Popover>
         </TabsTrigger>

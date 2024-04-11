@@ -1,52 +1,27 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
-
-import { cn } from "@/lib/utils";
+// import { usePathname } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Link from "next/link";
 
 interface Props {
   gigId: string;
   className?: string;
 }
 
-export function GigDetailTabs({ gigId, ...props }: Props) {
-  const router = useRouter();
-  const pathname = usePathname();
-
-  const tabs = [
-    {
-      title: "Gig Details",
-      href: `/dashboard/gigs/${gigId}`,
-    },
-    {
-      title: "Documents",
-      href: `/dashboard/gigs/${gigId}/documents`,
-    },
-  ];
-
+export function GigDetailTabs({ gigId }: Props) {
   return (
-    <Tabs
-      {...props}
-      defaultValue={`/dashboard/gigs/${gigId}`}
-      className={cn("w-full   overflow-x-auto", props.className)}
-      onValueChange={(value) => router.push(value)}
-    >
+    <Tabs defaultValue={gigId}>
       <TabsList>
-        {tabs.map((tab) => (
-          <TabsTrigger
-            key={tab.title}
-            value={tab.href}
-            className={cn(
-              // pathname === tab.href && "bg-background text-foreground shadow-sm"
-              pathname?.includes(tab.href) &&
-                "bg-accent text-foreground shadow-sm",
-            )}
-            onClick={() => router.push(tab.href)}
-          >
-            {tab.title}
-          </TabsTrigger>
-        ))}
+        <TabsTrigger value={gigId} asChild>
+          <Link href={`/dashboard/gigs/${gigId}`}>Overview</Link>
+        </TabsTrigger>
+        <TabsTrigger value="documents" asChild>
+          <Link href={`/dashboard/gigs/${gigId}/documents`}>Documents</Link>
+        </TabsTrigger>
+        <TabsTrigger value="multi-event" asChild>
+          <Link href={`/dashboard/gigs/${gigId}/multi-event`}>Multi-Event</Link>
+        </TabsTrigger>
       </TabsList>
     </Tabs>
   );

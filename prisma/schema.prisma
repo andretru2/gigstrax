@@ -66,6 +66,7 @@ model Gig {
   clientId            String?
   serial              Int?       @default(autoincrement())
   calendarId          String?
+  copiedFromId        String?
   driver              Source?    @relation("sourceOfDriver", fields: [driverId], references: [id])
   driverId            String?
   mrsSanta            Source?    @relation("sourceOfMrsSanta", fields: [mrsSantaId], references: [id])
@@ -203,6 +204,7 @@ enum VenueType {
   Public
   PublicSpace
   Restaurant
+  School
   Retail
   Theatre
   TV_Studio

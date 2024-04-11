@@ -3,18 +3,23 @@
 import type { GetGigsProps } from "@/types/index";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { gigSchema } from "@/lib/validations/gig";
+import { gigMultiEventSchema, gigSchema } from "@/lib/validations/gig";
 import {
   type FormState,
   fromErrorToFormState,
   toFormState,
 } from "@/components/form/to-form-state";
-import { parseFormData } from "@/lib/utils";
+import { combineDateTimeToISOString, parseFormData } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import { setCookieByKey } from "./cookies";
+import { unstable_noStore as noStore } from "next/cache";
+import { type Gig } from "@prisma/client";
+import { getClient } from "./client";
+
 // import { type Gig } from "@prisma/client";
 
 export async function getGig(id: string) {
+  noStore();
   if (id.length === 0) return null;
 
   const data = await prisma.gig.findFirst({
@@ -72,6 +77,7 @@ export async function getGigs({
   limit = 10,
   skip = 0,
 }: GetGigsProps) {
+  noStore();
   const totalCount = await prisma.gig.count({ where: whereClause });
 
   const data = await prisma.gig.findMany({
@@ -108,9 +114,11 @@ export async function saveGig(
   } catch (error) {
     return fromErrorToFormState(error);
   }
-
+  noStore();
+  revalidatePath(`/`);
   revalidatePath("/dashboard/gigs/");
   revalidatePath(`/dashboard/gigs/${id}`);
+  redirect(`/dashboard/gigs/${id}`);
   return toFormState("SUCCESS", "Gig updated");
 
   if (id) {
@@ -173,4 +181,108 @@ export async function createGig() {
   revalidatePath(`/dashboard/gigs/`);
   redirect(`/dashboard/gigs/${gig.id}`);
   return gig;
+}
+
+export async function copyGig(copyFromId: string): Promise<Gig> {
+  if (!copyFromId)
+    return { result: "Error", resultDescription: "Missing params" };
+
+  const gig = await getGig(copyFromId);
+  if (!gig) {
+    return { result: "Error", resultDescription: "Gig not found. " };
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { santa, mrsSanta, id, ...gigWithoutSanta } = gig;
+
+  return await prisma.gig.create({
+    data: {
+      id: undefined,
+      copiedFromId: copyFromId,
+      ...gigWithoutSanta,
+    },
+  });
+}
+
+export async function submitMultiEventForm(
+  copyFromId: string,
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  if (!copyFromId || !formData) return toFormState("ERROR", "Missing params");
+
+  try {
+    const parsedData = parseFormData(formData, gigMultiEventSchema);
+
+    if (parsedData) {
+      const gig = await copyGig(copyFromId);
+
+      if (!gig) {
+        return toFormState("ERROR", "Gig not found ");
+      }
+
+      const data = {
+        gigDate: formData.get("gigDate") as string | null,
+        timeStart: formData.get("timeStart") as string | null,
+        timeEnd: formData.get("timeEnd") as string | null,
+      };
+
+      if (data.gigDate && data.timeStart && data.timeEnd) {
+        const gigDateObj = new Date(data.gigDate);
+        const gigDateISO = gigDateObj.toISOString();
+        const timeStartISO = combineDateTimeToISOString(
+          gigDateObj,
+          data.timeStart,
+        );
+        const timeEndISO = combineDateTimeToISOString(gigDateObj, data.timeEnd);
+
+        await prisma.gig.update({
+          data: {
+            gigDate: gigDateISO,
+            timeStart: timeStartISO,
+            timeEnd: timeEndISO,
+          },
+          where: { id: gig.id },
+        });
+        revalidatePath(`/dashboard/gigs/`);
+        revalidatePath(`/dashboard/gigs/${gig.id}`);
+      }
+    }
+  } catch (error) {
+    return fromErrorToFormState(error);
+  }
+
+  return toFormState("SUCCESS", "Gig created successfully");
+  // return toFormState("ERROR", "Missing required form data");
+}
+
+export async function copyInfoFromClient(id: string) {
+  const gig = await getGig(id);
+
+  if (!gig?.clientId)
+    return { result: "Error", resultDescription: "No client assigned to gig" };
+
+  const client = await getClient(gig?.clientId);
+
+  await prisma.gig.update({
+    where: {
+      id,
+    },
+    data: {
+      venueAddressCity: client?.addressCity,
+      venueAddressState: client?.addressState,
+      venueAddressStreet: client?.addressStreet,
+      venueAddressZip: client?.addressZip,
+      contactName: client?.contact,
+      contactPhoneCell: client?.phoneCell,
+      contactPhoneLand: client?.phoneLandline,
+      contactEmail: client?.email,
+      notesVenue: client?.notes,
+    },
+  });
+
+  revalidatePath(`/dashboard/gigs/`);
+  revalidatePath(`/dashboard/gigs/${id}`);
+  // redirect(`/dashboard/gigs/${id}`);
+
+  return { result: "Success", resultDescription: "Gig updated. " };
 }

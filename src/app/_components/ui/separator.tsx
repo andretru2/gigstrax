@@ -11,20 +11,20 @@ const Separator = React.forwardRef<
 >(
   (
     { className, orientation = "horizontal", decorative = true, ...props },
-    ref
+    ref,
   ) => (
     <SeparatorPrimitive.Root
       ref={ref}
       decorative={decorative}
       orientation={orientation}
       className={cn(
-        "shrink-0 bg-gradient-to-r from-primary to-accent",
+        "my-1.5 shrink-0 bg-accent",
         orientation === "horizontal" ? "h-[5px] w-[30px]" : "h-full w-[1px]",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  ),
 );
 Separator.displayName = SeparatorPrimitive.Root.displayName;
 

@@ -26,6 +26,7 @@ import {
   handleSaveClient,
 } from "@/lib/client/handle-save-client";
 import { type FocusEvent } from "react";
+import { Separator } from "../ui/separator";
 
 export function ClientForm(props: Awaited<Partial<Client>>) {
   const { id } = props;
@@ -68,11 +69,12 @@ export function ClientForm(props: Awaited<Partial<Client>>) {
       ref={ref}
       className="  grid  grid-cols-12 items-center justify-center gap-3"
     >
-      <Card className="col-span-12 p-2">
+      <Card className="col-span-12 p-4">
         <CardHeader className="">
           <CardTitle>Client Details</CardTitle>
         </CardHeader>
-        <CardContent className="form  grid grid-cols-6 gap-4   p-4">
+        <Separator />
+        <CardContent className="form  grid grid-cols-6 gap-4   ">
           <ClientDetails
             {...props}
             handleSaveClientWrapper={handleSaveClientWrapper}
@@ -88,7 +90,7 @@ export function ClientForm(props: Awaited<Partial<Client>>) {
 interface FormProps {
   handleSaveClientWrapper: (props: SaveClientProps) => Promise<void>;
   fieldError: { key: string | null; error: string | null };
-  setFieldError: (props: { key: string | null; error: string | null }) => void;
+  setFieldError?: (props: { key: string | null; error: string | null }) => void;
   formState: { status: string; message: string };
 }
 
@@ -116,8 +118,6 @@ function ClientDetails({
     // createdBy,
     // updatedBy,
   } = props;
-
-  console.log(client);
 
   return (
     <>

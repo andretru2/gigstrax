@@ -6,7 +6,7 @@ import { type SearchParams } from "nuqs/server";
 import { ClientTabs } from "@/components/clients/client-tabs";
 
 // export const dynamic = "force-dynamic";
-// export const cache = "no-store";
+export const cache = "no-store";
 export const revalidate = 0;
 
 interface Props {

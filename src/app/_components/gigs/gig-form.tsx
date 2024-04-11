@@ -7,10 +7,15 @@ import { Input } from "@/components/ui/input";
 import { FieldError } from "@/components/form/field-error";
 import { useFormFeedback } from "@/components/form/use-form-feedback";
 import { EMPTY_FORM_STATE } from "@/components/form/to-form-state";
-import { submitGig } from "@/app/_actions/gig";
+import { submitGig, copyInfoFromClient } from "@/app/_actions/gig";
 import { VenueType, type Gig as GigProps } from "@prisma/client";
 import { DatePicker } from "../ui/date-picker";
-import { type FocusEvent, useRef, type ReactElement } from "react";
+import {
+  type FocusEvent,
+  useRef,
+  type ReactElement,
+  useTransition,
+} from "react";
 import {
   calculateTimeDifference,
   cn,
@@ -37,6 +42,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
+import { Separator } from "../ui/separator";
 
 interface Props {
   id: string;
@@ -59,6 +65,7 @@ export function GigForm(props: Props) {
     submitGigWithId,
     EMPTY_FORM_STATE,
   );
+  const [isPending, startTransition] = useTransition();
 
   const { ref } = useFormFeedback(formState, {
     onSuccess: ({ formState, reset }) => {
@@ -76,6 +83,7 @@ export function GigForm(props: Props) {
 
   async function handleSaveGigWrapper(props: SaveGigProps) {
     const resultSave = await handleSaveGig(props);
+
     if (!resultSave) return;
     if (resultSave.result === "Error") {
       void setFieldError({
@@ -86,16 +94,23 @@ export function GigForm(props: Props) {
     void setFieldError({ key: null, error: null });
   }
 
+  const handleCopy = () => {
+    startTransition(() => {
+      void copyInfoFromClient(id);
+    });
+  };
+
   return (
     <form
       action={formAction}
       ref={ref}
       className="  grid  grid-cols-12 items-start justify-start gap-3"
     >
-      <Card className="col-span-12 p-2">
-        <CardHeader className="">
+      <Card className="col-span-12 p-4">
+        <CardHeader className="flex flex-row gap-4">
           <CardTitle>Gig Details</CardTitle>
         </CardHeader>
+        <Separator />
         <CardContent className=" form mx-auto  grid grid-cols-9 gap-4 pt-4 ">
           <GigDetails
             {...props}
@@ -105,12 +120,23 @@ export function GigForm(props: Props) {
           />
         </CardContent>
       </Card>
-      <div className="  form col-span-6 ">{props.clientDetails}</div>
-      <Card className="col-span-6 p-2">
-        <CardHeader className="">
-          <CardTitle>Venue</CardTitle>
+      <ClientDetails {...props} />
+      <Card className="col-span-6 p-4">
+        <CardHeader className="flex flex-row items-center justify-start gap-4">
+          <CardTitle>Venue Details</CardTitle>
+          <Button
+            size="sm"
+            type="button"
+            isLoading={isPending}
+            variant={"ghost"}
+            className="h-0 w-max  space-y-0 p-0 text-xs underline hover:text-secondary-500"
+            onClick={handleCopy}
+          >
+            Same as client?
+          </Button>
         </CardHeader>
-        <CardContent className=" form mx-auto  grid grid-cols-6 gap-4 pt-4 ">
+        <Separator />
+        <CardContent className=" form mx-auto  grid grid-cols-6 gap-4  ">
           <VenueDetails
             {...props}
             handleSaveGigWrapper={handleSaveGigWrapper}
@@ -179,8 +205,6 @@ function GigDetails({
   const balance =
     price && amountPaid ? Number(price) - Number(amountPaid) : null;
 
-  console.log(durationHours);
-
   return (
     <>
       <Label className="col-span-3">
@@ -211,7 +235,6 @@ function GigDetails({
           disabled={gigDate == null}
           name="timeStart"
           defaultValue={timeStart ? getTimeFromDate(timeStart) : undefined}
-          className="text-right"
           onBlur={(e: FocusEvent<HTMLInputElement>) =>
             void handleTimeInputBlur(e)
           }
@@ -230,7 +253,6 @@ function GigDetails({
           disabled={gigDate == null}
           name="timeEnd"
           defaultValue={timeEnd ? getTimeFromDate(timeEnd) : undefined}
-          className="text-right"
           onBlur={(e: FocusEvent<HTMLInputElement>) =>
             void handleTimeInputBlur(e)
           }
@@ -411,6 +433,11 @@ function MrsSantaPicker(props: Props) {
       <SheetContent className="">{props.mrsSantaPicker}</SheetContent>
     </Sheet>
   );
+}
+
+function ClientDetails(props: Props) {
+  // TOOD: Cloneelement instead?
+  return <div className="form col-span-6">{props.clientDetails}</div>;
 }
 
 function VenueDetails({

@@ -13,7 +13,7 @@ export interface SaveGigProps {
 
 export async function handleSaveGig(props: SaveGigProps) {
   const { id, key, value } = props;
-  if (!value) return { result: "Error", resultDescription: "Missing value." };
+  // if (!value) return { result: "Error", resultDescription: "Missing value." };
 
   let result;
   const formData = new FormData();
