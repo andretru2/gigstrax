@@ -20,6 +20,7 @@ interface Props {
 async function fetchSources({ searchParams, role }: Props) {
   const search =
     role === "RBS" ? searchParams?.searchSanta : searchParams?.searchMrsSanta;
+  console.log("fetch", search);
 
   if (!search) return [] as SourcePickerProps[];
 
@@ -49,17 +50,6 @@ async function fetchSources({ searchParams, role }: Props) {
             contains: search,
             mode: "insensitive",
           },
-        },
-      ],
-      AND: [
-        {
-          OR: [
-            {
-              role: {
-                contains: role,
-              },
-            },
-          ],
         },
       ],
     },
@@ -181,11 +171,14 @@ export function SourcePicker(props: Props) {
 }
 
 async function Search(props: Props) {
-  const sources = props.searchParams?.search ? await fetchSources(props) : [];
   const search =
     props.role === "RBS"
       ? props.searchParams?.searchSanta
       : props.searchParams?.searchMrsSanta;
+
+  const sources = search ? await fetchSources(props) : [];
+
+  console.log(search, sources);
 
   return (
     <Card className=" p-4">
