@@ -3,11 +3,62 @@ import { prisma } from "@/server/db";
 // import Gigs from "../../../lib/fmData/gigs.json";
 // import { getGigs } from "@/app/_actions/gig";
 import Sources from "../../../lib/fmData/sources-2024-04-04.json";
-import { type SourceStatus, type Gender } from "@prisma/client";
+import Clients from "../../../lib/fmData/clients-2024-04-04.json";
+import { type SourceStatus, type Gender, ClientType } from "@prisma/client";
+
+function getClientType(clientTypeStr: string | undefined): ClientType | null {
+  switch (clientTypeStr) {
+    case "Event/Party Planner":
+      return ClientType.Event_Party_Planner;
+    case "agency":
+      return ClientType.Agency;
+    case "Country Club":
+      return ClientType.Country_Club;
+    case "fundraiser":
+      return ClientType.Fundraiser;
+    case "NGO":
+      return ClientType.NGO;
+    case "other":
+      return ClientType.Other;
+    case "":
+      return null;
+    default:
+      return clientTypeStr as ClientType;
+  }
+}
 
 export default async function Page() {
+  //2024-04-11 clients
+
+  if (false) {
+    const formattedClients = Clients.map((client) => ({
+      ...client,
+      addressZip: client?.addressZip?.toString(),
+      clientType: getClientType(client?.clientType),
+
+      createdAt: client.createdAt ? new Date(client.createdAt) : null,
+      updatedAt: client.updatedAt ? new Date(client.updatedAt) : null,
+      notes: Buffer.from(client.notes, "binary").toString("utf8"),
+    }));
+
+    console.log(formattedClients);
+
+    // Prepare an array of upsert operations for each client
+    const upsertOperations = formattedClients.map((client) =>
+      prisma.client.upsert({
+        where: { id: client.id }, // Assuming 'id' is the unique identifier for each client
+        update: client,
+        create: client,
+      }),
+    );
+
+    // Execute all upsert operations in a single transaction
+    const res = await prisma.$transaction(upsertOperations);
+    console.log(res);
+  }
+
   //2024-04-11 sources
-  if (true) {
+  if (false) {
     const formattedSources = Sources.map((source) => ({
       ...source,
       dob: source.dob ? new Date(source.dob) : null,
