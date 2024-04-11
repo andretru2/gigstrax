@@ -337,3 +337,15 @@ export function parseFormData<T extends Record<string, unknown>>(
 
   return Object.fromEntries(dataEntries) as T;
 }
+
+export function combineDateTimeToISOString(date: Date, time: string) {
+  const [hours, minutes] = time.split(":").map(Number);
+  const combinedDateTime = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    hours,
+    minutes,
+  );
+  return combinedDateTime.toISOString();
+}

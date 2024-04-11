@@ -9,10 +9,11 @@ import {
   fromErrorToFormState,
   toFormState,
 } from "@/components/form/to-form-state";
-import { parseFormData } from "@/lib/utils";
+import { combineDateTimeToISOString, parseFormData } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import { setCookieByKey } from "./cookies";
 import { unstable_noStore as noStore } from "next/cache";
+import { type Gig } from "@prisma/client";
 
 // import { type Gig } from "@prisma/client";
 
@@ -113,7 +114,6 @@ export async function saveGig(
     return fromErrorToFormState(error);
   }
   noStore();
-  console.log("save");
   revalidatePath(`/`);
   revalidatePath("/dashboard/gigs/");
   revalidatePath(`/dashboard/gigs/${id}`);
@@ -182,6 +182,26 @@ export async function createGig() {
   return gig;
 }
 
+export async function copyGig(copyFromId: string): Promise<Gig> {
+  if (!copyFromId)
+    return { result: "Error", resultDescription: "Missing params" };
+
+  const gig = await getGig(copyFromId);
+  if (!gig) {
+    return { result: "Error", resultDescription: "Gig not found. " };
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { santa, mrsSanta, id, ...gigWithoutSanta } = gig;
+
+  return await prisma.gig.create({
+    data: {
+      id: undefined,
+      copiedFromId: copyFromId,
+      ...gigWithoutSanta,
+    },
+  });
+}
+
 export async function submitMultiEventForm(
   copyFromId: string,
   prevState: FormState,
@@ -189,14 +209,45 @@ export async function submitMultiEventForm(
 ): Promise<FormState> {
   if (!copyFromId || !formData) return toFormState("ERROR", "Missing params");
 
-  const gig = await getGig(copyFromId);
+  // const parsedData = parseFormData()
+
+  console.log("submmit multi-event");
+
+  const gig = await copyGig(copyFromId);
 
   if (!gig) {
     return toFormState("ERROR", "Gig not found ");
   }
-  console.log(gig);
+  console.log("copy", gig);
 
-  formData.forEach((form) => {
-    console.log("form", form);
-  });
+  const data = {
+    gigDate: formData.get("gigDate") as string | null,
+    timeStart: formData.get("timeStart") as string | null,
+    timeEnd: formData.get("timeEnd") as string | null,
+  };
+
+  if (data.gigDate && data.timeStart && data.timeEnd) {
+    const gigDateObj = new Date(data.gigDate);
+    const gigDateISO = gigDateObj.toISOString();
+    const timeStartISO = combineDateTimeToISOString(gigDateObj, data.timeStart);
+    const timeEndISO = combineDateTimeToISOString(gigDateObj, data.timeEnd);
+
+    const gigUpdated = await prisma.gig.update({
+      data: {
+        gigDate: gigDateISO,
+        timeStart: timeStartISO,
+        timeEnd: timeEndISO,
+      },
+      where: { id: gig.id },
+    });
+
+    console.log("gigupdated", gigUpdated);
+
+    revalidatePath(`/dashboard/gigs/`);
+    revalidatePath(`/dashboard/gigs/${gig.id}`);
+
+    return toFormState("SUCCESS", "Gig created successfully");
+  }
+
+  return toFormState("ERROR", "Missing required form data");
 }

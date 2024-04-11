@@ -10,8 +10,6 @@ interface Props {
 }
 
 export function GigDetailTabs({ gigId }: Props) {
-  // const pathName = usePathname();
-
   return (
     <Tabs defaultValue={gigId}>
       <TabsList>

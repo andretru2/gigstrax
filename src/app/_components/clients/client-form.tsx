@@ -119,8 +119,6 @@ function ClientDetails({
     // updatedBy,
   } = props;
 
-  console.log(client);
-
   return (
     <>
       <Label className="col-span-6">
