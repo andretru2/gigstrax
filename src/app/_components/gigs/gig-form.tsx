@@ -15,7 +15,7 @@ import {
   useRef,
   type ReactElement,
   useTransition,
-  useOptimistic,
+  // useOptimistic,
 } from "react";
 import {
   calculateTimeDifference,
@@ -23,6 +23,7 @@ import {
   formatDate,
   formatPrice,
   getTimeFromDate,
+  combineDateTimeToISOString,
 } from "@/lib/utils";
 import { useQueryStates, parseAsBoolean, useQueryState } from "nuqs";
 import { type ClientPickerProps, type SourcePickerProps } from "@/types/index";
@@ -188,28 +189,58 @@ function GigDetails({
   ...props
 }: Props & FormProps) {
   const { id, gig } = props;
-  const { gigDate, timeStart, timeEnd, price, amountPaid } = gig;
+  const { gigDate, timeStart, timeEnd, price, amountPaid, travelType } = gig;
 
-  function handleTimeInputBlur(e: FocusEvent<HTMLInputElement>) {
-    const selectedTime = e.target.value;
+  // console.log(gigDate, timeStart, timeEnd);
 
-    if (selectedTime && gigDate) {
-      const [hours, minutes] = selectedTime.split(":");
-      const gigDateObj = new Date(gigDate);
-      const saveGigdTime = new Date(
-        gigDateObj.getFullYear(),
-        gigDateObj.getMonth(),
-        gigDateObj.getDate(),
-        Number(hours),
-        Number(minutes),
+  function handleDatePickerBlur(date: Date) {
+    const newGigDate = new Date(date);
+
+    const newStartDate =
+      timeStart &&
+      new Date(
+        newGigDate.getFullYear(),
+        newGigDate.getMonth(),
+        newGigDate.getDate(),
+        new Date(timeStart).getHours(),
+        new Date(timeStart).getMinutes(),
       );
+
+    const newEndDate =
+      timeEnd &&
+      new Date(
+        newGigDate.getFullYear(),
+        newGigDate.getMonth(),
+        newGigDate.getDate(),
+        new Date(timeEnd).getHours(),
+        new Date(timeEnd).getMinutes(),
+      );
+
+    void handleSaveGigWrapper({
+      id: id,
+      key: "gigDate",
+      value: newGigDate.toISOString(),
+    });
+
+    if (timeStart) {
+      newStartDate?.getTime() !== new Date(timeStart).getTime();
       void handleSaveGigWrapper({
         id: id,
-        key: e.target.name as keyof GigProps,
-        value: saveGigdTime.toISOString(),
+        key: "timeStart",
+        value: newStartDate?.toISOString(),
+      });
+    }
+
+    if (timeEnd) {
+      newEndDate?.getTime() !== new Date(timeEnd).getTime();
+      void handleSaveGigWrapper({
+        id: id,
+        key: "timeEnd",
+        value: newEndDate?.toISOString(),
       });
     }
   }
+
   const datePickerImperativeHandleRef = useRef<{
     reset: () => void;
   }>(null);
@@ -222,18 +253,19 @@ function GigDetails({
 
   return (
     <>
-      <Label className="col-span-3">
+      <Label className="col-span-2">
         <DatePicker
           id="gigDate"
           name="gigDate"
           defaultValue={gigDate ? formatDate(gigDate, "formal") : ""}
-          onSelect={(date) => {
-            void handleSaveGigWrapper({
-              id: id,
-              key: "gigDate",
-              value: date.toISOString(),
-            });
-          }}
+          onSelect={handleDatePickerBlur}
+          // onSelect={(date) => {
+          //   void handleSaveGigWrapper({
+          //     id: id,
+          //     key: "gigDate",
+          //     value: date.toISOString(),
+          //   });
+          // }}
           imperativeHandleRef={datePickerImperativeHandleRef}
         />
         <span>Gig Date</span>
@@ -250,9 +282,18 @@ function GigDetails({
           disabled={gigDate == null}
           name="timeStart"
           defaultValue={timeStart ? getTimeFromDate(timeStart) : undefined}
-          onBlur={(e: FocusEvent<HTMLInputElement>) =>
-            void handleTimeInputBlur(e)
-          }
+          // onBlur={(e: FocusEvent<HTMLInputElement>) =>
+          //   void handleTimeInputBlur(e)
+          // }
+          onBlur={(e: FocusEvent<HTMLInputElement>) => {
+            const timeStartISO =
+              gigDate && combineDateTimeToISOString(gigDate, e.target.value);
+            void handleSaveGigWrapper({
+              id: id,
+              key: e.target.name as keyof GigProps,
+              value: timeStartISO,
+            });
+          }}
         />
         <span>Start</span>
         <FieldError
@@ -268,9 +309,18 @@ function GigDetails({
           disabled={gigDate == null}
           name="timeEnd"
           defaultValue={timeEnd ? getTimeFromDate(timeEnd) : undefined}
-          onBlur={(e: FocusEvent<HTMLInputElement>) =>
-            void handleTimeInputBlur(e)
-          }
+          // onBlur={(e: FocusEvent<HTMLInputElement>) =>
+          //   void handleTimeInputBlur(e)
+          // }
+          onBlur={(e: FocusEvent<HTMLInputElement>) => {
+            const timeEndISO =
+              gigDate && combineDateTimeToISOString(gigDate, e.target.value);
+            void handleSaveGigWrapper({
+              id: id,
+              key: e.target.name as keyof GigProps,
+              value: timeEndISO,
+            });
+          }}
         />
         <span>End</span>
         <FieldError
@@ -287,6 +337,20 @@ function GigDetails({
           defaultValue={durationHours ? durationHours : undefined}
         />
         <span>Duration</span>
+      </Label>
+      <Label className="col-span-1">
+        <Input
+          name="travelType"
+          defaultValue={travelType ? travelType : ""}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveGigWrapper({
+              id: id,
+              key: e.target.name as keyof GigProps,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Travel</span>
       </Label>
 
       <Label className="col-span-1">
@@ -343,7 +407,7 @@ function GigDetails({
             balance && balance > 0 && "font-bold text-destructive",
           )}
         />
-        <span>Balance</span>
+        <span>Open</span>
       </Label>
 
       {/* <Label className="col-span-3">

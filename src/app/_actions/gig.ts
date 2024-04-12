@@ -45,6 +45,7 @@ export async function getGig(id: string) {
       santaId: true,
       mrsSantaId: true,
       clientId: true,
+      travelType: true,
 
       venueAddressCity: true,
       venueAddressName: true,
