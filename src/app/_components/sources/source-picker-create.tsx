@@ -30,7 +30,7 @@ interface Props {
 }
 
 export function SourcePickerCreate(props: Props) {
-  // console.log(props);
+  console.log(props);
   // const [open, setOpen] = useQueryState(
   //   props.role === "RBS" ? "modalOpenSanta" : "modalOpenMrsSanta",
   //   modalOpenParser,
