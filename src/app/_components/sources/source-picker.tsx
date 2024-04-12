@@ -20,7 +20,7 @@ interface Props {
 async function fetchSources({ searchParams, role }: Props) {
   const search =
     role === "RBS" ? searchParams?.searchSanta : searchParams?.searchMrsSanta;
-  console.log("fetch", search);
+  // console.log("fetch", search);
 
   if (!search) return [] as SourcePickerProps[];
 

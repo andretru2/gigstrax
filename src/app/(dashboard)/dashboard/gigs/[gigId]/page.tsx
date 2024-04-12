@@ -35,8 +35,6 @@ interface Props {
 }
 
 export default function Page(props: Props) {
-  // const client = gig?.clientId && (await getClient(gig?.clientId));
-
   return (
     <Card className="mx-auto w-full  border-0 bg-background [&>*]:px-0 ">
       <CardContent className="flex flex-col gap-2">

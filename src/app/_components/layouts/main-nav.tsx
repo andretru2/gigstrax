@@ -24,7 +24,7 @@ interface MainNavProps {
 
 export function MainNav({ items }: MainNavProps) {
   const segment = useSelectedLayoutSegment();
-  // console.log(segment);
+
   return (
     <div className="hidden gap-8   lg:flex">
       <Link
@@ -65,7 +65,6 @@ export function MainNav({ items }: MainNavProps) {
                   </li>
                   {items[0].items.map((item) => (
                     <ListItem
-                      isActive={segment?.toUpperCase() === "CLIENTS"}
                       key={item.title}
                       title={item.title}
                       href={item.href}
@@ -92,6 +91,11 @@ export function MainNav({ items }: MainNavProps) {
                           key={item.title}
                           title={item.title}
                           href={item.href}
+                          className={
+                            segment?.toUpperCase() === item.title.toUpperCase()
+                              ? "bg-secondary text-foreground shadow-sm"
+                              : " block select-none space-y-1 rounded-md bg-secondary p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          }
                         >
                           {item.description}
                         </ListItem>
@@ -123,20 +127,15 @@ const ListItem = React.forwardRef<
   React.ElementRef<"a">,
   React.ComponentPropsWithoutRef<"a">
 >(({ className, title, children, href, ...props }, ref) => {
-  const segment = useSelectedLayoutSegment();
-  console.log("a", segment, href, props.isActive);
+  // const segment = useSelectedLayoutSegment();
+
   return (
     <li>
       <NavigationMenuLink asChild>
         <Link
           ref={ref}
           href={String(href)}
-          className={cn(
-            className,
-            "CLIENTS" === segment?.toUpperCase()
-              ? "bg-secondary text-foreground shadow-sm"
-              : " block select-none space-y-1 rounded-md bg-secondary p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-          )}
+          className={cn(className)}
           {...props}
         >
           <div className="text-sm font-medium leading-none">{title}</div>

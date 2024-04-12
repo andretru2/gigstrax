@@ -282,7 +282,7 @@ export async function copyInfoFromClient(id: string) {
     },
   });
 
-  console.log("result update", resultUpdate);
+  // console.log("result update", resultUpdate);
 
   // revalidatePath(`/dashboard/gigs/`);
   revalidatePath(`/dashboard/gigs/${id}`);
