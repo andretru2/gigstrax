@@ -52,6 +52,7 @@ export function ClientForm(props: Awaited<Partial<Client>>) {
   });
 
   async function handleSaveClientWrapper(props: SaveClientProps) {
+    // ref.current?.reset()
     const resultSave = await handleSaveClient(props);
     if (!resultSave) return;
     if (resultSave.result === "Error") {
@@ -218,7 +219,7 @@ function ClientDetails({
             });
           }}
         >
-          <SelectTrigger className="bg-white capitalize">
+          <SelectTrigger className="bg-white text-xs capitalize">
             <SelectValue placeholder={clientType} />
           </SelectTrigger>
           <SelectContent>

@@ -15,6 +15,7 @@ import {
   useRef,
   type ReactElement,
   useTransition,
+  useOptimistic,
 } from "react";
 import {
   calculateTimeDifference,
@@ -66,6 +67,16 @@ export function GigForm(props: Props) {
     EMPTY_FORM_STATE,
   );
   const [isPending, startTransition] = useTransition();
+  // const [optimisticVenue, addOptimisticVenue] = useOptimistic(
+  //   {
+  //     contactName: props.gig.contactName,
+  //   },
+  //   (state, optimisticValue) => {
+  //     // Merge and return new state with optimistic value
+  //     // return [...state, { contactName: optimisticValue, pending: true }];
+  //     return { ...state, contactName: optimisticValue, pending: true };
+  //   },
+  // );
 
   const { ref } = useFormFeedback(formState, {
     onSuccess: ({ formState, reset }) => {
@@ -92,10 +103,13 @@ export function GigForm(props: Props) {
       });
     }
     void setFieldError({ key: null, error: null });
+    // ref.current?.reset();
   }
 
   const handleCopy = () => {
     startTransition(() => {
+      ref.current?.reset();
+      // addOptimisticVenue("michael shea optimistic");
       void copyInfoFromClient(id);
     });
   };
@@ -129,7 +143,7 @@ export function GigForm(props: Props) {
             type="button"
             isLoading={isPending}
             variant={"ghost"}
-            className="h-0 w-max  space-y-0 p-0 text-xs underline hover:text-secondary-500"
+            className="mb-1 h-0  w-max space-y-0 p-0 text-xs underline hover:text-secondary-500"
             onClick={handleCopy}
           >
             Same as client?
@@ -142,6 +156,7 @@ export function GigForm(props: Props) {
             handleSaveGigWrapper={handleSaveGigWrapper}
             fieldError={fieldError}
             formState={formState}
+            // optimisticVenue={optimisticVenue}
           />
         </CardContent>
       </Card>
@@ -444,6 +459,7 @@ function VenueDetails({
   handleSaveGigWrapper,
   fieldError,
   formState,
+  // optimisticVenue,
   ...props
 }: Props & FormProps) {
   const { id, gig } = props;
@@ -460,6 +476,8 @@ function VenueDetails({
     venueAddressZip,
     notesVenue,
   } = gig;
+
+  // const { contactName: contactNameOptimistic, pending } = optimisticVenue;
 
   return (
     <>
@@ -504,6 +522,30 @@ function VenueDetails({
           name="contactName"
         />
       </Label>
+      {/* <Label className="col-span-6">
+        <Input
+          name="contactNameOptimistic"
+          defaultValue={
+            contactNameOptimistic ? contactNameOptimistic : undefined
+          }
+          className={pending && "opacity-75"}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveGigWrapper({
+              id: id,
+              key: e.target.name as keyof GigProps,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Contact at Venue optmisitstc</span>
+        <FieldError
+          formState={formState}
+          error={
+            fieldError.key === "contactNameOptimistic" ? fieldError.error : null
+          }
+          name="contactNameOptimistic"
+        />
+      </Label> */}
 
       <Label className="col-span-2">
         <Input
@@ -561,7 +603,7 @@ function VenueDetails({
             });
           }}
         >
-          <SelectTrigger className="bg-white capitalize">
+          <SelectTrigger className="bg-white text-xs capitalize">
             <SelectValue placeholder={venueType} />
           </SelectTrigger>
           <SelectContent>

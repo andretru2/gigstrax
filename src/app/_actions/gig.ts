@@ -184,6 +184,7 @@ export async function createGig() {
 }
 
 export async function copyGig(copyFromId: string): Promise<Gig> {
+  noStore();
   if (!copyFromId)
     return { result: "Error", resultDescription: "Missing params" };
 
@@ -263,7 +264,7 @@ export async function copyInfoFromClient(id: string) {
 
   const client = await getClient(gig?.clientId);
 
-  await prisma.gig.update({
+  const resultUpdate = await prisma.gig.update({
     where: {
       id,
     },
@@ -280,9 +281,15 @@ export async function copyInfoFromClient(id: string) {
     },
   });
 
-  revalidatePath(`/dashboard/gigs/`);
+  console.log("result update", resultUpdate);
+
+  // revalidatePath(`/dashboard/gigs/`);
   revalidatePath(`/dashboard/gigs/${id}`);
   // redirect(`/dashboard/gigs/${id}`);
 
-  return { result: "Success", resultDescription: "Gig updated. " };
+  return {
+    result: "Success",
+    resultDescription: "Gig updated. ",
+    gig: resultUpdate,
+  };
 }
