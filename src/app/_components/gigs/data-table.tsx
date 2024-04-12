@@ -70,7 +70,14 @@ export default function Datatable({ data, pageCount }: Props) {
       },
       {
         accessorKey: "timeStart",
-        header: () => <div className=" text-center">Start</div>,
+        header: ({ column }) => (
+          <DataTableColumnHeader
+            column={column}
+            title="Start"
+            className="   [&>*]:justify-start [&>*]:px-2 "
+          />
+        ),
+        // header: () => <div className=" text-center">Start</div>,
         cell: ({ row }) => {
           return (
             <div className="text-center">
@@ -83,7 +90,14 @@ export default function Datatable({ data, pageCount }: Props) {
       },
       {
         accessorKey: "timeEnd",
-        header: () => <div className=" text-center">End</div>,
+        header: ({ column }) => (
+          <DataTableColumnHeader
+            column={column}
+            title="End"
+            className="   [&>*]:justify-start [&>*]:px-2 "
+          />
+        ),
+        // header: () => <div className=" text-center">End</div>,
 
         cell: ({ row }) => {
           return (
@@ -142,7 +156,7 @@ export default function Datatable({ data, pageCount }: Props) {
         cell: ({ row }) => {
           return (
             <div className=" truncate px-2 text-left">
-              {row.original?.mrsSanta?.nameFirst}
+              {row.original?.mrsSanta?.role}
             </div>
           );
         },

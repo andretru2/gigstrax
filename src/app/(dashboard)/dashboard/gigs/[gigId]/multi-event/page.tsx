@@ -118,7 +118,7 @@ async function GigList(props: Props) {
                 </span>
                 <span className="w-12">{getTimeFromDate(gig?.timeStart)}</span>
                 <span className="w-12">{getTimeFromDate(gig?.timeEnd)}</span>
-                <span className="w-20">{gig.santa.role}</span>
+                <span className="w-20">{gig.santa?.role}</span>
                 <span className="">{gig.venueAddressName}</span>
               </Link>
             ))}
@@ -138,7 +138,7 @@ async function GigList(props: Props) {
                 </span>
                 <span className="w-12">{getTimeFromDate(gig?.timeStart)}</span>
                 <span className="w-12">{getTimeFromDate(gig?.timeEnd)}</span>
-                <span className="w-20">{gig.santa.role}</span>
+                <span className="w-20">{gig?.santa?.role}</span>
                 <span className="">{gig.venueAddressName}</span>
               </Link>
             ))}

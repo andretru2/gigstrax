@@ -15,6 +15,7 @@ import {
   useRef,
   type ReactElement,
   useTransition,
+  // useOptimistic,
 } from "react";
 import {
   calculateTimeDifference,
@@ -22,6 +23,7 @@ import {
   formatDate,
   formatPrice,
   getTimeFromDate,
+  combineDateTimeToISOString,
 } from "@/lib/utils";
 import { useQueryStates, parseAsBoolean, useQueryState } from "nuqs";
 import { type ClientPickerProps, type SourcePickerProps } from "@/types/index";
@@ -66,6 +68,16 @@ export function GigForm(props: Props) {
     EMPTY_FORM_STATE,
   );
   const [isPending, startTransition] = useTransition();
+  // const [optimisticVenue, addOptimisticVenue] = useOptimistic(
+  //   {
+  //     contactName: props.gig.contactName,
+  //   },
+  //   (state, optimisticValue) => {
+  //     // Merge and return new state with optimistic value
+  //     // return [...state, { contactName: optimisticValue, pending: true }];
+  //     return { ...state, contactName: optimisticValue, pending: true };
+  //   },
+  // );
 
   const { ref } = useFormFeedback(formState, {
     onSuccess: ({ formState, reset }) => {
@@ -92,10 +104,13 @@ export function GigForm(props: Props) {
       });
     }
     void setFieldError({ key: null, error: null });
+    // ref.current?.reset();
   }
 
   const handleCopy = () => {
     startTransition(() => {
+      ref.current?.reset();
+      // addOptimisticVenue("michael shea optimistic");
       void copyInfoFromClient(id);
     });
   };
@@ -129,7 +144,7 @@ export function GigForm(props: Props) {
             type="button"
             isLoading={isPending}
             variant={"ghost"}
-            className="h-0 w-max  space-y-0 p-0 text-xs underline hover:text-secondary-500"
+            className="mb-1 h-0  w-max space-y-0 p-0 text-xs underline hover:text-secondary-500"
             onClick={handleCopy}
           >
             Same as client?
@@ -142,6 +157,7 @@ export function GigForm(props: Props) {
             handleSaveGigWrapper={handleSaveGigWrapper}
             fieldError={fieldError}
             formState={formState}
+            // optimisticVenue={optimisticVenue}
           />
         </CardContent>
       </Card>
@@ -173,28 +189,58 @@ function GigDetails({
   ...props
 }: Props & FormProps) {
   const { id, gig } = props;
-  const { gigDate, timeStart, timeEnd, price, amountPaid } = gig;
+  const { gigDate, timeStart, timeEnd, price, amountPaid, travelType } = gig;
 
-  function handleTimeInputBlur(e: FocusEvent<HTMLInputElement>) {
-    const selectedTime = e.target.value;
+  // console.log(gigDate, timeStart, timeEnd);
 
-    if (selectedTime && gigDate) {
-      const [hours, minutes] = selectedTime.split(":");
-      const gigDateObj = new Date(gigDate);
-      const saveGigdTime = new Date(
-        gigDateObj.getFullYear(),
-        gigDateObj.getMonth(),
-        gigDateObj.getDate(),
-        Number(hours),
-        Number(minutes),
+  function handleDatePickerBlur(date: Date) {
+    const newGigDate = new Date(date);
+
+    const newStartDate =
+      timeStart &&
+      new Date(
+        newGigDate.getFullYear(),
+        newGigDate.getMonth(),
+        newGigDate.getDate(),
+        new Date(timeStart).getHours(),
+        new Date(timeStart).getMinutes(),
       );
+
+    const newEndDate =
+      timeEnd &&
+      new Date(
+        newGigDate.getFullYear(),
+        newGigDate.getMonth(),
+        newGigDate.getDate(),
+        new Date(timeEnd).getHours(),
+        new Date(timeEnd).getMinutes(),
+      );
+
+    void handleSaveGigWrapper({
+      id: id,
+      key: "gigDate",
+      value: newGigDate.toISOString(),
+    });
+
+    if (timeStart) {
+      newStartDate?.getTime() !== new Date(timeStart).getTime();
       void handleSaveGigWrapper({
         id: id,
-        key: e.target.name as keyof GigProps,
-        value: saveGigdTime.toISOString(),
+        key: "timeStart",
+        value: newStartDate?.toISOString(),
+      });
+    }
+
+    if (timeEnd) {
+      newEndDate?.getTime() !== new Date(timeEnd).getTime();
+      void handleSaveGigWrapper({
+        id: id,
+        key: "timeEnd",
+        value: newEndDate?.toISOString(),
       });
     }
   }
+
   const datePickerImperativeHandleRef = useRef<{
     reset: () => void;
   }>(null);
@@ -207,18 +253,19 @@ function GigDetails({
 
   return (
     <>
-      <Label className="col-span-3">
+      <Label className="col-span-2">
         <DatePicker
           id="gigDate"
           name="gigDate"
           defaultValue={gigDate ? formatDate(gigDate, "formal") : ""}
-          onSelect={(date) => {
-            void handleSaveGigWrapper({
-              id: id,
-              key: "gigDate",
-              value: date.toISOString(),
-            });
-          }}
+          onSelect={handleDatePickerBlur}
+          // onSelect={(date) => {
+          //   void handleSaveGigWrapper({
+          //     id: id,
+          //     key: "gigDate",
+          //     value: date.toISOString(),
+          //   });
+          // }}
           imperativeHandleRef={datePickerImperativeHandleRef}
         />
         <span>Gig Date</span>
@@ -235,9 +282,18 @@ function GigDetails({
           disabled={gigDate == null}
           name="timeStart"
           defaultValue={timeStart ? getTimeFromDate(timeStart) : undefined}
-          onBlur={(e: FocusEvent<HTMLInputElement>) =>
-            void handleTimeInputBlur(e)
-          }
+          // onBlur={(e: FocusEvent<HTMLInputElement>) =>
+          //   void handleTimeInputBlur(e)
+          // }
+          onBlur={(e: FocusEvent<HTMLInputElement>) => {
+            const timeStartISO =
+              gigDate && combineDateTimeToISOString(gigDate, e.target.value);
+            void handleSaveGigWrapper({
+              id: id,
+              key: e.target.name as keyof GigProps,
+              value: timeStartISO,
+            });
+          }}
         />
         <span>Start</span>
         <FieldError
@@ -253,9 +309,18 @@ function GigDetails({
           disabled={gigDate == null}
           name="timeEnd"
           defaultValue={timeEnd ? getTimeFromDate(timeEnd) : undefined}
-          onBlur={(e: FocusEvent<HTMLInputElement>) =>
-            void handleTimeInputBlur(e)
-          }
+          // onBlur={(e: FocusEvent<HTMLInputElement>) =>
+          //   void handleTimeInputBlur(e)
+          // }
+          onBlur={(e: FocusEvent<HTMLInputElement>) => {
+            const timeEndISO =
+              gigDate && combineDateTimeToISOString(gigDate, e.target.value);
+            void handleSaveGigWrapper({
+              id: id,
+              key: e.target.name as keyof GigProps,
+              value: timeEndISO,
+            });
+          }}
         />
         <span>End</span>
         <FieldError
@@ -272,6 +337,20 @@ function GigDetails({
           defaultValue={durationHours ? durationHours : undefined}
         />
         <span>Duration</span>
+      </Label>
+      <Label className="col-span-1">
+        <Input
+          name="travelType"
+          defaultValue={travelType ? travelType : ""}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveGigWrapper({
+              id: id,
+              key: e.target.name as keyof GigProps,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Travel</span>
       </Label>
 
       <Label className="col-span-1">
@@ -328,7 +407,7 @@ function GigDetails({
             balance && balance > 0 && "font-bold text-destructive",
           )}
         />
-        <span>Balance</span>
+        <span>Open</span>
       </Label>
 
       {/* <Label className="col-span-3">
@@ -444,6 +523,7 @@ function VenueDetails({
   handleSaveGigWrapper,
   fieldError,
   formState,
+  // optimisticVenue,
   ...props
 }: Props & FormProps) {
   const { id, gig } = props;
@@ -460,6 +540,8 @@ function VenueDetails({
     venueAddressZip,
     notesVenue,
   } = gig;
+
+  // const { contactName: contactNameOptimistic, pending } = optimisticVenue;
 
   return (
     <>
@@ -504,6 +586,30 @@ function VenueDetails({
           name="contactName"
         />
       </Label>
+      {/* <Label className="col-span-6">
+        <Input
+          name="contactNameOptimistic"
+          defaultValue={
+            contactNameOptimistic ? contactNameOptimistic : undefined
+          }
+          className={pending && "opacity-75"}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveGigWrapper({
+              id: id,
+              key: e.target.name as keyof GigProps,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Contact at Venue optmisitstc</span>
+        <FieldError
+          formState={formState}
+          error={
+            fieldError.key === "contactNameOptimistic" ? fieldError.error : null
+          }
+          name="contactNameOptimistic"
+        />
+      </Label> */}
 
       <Label className="col-span-2">
         <Input
@@ -561,7 +667,7 @@ function VenueDetails({
             });
           }}
         >
-          <SelectTrigger className="bg-white capitalize">
+          <SelectTrigger className="bg-white text-xs capitalize">
             <SelectValue placeholder={venueType} />
           </SelectTrigger>
           <SelectContent>

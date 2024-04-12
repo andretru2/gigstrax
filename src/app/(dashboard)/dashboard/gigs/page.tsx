@@ -68,6 +68,7 @@ async function Gigs(props: Props) {
     mrsSanta: {
       select: {
         nameFirst: true,
+        role: true,
       },
     },
   };
@@ -95,7 +96,7 @@ async function Gigs(props: Props) {
       break;
 
     case "all":
-      orderBy = [];
+      orderBy = [{ timeStart: { sort: "desc", nulls: "last" } }];
       break;
   }
 

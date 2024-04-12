@@ -85,7 +85,7 @@ export async function checkIfExists(name: string) {
       },
     },
   });
-  console.log("check if exists", name, client, !!client, client?.id);
+  // console.log("check if exists", name, client, !!client, client?.id);
 
   return {
     result: "Success",

@@ -15,6 +15,8 @@ export const metadata: Metadata = {
   description: "Manage your client",
 };
 
+export const revalidate = 0;
+
 interface Props {
   params: {
     clientId: string;

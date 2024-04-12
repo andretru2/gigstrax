@@ -52,6 +52,7 @@ export function ClientForm(props: Awaited<Partial<Client>>) {
   });
 
   async function handleSaveClientWrapper(props: SaveClientProps) {
+    // ref.current?.reset()
     const resultSave = await handleSaveClient(props);
     if (!resultSave) return;
     if (resultSave.result === "Error") {
@@ -113,6 +114,7 @@ function ClientDetails({
     notes,
     phoneCell,
     phoneLandline,
+    source,
     // createdAt,
     // updatedAt,
     // createdBy,
@@ -142,7 +144,7 @@ function ClientDetails({
         />
       </Label>
 
-      <Label className="col-span-6">
+      <Label className="col-span-3">
         <Input
           name="contact"
           disabled={!client}
@@ -160,6 +162,27 @@ function ClientDetails({
           formState={formState}
           error={fieldError.key === "contact" ? fieldError.error : null}
           name="contact"
+        />
+      </Label>
+
+      <Label className="col-span-3">
+        <Input
+          name="source"
+          disabled={!client}
+          defaultValue={source ? source : undefined}
+          onBlur={(e: FocusEvent<HTMLInputElement>) =>
+            void handleSaveClientWrapper({
+              id: id,
+              key: e.target.name as keyof Client,
+              value: e.target.value,
+            })
+          }
+        />
+        <span>Source</span>
+        <FieldError
+          formState={formState}
+          error={fieldError.key === "source" ? fieldError.error : null}
+          name="source"
         />
       </Label>
 
@@ -218,7 +241,7 @@ function ClientDetails({
             });
           }}
         >
-          <SelectTrigger className="bg-white capitalize">
+          <SelectTrigger className="bg-white text-xs capitalize">
             <SelectValue placeholder={clientType} />
           </SelectTrigger>
           <SelectContent>
