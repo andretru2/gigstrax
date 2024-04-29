@@ -81,6 +81,22 @@ export function MultiEventCreateForm(props: Props) {
             <Input type="time" id="timeEnd" name="timeEnd" />
             <span>End</span>
           </Label>
+          <Label className="col-span-3">
+            <DatePicker
+              id="gigDate"
+              name="gigDate"
+              imperativeHandleRef={datePickerImperativeHandleRef}
+            />
+            <span>Gig Date</span>
+          </Label>
+          <Label className="col-span-2">
+            <Input type="time" id="timeStart" name="timeStart" />
+            <span>Start</span>
+          </Label>
+          <Label className="col-span-2">
+            <Input type="time" id="timeEnd" name="timeEnd" />
+            <span>End</span>
+          </Label>
           <SubmitButton />
         </form>
       </CardContent>

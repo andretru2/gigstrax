@@ -23,18 +23,18 @@ export default function SignIn() {
         onClick={() => {
           setIsLoading(true);
           void signIn("google", {
-            callbackUrl: "https://gigstrax.vercel.app/dashboard/gigs",
-            // callbackUrl: "http://localhost:3000/dashboard/gigs",
+            // callbackUrl: "https://gigstrax.vercel.app/dashboard/gigs",
+            callbackUrl: "http://localhost:3000/dashboard/gigs",
           });
           setIsLoading(false);
         }}
-        className=" align-center flex w-full flex-row items-center gap-1 text-base"
+        className=" align-center flex w-full flex-row items-center gap-1 bg-white text-base hover:bg-gray-50"
       >
         Sign In
         <Icons.logIn className="h-5 w-5" />
       </Button>
       <svg
-        className="mt-2 w-full opacity-60"
+        className="mt-4 w-full opacity-80"
         // width="242"
         // height="10"
         fill="none"

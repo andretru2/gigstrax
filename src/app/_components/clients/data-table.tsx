@@ -53,7 +53,7 @@ export default function Datatable({ data, pageCount }: Props) {
         ),
         cell: ({ row }) => {
           return (
-            <div className=" w-48 truncate px-2 text-left">
+            <div className=" max-w-64 truncate px-2 text-left">
               {row.original.client}
             </div>
           );
@@ -70,7 +70,7 @@ export default function Datatable({ data, pageCount }: Props) {
         ),
         cell: ({ row }) => {
           return (
-            <div className="  w-44 truncate px-2 text-left">
+            <div className="  max-w-64 truncate px-2 text-left">
               {row.original.contact}
             </div>
           );
@@ -99,7 +99,7 @@ export default function Datatable({ data, pageCount }: Props) {
           <DataTableColumnHeader
             column={column}
             title="Email"
-            className=" w-60  [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+            className=" max-w-64  [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
           />
         ),
         cell: ({ row }) => {
@@ -122,7 +122,7 @@ export default function Datatable({ data, pageCount }: Props) {
         ),
         cell: ({ row }) => {
           return (
-            <div className=" px-2 text-left">
+            <div className=" max-w-96 truncate px-2 text-left">
               {formatAddress({
                 addressLine1: row.original.addressStreet ?? "",
                 city: row.original.addressCity ?? "",

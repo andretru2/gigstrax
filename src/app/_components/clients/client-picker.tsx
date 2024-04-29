@@ -47,7 +47,7 @@ async function fetchRecent() {
 export function ClientPicker(props: Props) {
   return (
     <div className="flex flex-col gap-8">
-      <h2 className="flex w-full items-center justify-center text-base font-bold">
+      <h2 className="flex w-full items-center justify-center  font-bold">
         Client Picker
       </h2>
       <div className="flex w-full flex-col gap-4">

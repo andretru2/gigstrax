@@ -5,7 +5,7 @@ import Link from "next/link";
 import { type ColumnDef } from "@tanstack/react-table";
 // import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { formatPhone } from "@/lib/utils";
+import { formatAddress, formatPhone } from "@/lib/utils";
 // import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 // import { Checkbox } from "@/components/ui/checkbox";
@@ -54,7 +54,7 @@ export default function Datatable({ data, pageCount }: Props) {
         ),
         cell: ({ row }) => {
           return (
-            <div className=" w-28 truncate px-2 text-left">
+            <div className=" max-w-40 truncate px-2 text-left">
               {row.original.nameFirst}
             </div>
           );
@@ -71,7 +71,7 @@ export default function Datatable({ data, pageCount }: Props) {
         ),
         cell: ({ row }) => {
           return (
-            <div className=" truncate  px-2 text-left ">
+            <div className="  max-w-40  truncate  px-2 text-left ">
               {row.original.nameLast}
             </div>
           );
@@ -88,7 +88,7 @@ export default function Datatable({ data, pageCount }: Props) {
         ),
         cell: ({ row }) => {
           return (
-            <div className=" w-28 truncate  px-2 text-left">
+            <div className=" max-w-40 truncate  px-2 text-left">
               {row.original.role}
             </div>
           );
@@ -101,7 +101,7 @@ export default function Datatable({ data, pageCount }: Props) {
         ),
         cell: ({ row }) => {
           return (
-            <div className=" w-32 truncate ">
+            <div className=" max-w-32 truncate ">
               {row.original.phone && formatPhone(row.original.phone)}
             </div>
           );
@@ -118,7 +118,9 @@ export default function Datatable({ data, pageCount }: Props) {
         ),
         cell: ({ row }) => {
           return (
-            <div className=" w-40 px-2 text-left">{row.original.email}</div>
+            <div className=" max-w-56 truncate px-2 text-left">
+              {row.original.email}
+            </div>
           );
         },
       },
@@ -130,6 +132,29 @@ export default function Datatable({ data, pageCount }: Props) {
         ),
         cell: ({ row }) => {
           return <span>{row.original.status}</span>;
+        },
+      },
+
+      {
+        accessorKey: "addressStreet",
+        header: ({ column }) => (
+          <DataTableColumnHeader
+            column={column}
+            title="Address"
+            className=" [&>*]:justify-start [&>*]:px-2 [&>*]:text-left"
+          />
+        ),
+        cell: ({ row }) => {
+          return (
+            <div className=" max-w-96 truncate px-2 text-left">
+              {formatAddress({
+                addressLine1: row.original.addressStreet ?? "",
+                city: row.original.addressCity ?? "",
+                state: row.original.addressState ?? "",
+                zip: row.original.addressZip ?? "",
+              })}
+            </div>
+          );
         },
       },
       {
@@ -194,7 +219,7 @@ export default function Datatable({ data, pageCount }: Props) {
 
         id && router.push(`/dashboard/sources/${id}`);
       }}
-      classNameTableRow={classNameTableRow}
+      // classNameTableRow={classNameTableRow}
       pageCount={pageCount}
       filterableColumns={[
         {

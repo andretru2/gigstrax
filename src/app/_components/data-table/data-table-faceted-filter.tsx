@@ -43,7 +43,7 @@ export function DataTableFacetedFilter<TData, TValue>({
           aria-label="Filter rows"
           variant="outline"
           size="sm"
-          className="h-8 border-dashed border-accent hover:text-accent"
+          className="h-10 border-dashed border-accent hover:text-accent"
         >
           <Icons.add className="mr-2 h-4 w-4" aria-hidden="true" />
           {title}
