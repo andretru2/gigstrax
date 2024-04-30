@@ -208,47 +208,70 @@ export async function copyGig(copyFromId: string): Promise<Gig> {
 export async function submitMultiEventForm(
   copyFromId: string,
   prevState: FormState,
-  formData: FormData,
+  formData: FormData[],
 ): Promise<FormState> {
   if (!copyFromId || !formData) return toFormState("ERROR", "Missing params");
 
   try {
-    const parsedData = parseFormData(formData, gigMultiEventSchema);
+    // const parsedData = parseFormData(formData, gigMultiEventSchema);
 
-    if (parsedData) {
-      const gig = await copyGig(copyFromId);
+    // const gig = await copyGig(copyFromId);
+    // const gig = await getGig(copyFromId);
 
-      if (!gig) {
-        return toFormState("ERROR", "Gig not found ");
-      }
+    if (!copyFromId) {
+      return toFormState("ERROR", "Gig not found ");
+    }
 
-      const data = {
-        gigDate: formData.get("gigDate") as string | null,
-        timeStart: formData.get("timeStart") as string | null,
-        timeEnd: formData.get("timeEnd") as string | null,
-      };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // const { gigDate, timeStart, id, timeEnd, ...gigWithoutDates } = gig;
 
-      if (data.gigDate && data.timeStart && data.timeEnd) {
-        const gigDateObj = new Date(data.gigDate);
-        const gigDateISO = gigDateObj.toISOString();
-        const timeStartISO = combineDateTimeToISOString(
-          gigDateObj,
-          data.timeStart,
-        );
-        const timeEndISO = combineDateTimeToISOString(gigDateObj, data.timeEnd);
+    await Promise.all(
+      formData.map(async (data) => {
+        const copiedGig = await copyGig(copyFromId);
 
         await prisma.gig.update({
+          where: { id: copiedGig.id },
           data: {
-            gigDate: gigDateISO,
-            timeStart: timeStartISO,
-            timeEnd: timeEndISO,
+            gigDate: data.gigDateISO,
+            timeStart: data.timeStartISO,
+            timeEnd: data.timeEndISO,
+            // id: undefined,
+            // ...gigWithoutDates,
+            // other fields...
           },
-          where: { id: gig.id },
         });
-        revalidatePath(`/dashboard/gigs/`);
-        revalidatePath(`/dashboard/gigs/${gig.id}`);
-      }
-    }
+      }),
+    );
+
+    revalidatePath(`/dashboard/gigs/`);
+    revalidatePath(`/dashboard/gigs/${copyFromId}`);
+
+    // const data = {
+    //   gigDate: formData.get("gigDate") as string | null,
+    //   timeStart: formData.get("timeStart") as string | null,
+    //   timeEnd: formData.get("timeEnd") as string | null,
+    // };
+
+    // if (data.gigDate && data.timeStart && data.timeEnd) {
+    //   const gigDateObj = new Date(data.gigDate);
+    //   const gigDateISO = gigDateObj.toISOString();
+    //   const timeStartISO = combineDateTimeToISOString(
+    //     gigDateObj,
+    //     data.timeStart,
+    //   );
+    //   const timeEndISO = combineDateTimeToISOString(gigDateObj, data.timeEnd);
+
+    //   await prisma.gig.update({
+    //     data: {
+    //       gigDate: gigDateISO,
+    //       timeStart: timeStartISO,
+    //       timeEnd: timeEndISO,
+    //     },
+    //     where: { id: gig.id },
+    //   });
+    //   revalidatePath(`/dashboard/gigs/`);
+    //   revalidatePath(`/dashboard/gigs/${gig.id}`);
+    // }
   } catch (error) {
     return fromErrorToFormState(error);
   }
