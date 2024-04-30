@@ -57,7 +57,7 @@ export function MainNav({ items }: MainNavProps) {
                         <div className="mb-2 mt-4 text-lg font-medium">
                           {siteConfig.name}
                         </div>
-                        <p className="text-sm leading-tight text-muted-foreground">
+                        <p className=" leading-tight text-muted-foreground">
                           {siteConfig.description}
                         </p>
                       </a>
@@ -94,7 +94,7 @@ export function MainNav({ items }: MainNavProps) {
                           className={
                             segment?.toUpperCase() === item.title.toUpperCase()
                               ? "bg-secondary text-foreground shadow-sm"
-                              : " block select-none space-y-1 rounded-md bg-secondary p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                              : " block select-none space-y-1 rounded-md bg-secondary p-3 text-base leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                           }
                         >
                           {item.description}
@@ -138,8 +138,8 @@ const ListItem = React.forwardRef<
           className={cn(className)}
           {...props}
         >
-          <div className="text-sm font-medium leading-none">{title}</div>
-          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+          <div className=" font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 leading-snug text-muted-foreground">
             {children}
           </p>
         </Link>

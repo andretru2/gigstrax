@@ -7,24 +7,15 @@ export const metadata: Metadata = {
   description: "Login to your account",
 };
 
-export default function LoginPage() {
+export default function Page() {
   return (
-    <main className="relative h-screen overscroll-y-none bg-gray-50 font-sans">
-      <div className="flex flex-row ">
-        <div className="relative flex max-w-[50%] flex-1 flex-col justify-center gap-10 bg-gradient-to-br from-primary to-primary/90 pl-20  ">
-          <h1 className=" line-clamp-3 flex max-w-md flex-row items-center  justify-center font-heading text-5xl font-bold leading-[1.2]">
-            <Icons.logo className="mr-4 h-12 w-12 text-white" />
-            Real Beard Santas
-          </h1>
-        </div>
-        <div className="flex h-screen max-w-[50%] flex-1 flex-col  items-center justify-center ">
-          <div className="flex w-72 flex-col items-center justify-center">
-            <h2 className="mb-4 text-2xl font-bold">Welcome Back!</h2>
-            <h3 className="mb-12 text-lg">Please login to your account</h3>
-            <SignIn />
-          </div>
-        </div>
-      </div>
+    <main className="flex h-svh flex-col   items-center justify-center gap-10 bg-gray-50 bg-gradient-to-br from-primary to-primary/90 font-sans">
+      <Icons.logo className="h-44 w-44 text-white" />
+      <h1 className="line-clamp-3 max-w-md font-heading text-5xl font-light leading-[1.2]">
+        Real Beard Santas
+      </h1>
+
+      <SignIn />
     </main>
   );
 }

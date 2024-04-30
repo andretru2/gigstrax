@@ -17,7 +17,7 @@ export function BackButton({ fallback = defaultFallback }) {
 
   return (
     <Button
-      className="flex items-center gap-1 self-start text-xs text-current"
+      className="flex items-center gap-1 self-start text-sm text-current"
       onClick={handleBack}
     >
       <Icons.arrowLeft aria-hidden="true" className="size-4 opacity-70" />

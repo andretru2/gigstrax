@@ -3,7 +3,6 @@
 import { cloneElement } from "react";
 import { useFormStatus } from "react-dom";
 
-import { Icons } from "../icons";
 import { Button } from "../ui/button";
 
 type SubmitButtonProps = {
@@ -20,8 +19,12 @@ const SubmitButton = ({
   const { pending } = useFormStatus();
 
   return (
-    <Button disabled={pending} type="submit">
-      {pending && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+    <Button
+      disabled={pending}
+      className="px-4 py-2"
+      type="submit"
+      isLoading={pending}
+    >
       {label}
       {suffixIcon && (
         <span className="ml-2">

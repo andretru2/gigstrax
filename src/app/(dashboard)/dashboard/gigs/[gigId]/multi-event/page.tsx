@@ -132,7 +132,7 @@ async function GigList(props: Props) {
                 href={`/dashboard/gigs/${gig.id}`}
               >
                 <Icons.arrowRight className="size-4" />
-                <span className="w-32">{gig.client.client}</span>
+                <span className="w-32">{gig?.client?.client}</span>
                 <span className="w-40">
                   {formatDate(gig?.gigDate, "friendly")}
                 </span>

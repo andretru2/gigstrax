@@ -277,7 +277,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="w-full space-y-3 overflow-auto">
+    <div className=" w-full space-y-3 overflow-hidden ">
       <DataTableToolbar
         table={table}
         filterableColumns={filterableColumns}
@@ -287,7 +287,7 @@ export function DataTable<TData, TValue>({
       />
       <div className="rounded-md border">
         <Table className="relative">
-          <TableHeader className="sticky top-0">
+          <TableHeader className=" ">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -305,7 +305,7 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody className="">
+          <TableBody className="max-w-max">
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow

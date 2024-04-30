@@ -447,7 +447,7 @@ function ClientPicker(props: Props) {
   return (
     <Sheet open={open} onOpenChange={handleDrawerOpen}>
       <SheetTrigger className="w-full justify-start text-left" asChild>
-        <Button variant="outline" className="text-xs">
+        <Button variant="outline" className="">
           <Icons.user className=" mr-2 size-3 " />
           {props.client?.client}
           <Input type="hidden" name="clientId" value={props.client?.client} />
@@ -667,7 +667,7 @@ function VenueDetails({
             });
           }}
         >
-          <SelectTrigger className="bg-white text-xs capitalize">
+          <SelectTrigger className="bg-white capitalize">
             <SelectValue placeholder={venueType} />
           </SelectTrigger>
           <SelectContent>

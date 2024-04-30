@@ -35,27 +35,31 @@ export function DataTableToolbar<TData>({
   const isFiltered = table.getState().columnFilters.length > 0;
 
   return (
-    <div className="flex w-full items-center justify-between space-x-2 overflow-auto py-2">
+    <div className="flex w-full items-center justify-between space-x-2 py-2">
       <div className="flex flex-1 items-center space-x-2">
         {searchableColumns.length > 0 &&
           searchableColumns.map(
             (column) =>
               table.getColumn(column.id ? String(column.id) : "") && (
-                <Input
-                  key={String(column.id)}
-                  placeholder={`Filter ${column.title}...`}
-                  value={
-                    (table
-                      .getColumn(String(column.id))
-                      ?.getFilterValue() as string) ?? ""
-                  }
-                  onChange={(event) =>
-                    table
-                      .getColumn(String(column.id))
-                      ?.setFilterValue(event.target.value)
-                  }
-                  className="h-8 w-[150px] lg:w-[250px]"
-                />
+                <div key={String(column.id)} className="relative">
+                  <Input
+                    placeholder={`Filter ${column.title}...`}
+                    value={
+                      (table
+                        .getColumn(String(column.id))
+                        ?.getFilterValue() as string) ?? ""
+                    }
+                    onChange={(event) =>
+                      table
+                        .getColumn(String(column.id))
+                        ?.setFilterValue(event.target.value)
+                    }
+                    className="h-10 w-[150px] pl-8 lg:w-[250px]"
+                  />
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <Icons.search className="size-4 opacity-80" />{" "}
+                  </div>{" "}
+                </div>
               ),
           )}
         {filterableColumns.length > 0 &&

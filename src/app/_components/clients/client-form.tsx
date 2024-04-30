@@ -241,7 +241,7 @@ function ClientDetails({
             });
           }}
         >
-          <SelectTrigger className="bg-white text-xs capitalize">
+          <SelectTrigger className="bg-white  capitalize">
             <SelectValue placeholder={clientType} />
           </SelectTrigger>
           <SelectContent>

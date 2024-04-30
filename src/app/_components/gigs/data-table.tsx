@@ -116,7 +116,7 @@ export default function Datatable({ data, pageCount }: Props) {
 
         cell: ({ row }) => {
           return (
-            <div className=" text-center">
+            <div className=" text-cente min-w-24">
               {row.original.timeStart && row.original.timeEnd
                 ? calculateTimeDifference(
                     row.original.timeStart,
@@ -191,7 +191,7 @@ export default function Datatable({ data, pageCount }: Props) {
         ),
         cell: ({ row }) => {
           return (
-            <div className="   max-w-xl  truncate pr-4 text-left">
+            <div className="   max-w-96  truncate pr-4 text-left">
               {formatAddress({
                 name: row.original.venueAddressName ?? "",
                 addressLine1: row.original.venueAddressStreet ?? "",
