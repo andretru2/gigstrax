@@ -56,25 +56,19 @@ export function MultiEventCreateForm(props: Props) {
     const timeStarts = formData.getAll("timeStart");
     const timeEnds = formData.getAll("timeEnd");
 
-    return gigDates
-      .map((gigDate, index) => {
-        const timeStart = timeStarts[index];
-        const timeEnd = timeEnds[index];
+    return gigDates.map((gigDate, index) => {
+      const timeStart = timeStarts[index];
+      const timeEnd = timeEnds[index];
 
-        if (timeStart && timeEnd && gigDate) {
-          const gigDateObj = new Date(gigDate);
-          const gigDateISO = gigDateObj.toISOString();
-          const timeStartISO = combineDateTimeToISOString(
-            gigDateObj,
-            timeStart,
-          );
-          const timeEndISO = combineDateTimeToISOString(gigDateObj, timeEnd);
+      if (timeStart && timeEnd && gigDate) {
+        const gigDateObj = new Date(gigDate);
+        const gigDateISO = gigDateObj.toISOString();
+        const timeStartISO = combineDateTimeToISOString(gigDateObj, timeStart);
+        const timeEndISO = combineDateTimeToISOString(gigDateObj, timeEnd);
 
-          return { gigDateISO, timeStartISO, timeEndISO };
-        }
-        return null;
-      })
-      .filter(Boolean);
+        return { gigDateISO, timeStartISO, timeEndISO };
+      }
+    });
   }
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -84,7 +78,9 @@ export function MultiEventCreateForm(props: Props) {
 
     if (!formData) return;
     const processedData = processFormData(formData);
-    processedData && formAction(processedData);
+
+    if (!processedData) return;
+    formAction(processedData);
     ref?.current?.reset();
     datePickerImperativeHandleRef.current?.reset();
   }

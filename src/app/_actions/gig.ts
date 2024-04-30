@@ -3,13 +3,13 @@
 import type { GetGigsProps } from "@/types/index";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { gigMultiEventSchema, gigSchema } from "@/lib/validations/gig";
+import { gigSchema } from "@/lib/validations/gig";
 import {
   type FormState,
   fromErrorToFormState,
   toFormState,
 } from "@/components/form/to-form-state";
-import { combineDateTimeToISOString, parseFormData } from "@/lib/utils";
+import { parseFormData } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import { setCookieByKey } from "./cookies";
 import { unstable_noStore as noStore } from "next/cache";
@@ -231,9 +231,13 @@ export async function submitMultiEventForm(
 
         await prisma.gig.update({
           where: { id: copiedGig.id },
+
           data: {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             gigDate: data.gigDateISO,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             timeStart: data.timeStartISO,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             timeEnd: data.timeEndISO,
             // id: undefined,
             // ...gigWithoutDates,

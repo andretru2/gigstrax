@@ -37,8 +37,8 @@ export default function Datatable({ data, pageCount }: Props) {
   // const [selectedRowIds, setSelectedRowIds] = React.useState<number[]>([]);
   const router = useRouter();
 
-  const classNameTableRow =
-    "[&>*:nth-child(1)]:w-28 [&>*:nth-child(2)]:w-28  [&>*:nth-child(3)]:w-28  [&>*:nth-child(4)]:w-32  [&>*:nth-child(5)]:w-40 [&>*:nth-child(6)]:w-32";
+  // const classNameTableRow =
+  //   "[&>*:nth-child(1)]:w-28 [&>*:nth-child(2)]:w-28  [&>*:nth-child(3)]:w-28  [&>*:nth-child(4)]:w-32  [&>*:nth-child(5)]:w-40 [&>*:nth-child(6)]:w-32";
 
   // Memoize the columns so they don't re-render on every render
   const columns = React.useMemo<ColumnDef<SourceProps, unknown>[]>(
