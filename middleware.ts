@@ -10,3 +10,5 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: ["/", "/signin", "/dashboard/:path*"],
 };
+
+export { auth } from "auth";

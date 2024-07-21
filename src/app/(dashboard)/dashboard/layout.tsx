@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-// import { currentUser } from "@clerk/nextjs";
 
 // import { dashboardConfig } from "@/config/site";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -7,8 +6,8 @@ import { type Metadata } from "next";
 import { siteConfig } from "@/config/site";
 // import { SiteFooter } from "@/components/layouts/site-footer";
 import { SiteHeader } from "@/components/layouts/site-header";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
+import { auth } from "auth";
 
 export const metadata: Metadata = {
   title: {
@@ -36,16 +35,11 @@ interface DashboardLayoutProps {
 export default async function DashboardLayout({
   children,
 }: DashboardLayoutProps) {
-  // const user = await currentUser();
-
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session || !session.user) {
     redirect("/api/auth/signin");
   }
 
-  // if (!user) {
-  //   redirect("/signin");
-  // }
   return (
     <div className="mx-auto flex min-h-svh max-w-screen-2xl  flex-col gap-8 ">
       <SiteHeader user={session.user} />
