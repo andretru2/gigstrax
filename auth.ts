@@ -1,6 +1,5 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-// import AppleProvider from "next-auth/providers/apple";
 
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/server/db";
@@ -11,14 +10,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       clientId: process.env.GOOGLE_CLIENT_ID ?? "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
     }),
-    // AppleProvider({
-    //   clientId: process.env.APPLE_ID ?? "",
-    //   clientSecret: process.env.APPLE_SECRET ?? "",
-    // }),
   ],
 
   adapter: PrismaAdapter(prisma),
-  // session: { strategy: "jwt" },
 
   pages: {
     signIn: "/signin",
