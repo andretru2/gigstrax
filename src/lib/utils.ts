@@ -1,8 +1,8 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import * as z from "zod";
+import { z } from "zod";
 import { toast } from "@/hooks/use-toast";
-import { type Address } from "../types";
+import type { Address, Response } from "../types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -349,3 +349,23 @@ export function combineDateTimeToISOString(date: Date, time: string) {
   );
   return combinedDateTime.toISOString();
 }
+
+export const fromErrorToResponse = (error: unknown): Response<never> => {
+  const isZodError = error instanceof z.ZodError;
+  const message = isZodError
+    ? error.message
+    : error instanceof Error
+      ? error.message
+      : "An unknown error occurred";
+
+  const fieldErrors = isZodError ? error.flatten().fieldErrors : {};
+  const issues = isZodError ? error.issues.map((issue) => issue.message) : [];
+
+  return {
+    result: "ERROR",
+    description: message,
+    fieldErrors,
+    issues,
+    timestamp: Date.now(),
+  };
+};

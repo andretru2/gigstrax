@@ -48,6 +48,7 @@ model User {
   sessions      Session[]
   role          GlobalRole?  @default(CUSTOMER)
   memberships   Membership[]
+  isActive      Boolean?     @default(true)
   createdAt     DateTime     @default(now()) @db.Timestamptz()
   updatedAt     DateTime     @updatedAt @db.Timestamptz()
 }
@@ -61,30 +62,32 @@ model VerificationToken {
 }
 
 model Gig {
-  id                  String     @id @unique @default(cuid())
-  client              Client?    @relation(fields: [clientId], references: [id])
+  id                  String        @id @unique @default(cuid())
+  organization        Organization? @relation(fields: [orgId], references: [id])
+  orgId               String?
+  client              Client?       @relation(fields: [clientId], references: [id])
   clientId            String?
-  serial              Int?       @default(autoincrement())
+  serial              Int?          @default(autoincrement())
   calendarId          String?
   copiedFromId        String?
-  driver              Source?    @relation("sourceOfDriver", fields: [driverId], references: [id])
+  driver              Source?       @relation("sourceOfDriver", fields: [driverId], references: [id])
   driverId            String?
-  mrsSanta            Source?    @relation("sourceOfMrsSanta", fields: [mrsSantaId], references: [id])
+  mrsSanta            Source?       @relation("sourceOfMrsSanta", fields: [mrsSantaId], references: [id])
   mrsSantaId          String?
-  santa               Source?    @relation("sourceOfSanta", fields: [santaId], references: [id])
+  santa               Source?       @relation("sourceOfSanta", fields: [santaId], references: [id])
   santaId             String?
-  contactEmail        String?    @default("")
+  contactEmail        String?       @default("")
   contactName         String?
   contactPhoneCell    String?
   contactPhoneLand    String?
-  gigDate             DateTime?  @db.Timestamptz()
+  gigDate             DateTime?     @db.Timestamptz()
   invoiceNumber       String?
   notesGig            String?
   notesVenue          String?
-  amountPaid          Decimal?   @db.Money
-  price               Decimal?   @db.Money
-  timeEnd             DateTime?  @db.Timestamptz()
-  timeStart           DateTime?  @db.Timestamptz()
+  amountPaid          Decimal?      @db.Money
+  price               Decimal?      @db.Money
+  timeEnd             DateTime?     @db.Timestamptz()
+  timeStart           DateTime?     @db.Timestamptz()
   travelType          String?
   venueAddressCity    String?
   venueAddressName    String?
@@ -94,14 +97,16 @@ model Gig {
   venueAddressZip     String?
   venueType           VenueType?
   isSoftHold          Boolean?
-  createdAt           DateTime?  @default(now()) @db.Timestamptz()
+  createdAt           DateTime?     @default(now()) @db.Timestamptz()
   createdBy           String?
-  updatedAt           DateTime?  @updatedAt @db.Timestamptz()
+  updatedAt           DateTime?     @updatedAt @db.Timestamptz()
   updatedBy           String?
 }
 
 model Client {
-  id            String      @unique @default(cuid())
+  id            String        @unique @default(cuid())
+  organization  Organization? @relation(fields: [orgId], references: [id])
+  orgId         String?
   client        String
   addressCity   String?
   addressState  String?
@@ -115,15 +120,17 @@ model Client {
   phoneLandline String?
   source        String?
   status        String?
-  createdAt     DateTime?   @default(now()) @db.Timestamptz()
+  createdAt     DateTime?     @default(now()) @db.Timestamptz()
   createdBy     String?
-  updatedAt     DateTime?   @updatedAt() @db.Timestamptz()
+  updatedAt     DateTime?     @updatedAt() @db.Timestamptz()
   updatedBy     String?
   gigs          Gig[]
 }
 
 model Source {
   id                String        @id @default(cuid())
+  organization      Organization? @relation(fields: [orgId], references: [id])
+  orgId             String?
   nameFirst         String
   nameLast          String?
   addressCity       String?
@@ -211,30 +218,39 @@ enum VenueType {
 }
 
 model Organization {
-  id             Int          @id @default(autoincrement())
+  id             String       @id @default(cuid())
   name           String
-  trialStartDate DateTime     @default(now()) @db.Timestamptz()
-  trialEndDate   DateTime     @db.Timestamptz()
+  trialStartDate DateTime?    @default(now()) @db.Timestamptz()
+  trialEndDate   DateTime?    @db.Timestamptz()
+  isActive       Boolean?     @default(true)
   memberships    Membership[]
   createdAt      DateTime?    @default(now()) @db.Timestamptz()
   createdBy      String?
   updatedAt      DateTime?    @updatedAt() @db.Timestamptz()
   updatedBy      String?
+  Source         Source[]
+  Client         Client[]
+  Gig            Gig[]
 }
 
 model Membership {
-  id             Int            @id @default(autoincrement())
-  role           MembershipRole
-  organization   Organization   @relation(fields: [organizationId], references: [id])
-  organizationId Int
-  user           User?          @relation(fields: [userId], references: [id])
-  userId         String?
+  id           String         @id @default(cuid())
+  role         MembershipRole @default(OWNER)
+  organization Organization   @relation(fields: [orgId], references: [id])
+  orgId        String
+  user         User?          @relation(fields: [userId], references: [id])
+  userId       String?
+  isActive     Boolean?       @default(true)
+  createdAt    DateTime?      @default(now()) @db.Timestamptz()
+  createdBy    String?
+  updatedAt    DateTime?      @updatedAt() @db.Timestamptz()
+  updatedBy    String?
 
   // // When the user joins, we will clear out the name and email and set the user.
   // invitedName  String?
   // invitedEmail String?
 
-  @@unique([organizationId, userId])
+  @@unique([orgId, userId])
 }
 
 enum MembershipRole {
