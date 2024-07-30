@@ -22,6 +22,7 @@ export const env = createEnv({
 
     GOOGLE_CLIENT_ID: z.string(),
     GOOGLE_CLIENT_SECRET: z.string(),
+    AUTH_RESEND_KEY: z.string(),
 
     AUTH_SECRET:
       process.env.NODE_ENV === "production"
@@ -67,6 +68,7 @@ export const env = createEnv({
     POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
     POSTGRES_DATABASE: process.env.POSTGRES_DATABASE,
     AUTH_SECRET: process.env.AUTH_SECRET,
+    AUTH_RESEND_KEY: process.env.AUTH_RESEND_KEY,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   },

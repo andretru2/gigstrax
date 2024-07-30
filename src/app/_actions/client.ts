@@ -12,6 +12,7 @@ import { fromUTC, parseFormData } from "@/lib/utils";
 import { clientSchema } from "@/lib/validations/client";
 import { redirect } from "next/navigation";
 import { unstable_noStore as noStore } from "next/cache";
+import { auth } from "auth";
 
 export async function getClient(id: string): Promise<ClientProps | null> {
   noStore();
@@ -105,7 +106,7 @@ export async function createClient(props: CreateClientProps) {
   if (!props.client)
     return { result: "Error", resultDescription: "Client name is required." };
 
-  const resultExists = await checkIfExists(props.client.client);
+  const resultExists = await checkIfExists(props.client.client ?? "");
   if (resultExists.isDuplicate) {
     return resultExists;
   }

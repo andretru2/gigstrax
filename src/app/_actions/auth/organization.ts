@@ -2,25 +2,43 @@
 
 import { prisma } from "@/server/db";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
+import type { Organization } from "@prisma/client";
+
+import { fromErrorToResponse, parseFormData } from "@/lib/utils";
+import type { GetOrganizationsProps, Response } from "@/types/index";
 import {
-  toFormState,
-  type FormState,
-  fromErrorToFormState,
-} from "@/components/form/to-form-state";
-import { parseFormData } from "@/lib/utils";
-import { organizationSchema } from "@/lib/validations/organization";
-import { type GetOrganizationsProps } from "@/types/index";
+  type CreateOrganizationProps,
+  createOrganizationSchema,
+  type UpdateOrganizationProps,
+  updateOrganizationSchema,
+} from "@/lib/validations/organization";
 
-export async function getOrganization(id: string) {
-  if (id.length === 0) return null;
+export async function getOrganization(
+  id: string,
+): Promise<Response<Organization>> {
+  if (id.length === 0) {
+    return {
+      result: "ERROR",
+      description: "Invalid Organization ID",
+    };
+  }
 
-  const data = await prisma.organization.findFirst({
-    where: { id },
-  });
+  try {
+    const organization = await prisma.organization.findFirst({
+      where: { id },
+    });
 
-  return data;
+    return {
+      result: "SUCCESS",
+      description: organization
+        ? "Organization found"
+        : "Organization not found",
+      data: organization ? organization : undefined,
+    };
+  } catch (error) {
+    return fromErrorToResponse(error);
+  }
 }
 
 export async function getOrganizations({
@@ -29,65 +47,101 @@ export async function getOrganizations({
   orderBy = [],
   limit = 20,
   skip = 0,
-}: GetOrganizationsProps) {
-  const [totalCount, data] = await prisma.$transaction([
-    prisma.organization.count({ where: whereClause }),
-    prisma.organization.findMany({
-      select: select || undefined,
-      where: whereClause,
-      orderBy,
-      take: limit,
-      skip,
-    }),
-  ]);
+}: GetOrganizationsProps): Promise<Response<Organization>> {
+  try {
+    const [totalCount, organizations] = await prisma.$transaction([
+      prisma.organization.count({ where: whereClause }),
+      prisma.organization.findMany({
+        select: select || undefined,
+        where: whereClause,
+        orderBy,
+        take: limit,
+        skip,
+      }),
+    ]);
 
-  return {
-    data,
-    totalCount,
-  };
+    const totalPages = Math.ceil(totalCount / limit);
+    const currentPage = Math.floor(skip / limit) + 1;
+
+    return {
+      result: "SUCCESS",
+      description: "Organizations fetched successfully",
+      data: {
+        items: organizations,
+        pagination: {
+          totalCount,
+          pageSize: limit,
+          currentPage,
+          totalPages,
+        },
+      },
+    };
+  } catch (error) {
+    return fromErrorToResponse(error);
+  }
+}
+
+export async function createOrganization(
+  formData: FormData,
+): Promise<Response<Organization>> {
+  if (!formData) {
+    return {
+      result: "ERROR",
+      description: "Missing parameters",
+    };
+  }
+
+  try {
+    const parsedData = parseFormData<CreateOrganizationProps>(
+      formData,
+      createOrganizationSchema,
+    );
+    const organization = await prisma.organization.create({
+      data: parsedData,
+    });
+
+    revalidatePath(`/dashboard/Organizations/`);
+    revalidatePath(`/dashboard/Organizations/${organization.id}`);
+
+    return {
+      result: "SUCCESS",
+      description: "Organization created successfully",
+      data: organization,
+    };
+  } catch (error) {
+    return fromErrorToResponse(error);
+  }
 }
 
 export async function updateOrganization(
   id: string,
   formData: FormData,
-): Promise<FormState> {
-  if (!id || !formData) return toFormState("ERROR", "Missing params");
+): Promise<Response<Organization>> {
+  if (!id || !formData) {
+    return {
+      result: "ERROR",
+      description: "Missing parameters",
+    };
+  }
 
   try {
-    const parsedData = parseFormData(formData, organizationSchema);
+    const parsedData = parseFormData<UpdateOrganizationProps>(
+      formData,
+      updateOrganizationSchema,
+    );
+    const updatedOrganization = await prisma.organization.update({
+      where: { id },
+      data: parsedData,
+    });
 
-    if (parsedData) {
-      await prisma.organization.update({
-        where: { id },
-        data: parsedData,
-      });
-    }
+    revalidatePath(`/dashboard/Organizations/${id}`);
+
+    return {
+      result: "SUCCESS",
+      description: "Organization updated successfully",
+      data: updatedOrganization,
+    };
   } catch (error) {
-    return fromErrorToFormState(error);
+    return fromErrorToResponse(error);
   }
-  // revalidatePath(`/dashboard/organizations/${id}`);
-
-  return toFormState("SUCCESS", "Organization updated");
-}
-
-export async function createOrganization(
-  formData: FormData,
-): Promise<FormState> {
-  if (!formData) return toFormState("ERROR", "Missing params");
-
-  let organization;
-  try {
-    const parsedData = parseFormData(formData, organizationSchema);
-    if (parsedData) {
-      organization = await prisma.organization.create({
-        data: parsedData,
-      });
-    }
-  } catch (error) {
-    return fromErrorToFormState(error);
-  }
-  // revalidatePath(`/dashboard/organizations/`);
-  // organization && revalidatePath(`/dashboard/organizations/${organization.id}`);
-  // organization && redirect(`/dashboard/organizations/${organization.id}`);
-  return toFormState("SUCCESS", "Organization created");
 }

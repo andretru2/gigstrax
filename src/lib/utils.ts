@@ -350,7 +350,7 @@ export function combineDateTimeToISOString(date: Date, time: string) {
   return combinedDateTime.toISOString();
 }
 
-export const fromErrorToResponse = (error: unknown): Response<never> => {
+export const fromErrorToResponse = (error: unknown): Response => {
   const isZodError = error instanceof z.ZodError;
   const message = isZodError
     ? error.message

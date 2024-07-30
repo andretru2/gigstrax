@@ -171,7 +171,7 @@ export interface PaginatedData<T> {
 
 type ApiResponseData<T> = T | PaginatedData<T>;
 
-export interface Response<T> {
+export interface Response<T = void> {
   result: "SUCCESS" | "ERROR" | "IDLE";
   description?: string;
   data?: ApiResponseData<T>;
