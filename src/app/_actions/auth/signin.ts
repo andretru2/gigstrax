@@ -1,14 +1,22 @@
 "use server";
 
-import { signIn, signOut } from "auth";
+import { signIn } from "auth";
 import type { Response } from "@/types/index";
+
+/*
+
 import { headers } from "next/headers";
 
 const headersList = headers();
 const hostname = headersList.get("x-forwarded-host");
-const redirectTo = `${hostname}/dashboard/gigs`;
+const redirect = `${hostname}/dashboard/gigs`;
 
-console.log(hostname);
+For whatver reason, redirect to fails. It always goes back to localhost/3000. It must be explicity set. 
+    await signIn(provider, formData, {
+      redirectTo: redirect,
+    });
+
+*/
 
 export async function signin(
   provider: "google" | "resend",
@@ -32,8 +40,8 @@ export async function signin(
   if (provider === "resend") {
     await signIn(provider, formData, {
       // redirectTo: "https://gigstrax.vercel.app/dashboard/gigs",
-      // redirectTo: "http://localhost:3000/dashboard/gigs",
-      redirectTo: redirectTo,
+      redirectTo: "http://localhost:3000/dashboard/gigs",
+      // redirectTo: redirect,
     });
 
     return {
@@ -45,8 +53,8 @@ export async function signin(
   await signIn(provider, {
     // callbackUrl: "https://gigstrax.vercel.app/dashboard/gigs",
     // redirectTo: `${hostname}/dashboard/gigs`,
-    redirectTo: redirectTo,
-    // redirectTo: "http://localhost:3000/dashboard/gigs",
+    // redirectTo: redirect,
+    redirectTo: "http://localhost:3000/dashboard/gigs",
   });
 
   return {

@@ -15,7 +15,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
     }),
     Resend({
-      // apiKey: process.env.AUTH_RESEND_KEY,
       from: "santa@realbeardsantas.com",
 
       // async sendVerificationRequest({

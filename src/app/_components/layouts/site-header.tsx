@@ -22,6 +22,7 @@ import {
 } from "../ui/dropdown-menu";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { signout } from "@/app/_actions/auth/signout";
 
 interface SiteHeaderProps {
   user: User | null;
@@ -131,14 +132,16 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/signin">
-                      <Icons.logout
-                        className="mr-2 h-4 w-4"
-                        aria-hidden="true"
-                      />
-                      Log out
-                      <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
-                    </Link>
+                    <form action={signout}>
+                      <Button type="submit">
+                        <Icons.logout
+                          className="mr-2 h-4 w-4"
+                          aria-hidden="true"
+                        />
+                        Log out
+                        <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                      </Button>
+                    </form>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
