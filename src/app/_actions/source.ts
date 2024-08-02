@@ -3,7 +3,7 @@
 import { prisma } from "@/server/db";
 import { revalidatePath } from "next/cache";
 
-import type { Source } from "@prisma/client";
+import type { Prisma, Source } from "@prisma/client";
 import {
   toFormState,
   type FormState,
@@ -13,9 +13,14 @@ import { parseFormData } from "@/lib/utils";
 import { sourceSchema } from "@/lib/validations/source";
 import { type GetSourcesProps } from "@/types/index";
 import { redirect } from "next/navigation";
+import { orgCreate, orgFilter } from "@/lib/auth/orgUtils";
 
 export async function getSource(id: string) {
   if (id.length === 0) return null;
+
+  const whereClauseWithOrg = await orgFilter<Prisma.SourceWhereInput>({
+    whereClause: { id: id },
+  });
 
   const data = await prisma.source.findFirst({
     select: {
@@ -47,9 +52,7 @@ export async function getSource(id: string) {
       costume: true,
       gigMastersAccount: true,
     },
-    where: {
-      id: id,
-    },
+    where: whereClauseWithOrg,
   });
 
   return data;
@@ -61,11 +64,15 @@ export async function getSources({
   limit = 20,
   skip = 0,
 }: GetSourcesProps) {
-  const totalCount = await prisma.source.count({ where: whereClause });
+  const whereClauseWithOrg = await orgFilter<Prisma.SourceWhereInput>({
+    whereClause: whereClause,
+  });
+
+  const totalCount = await prisma.source.count({ where: whereClauseWithOrg });
 
   const data = await prisma.source.findMany({
     select: select,
-    where: whereClause,
+    where: whereClauseWithOrg,
     orderBy: orderBy,
     take: limit,
     skip: skip,
@@ -101,7 +108,7 @@ export async function checkIfExists({
   if (exists?.id) return true;
 }
 
-export async function createSource(props: Partial<Source>) {
+export async function createSource(props: Partial<Prisma.SourceCreateInput>) {
   // const exists = await checkIfExists({
   //   nameFirst: data.nameFirst,
   //   nameLast: data.nameFirst,
@@ -111,12 +118,24 @@ export async function createSource(props: Partial<Source>) {
   // }
   // console.log(data);
 
-  if (!props.role || !props.nameFirst || !props.nameLast)
+  if (!props.nameFirst)
     return {
       result: "Error",
       resultDescription: "Role, First Name and Last Name are required.",
     };
-  const source = await prisma.source.create({ data: props });
+
+  // Create a new object with only the defined properties
+  const definedProps = Object.fromEntries(
+    Object.entries(props).filter(([_, v]) => v !== undefined),
+  ) as Prisma.SourceCreateInput;
+
+  const dataWithOrg = await orgCreate<Prisma.SourceCreateInput>({
+    data: definedProps,
+  });
+
+  console.log(dataWithOrg, props);
+
+  const source = await prisma.source.create({ data: dataWithOrg });
   revalidatePath(`/dashboard/sources/`);
 
   return {
@@ -160,16 +179,20 @@ export async function submitSource(
   let source;
   try {
     const parsedData = parseFormData(formData, sourceSchema);
+
     if (parsedData) {
-      source = await prisma.source.create({
-        data: { ...parsedData },
-      });
+      source = await createSource(parsedData);
+      // source = await prisma.source.create({
+      //   data: { ...parsedData },
+      // });
     }
   } catch (error) {
     return fromErrorToFormState(error);
   }
+
+  console.log(source);
   revalidatePath(`/dashboard/sources/`);
-  source && revalidatePath(`/dashboard/sources/${source.id}`);
-  source && redirect(`/dashboard/sources/${source.id}`);
+  source && revalidatePath(`/dashboard/sources/${source.sourceId}`);
+  source && redirect(`/dashboard/sources/${source.sourceId}`);
   return toFormState("SUCCESS", "Source created");
 }

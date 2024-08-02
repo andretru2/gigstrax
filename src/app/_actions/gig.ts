@@ -87,8 +87,6 @@ export async function getGigs({
     whereClause: whereClause,
   });
 
-  console.log(whereClauseWithOrg, "org");
-
   if (!whereClauseWithOrg) {
     return {
       data: [],
