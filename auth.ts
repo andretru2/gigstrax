@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { type DefaultSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import Resend from "next-auth/providers/resend";
 
@@ -7,6 +7,21 @@ import { prisma } from "@/server/db";
 import { toast } from "sonner";
 
 import { redirect } from "next/navigation";
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      role: string;
+      orgId: string;
+      /**
+       * By default, TypeScript merges new interface properties and overwrites existing ones.
+       * In this case, the default session user properties will be overwritten,
+       * with the new ones defined above. To keep the default session user properties,
+       * you need to add them back into the newly declared interface.
+       */
+    } & DefaultSession["user"];
+  }
+}
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   providers: [
@@ -57,14 +72,39 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   secret: process.env.AUTH_SECRET,
 
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-        name: user.name,
-      },
-    }),
+    session: async ({ session, user }) => {
+      const memberships = await prisma.membership.findMany({
+        where: {
+          userId: user.id,
+          isActive: true,
+        },
+        select: {
+          id: true,
+          orgId: true,
+          isSelected: true,
+        },
+      });
+
+      let selectedOrgId = memberships.find((m) => m.isSelected)?.orgId;
+
+      // If no organization is selected, use the first active one by default
+      if (!selectedOrgId && memberships.length > 0) {
+        selectedOrgId = memberships[0].orgId;
+      }
+
+      console.log(memberships);
+
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: user.id,
+          name: user.name,
+          role: user.role,
+          orgId: selectedOrgId,
+        },
+      };
+    },
     authorized: ({ auth, request }) => {
       console.log(auth, request);
       return true;
@@ -110,7 +150,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       }
 
       //can access as long as its superadmin but has an active account.
-      // if (userData.role === "SUPERADMIN") return true;
+      if (userData.role === "SUPERADMIN") return true;
 
       //is it a new user? we can determine if memberships and organizations are empty.
       let isNewUser = false;
@@ -139,6 +179,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
               userId: user.id,
               orgId: organization.id, // Assuming the field is named 'organizationId'
               isActive: true,
+              isSelected: true,
               createdAt: new Date(),
               createdBy: userData.id,
               updatedAt: new Date(),
@@ -173,7 +214,18 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           return false;
         }
       }
-      console.log("made it here");
+
+      // Select the first active membership if there's no currently selected one
+      const selectedMembership =
+        memberships.find((m) => m.isSelected) || memberships[0];
+
+      console.log("here", selectedMembership);
+      // Add the selected organization to the user object
+      user.orgId = selectedMembership.orgId;
+      // user.orgName = selectedMembership.organization.name;
+
+      console.log("made it here", user);
+
       return true;
       redirect("/dashboard/gigs");
 
