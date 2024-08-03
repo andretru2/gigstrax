@@ -38,11 +38,13 @@ export async function signin(
     */
 
   if (provider === "resend") {
+    console.log("x", formData);
     await signIn(provider, formData, {
-      redirectTo: "https://gigstrax.vercel.app/dashboard/gigs",
-      // redirectTo: "http://localhost:3000/dashboard/gigs",
+      // redirectTo: "https://gigstrax.vercel.app/dashboard/gigs",
+      redirectTo: "/dashboard/gigs",
       // redirectTo: redirect,
     });
+    // return true;
 
     return {
       result: "SUCCESS",
@@ -51,10 +53,11 @@ export async function signin(
   }
 
   await signIn(provider, {
-    callbackUrl: "https://gigstrax.vercel.app/dashboard/gigs",
+    // callbackUrl: "https://gigstrax.vercel.app/dashboard/gigs",
     // redirectTo: `${hostname}/dashboard/gigs`,
     // redirectTo: redirect,
     // redirectTo: "http://localhost:3000/dashboard/gigs",
+    redirectTo: "/dashboard/gigs",
   });
 
   return {
