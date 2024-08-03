@@ -132,6 +132,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
+                    {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
                     <form action={signout}>
                       <Button type="submit">
                         <Icons.logout

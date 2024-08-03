@@ -60,6 +60,7 @@ export function SignInForm() {
         type="button"
         className={cn(buttonVariants({ variant: "outline" }))}
         // onClick={() => signIn("google", { redirectTo: "/dashboard/gigs" })}
+        /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
         onClick={handleSignIn}
       >
         <Icons.gmail className="mr-2 size-4" />
