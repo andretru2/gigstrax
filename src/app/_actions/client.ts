@@ -12,10 +12,16 @@ import { fromUTC, parseFormData } from "@/lib/utils";
 import { clientSchema } from "@/lib/validations/client";
 import { redirect } from "next/navigation";
 import { unstable_noStore as noStore } from "next/cache";
+import { orgCreate, orgFilter } from "@/lib/auth/orgUtils";
+import { type Prisma } from "@prisma/client";
 
 export async function getClient(id: string): Promise<ClientProps | null> {
   noStore();
   if (id.length === 0) return null;
+
+  const whereClauseWithOrg = await orgFilter<Prisma.ClientWhereInput>({
+    whereClause: { id: id },
+  });
 
   const data = await prisma.client.findFirst({
     select: {
@@ -35,6 +41,7 @@ export async function getClient(id: string): Promise<ClientProps | null> {
       createdAt: true,
       updatedAt: true,
       createdBy: true,
+      orgId: true,
 
       updatedBy: true,
       status: true,
@@ -44,9 +51,7 @@ export async function getClient(id: string): Promise<ClientProps | null> {
         },
       },
     },
-    where: {
-      id: id,
-    },
+    where: whereClauseWithOrg,
   });
 
   return data;
@@ -60,11 +65,16 @@ export async function getClients({
   skip = 0,
 }: GetClientsProps) {
   noStore();
-  const totalCount = await prisma.client.count({ where: whereClause });
+
+  const whereClauseWithOrg = await orgFilter<Prisma.ClientWhereInput>({
+    whereClause: whereClause,
+  });
+
+  const totalCount = await prisma.client.count({ where: whereClauseWithOrg });
 
   const data = await prisma.client.findMany({
     select: select,
-    where: whereClause,
+    where: whereClauseWithOrg,
     orderBy: orderBy,
     take: limit,
     skip: skip,
@@ -98,18 +108,26 @@ export async function checkIfExists(name: string) {
 }
 
 interface CreateClientProps {
-  client: Partial<ClientProps>;
+  client: Partial<Prisma.ClientCreateInput>;
   goto?: boolean | undefined;
 }
 export async function createClient(props: CreateClientProps) {
   if (!props.client)
     return { result: "Error", resultDescription: "Client name is required." };
 
-  const resultExists = await checkIfExists(props.client.client);
+  const resultExists = await checkIfExists(props.client.client ?? "");
   if (resultExists.isDuplicate) {
     return resultExists;
   }
-  const client = await prisma.client.create({ data: props.client });
+  const definedProps = Object.fromEntries(
+    Object.entries(props.client).filter(([_, v]) => v !== undefined),
+  ) as Prisma.ClientCreateInput;
+
+  const dataWithOrg = await orgCreate<Prisma.ClientCreateInput>({
+    data: definedProps,
+  });
+
+  const client = await prisma.client.create({ data: dataWithOrg });
 
   revalidatePath(`/dashboard/clients/`);
 

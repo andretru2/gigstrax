@@ -22,13 +22,14 @@ export const env = createEnv({
 
     GOOGLE_CLIENT_ID: z.string(),
     GOOGLE_CLIENT_SECRET: z.string(),
+    AUTH_RESEND_KEY: z.string(),
 
-    NEXTAUTH_SECRET:
+    AUTH_SECRET:
       process.env.NODE_ENV === "production"
         ? z.string().min(1)
         : z.string().min(1).optional(),
-    // NEXTAUTH_URL: z.preprocess(
-    //   // This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
+    //AUTH_URL: z.preprocess(
+    //   // This makes Vercel deployments not fail if you don't setAUTH_URL
     //   // Since NextAuth.js automatically uses the VERCEL_URL if present.
     //   (str) => process.env.VERCEL_URL ?? str,
     //   // VERCEL_URL doesn't include `https` so it cant be validated as a URL
@@ -66,8 +67,8 @@ export const env = createEnv({
     POSTGRES_HOST: process.env.POSTGRES_HOST,
     POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
     POSTGRES_DATABASE: process.env.POSTGRES_DATABASE,
-    // NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    AUTH_SECRET: process.env.AUTH_SECRET,
+    AUTH_RESEND_KEY: process.env.AUTH_RESEND_KEY,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   },

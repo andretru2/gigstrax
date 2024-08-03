@@ -23,7 +23,7 @@ interface Props {
 
 export default function Page(props: Props) {
   return (
-    <Card className="mx-auto w-full  border-0 bg-background [&>*]:px-0 ">
+    <Card className="animate-fadeIn mx-auto w-full  border-0 bg-background [&>*]:px-0 ">
       <CardContent className="flex flex-col gap-2">
         <BackButton />
         <SourceDetailTabs id={props.params.sourceId} />

@@ -3,6 +3,8 @@
 import type { GetGigsProps } from "@/types/index";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { type Prisma } from "@prisma/client";
+
 import { gigSchema } from "@/lib/validations/gig";
 import {
   type FormState,
@@ -15,12 +17,15 @@ import { setCookieByKey } from "./cookies";
 import { unstable_noStore as noStore } from "next/cache";
 import { type Gig } from "@prisma/client";
 import { getClient } from "./client";
-
-// import { type Gig } from "@prisma/client";
+import { orgFilter, orgCreate } from "@/lib/auth/orgUtils";
 
 export async function getGig(id: string) {
   noStore();
   if (id.length === 0) return null;
+
+  const whereClauseWithOrg = await orgFilter<Prisma.GigWhereInput>({
+    whereClause: { id: id },
+  });
 
   const data = await prisma.gig.findFirst({
     select: {
@@ -62,9 +67,7 @@ export async function getGig(id: string) {
       contactPhoneLand: true,
       notesVenue: true,
     },
-    where: {
-      id: id,
-    },
+    where: whereClauseWithOrg,
   });
 
   // return data as Gig[];
@@ -79,11 +82,23 @@ export async function getGigs({
   skip = 0,
 }: GetGigsProps) {
   noStore();
-  const totalCount = await prisma.gig.count({ where: whereClause });
+
+  const whereClauseWithOrg = await orgFilter<Prisma.GigWhereInput>({
+    whereClause: whereClause,
+  });
+
+  if (!whereClauseWithOrg) {
+    return {
+      data: [],
+      totalCount: 0,
+    };
+  }
+
+  const totalCount = await prisma.gig.count({ where: whereClauseWithOrg });
 
   const data = await prisma.gig.findMany({
     select: select,
-    where: whereClause,
+    where: whereClauseWithOrg,
     orderBy: orderBy,
     take: limit,
     skip: skip,
@@ -177,7 +192,12 @@ export async function createGig() {
   //   data = { data: props };
   // }
 
-  const gig = await prisma.gig.create({ data: { id: undefined } });
+  const dataWithOrg = await orgCreate<Prisma.GigCreateInput>({
+    data: { id: undefined },
+  });
+  console.log(dataWithOrg);
+
+  const gig = await prisma.gig.create({ data: dataWithOrg });
 
   revalidatePath(`/dashboard/gigs/`);
   redirect(`/dashboard/gigs/${gig.id}`);

@@ -132,3 +132,50 @@ export type GetSourcesProps = {
   limit?: Prisma.SourceFindManyArgs["take"];
   skip?: Prisma.SourceFindManyArgs["skip"];
 };
+
+export type GetOrganizationsProps = {
+  select?: Prisma.OrganizationSelect;
+  whereClause?: Prisma.OrganizationWhereInput;
+  orderBy?: Prisma.OrganizationOrderByWithRelationInput[];
+  limit?: Prisma.OrganizationFindManyArgs["take"];
+  skip?: Prisma.OrganizationFindManyArgs["skip"];
+};
+
+export type GetMembershipsProps = {
+  select?: Prisma.MembershipSelect;
+  whereClause?: Prisma.MembershipWhereInput;
+  orderBy?: Prisma.MembershipOrderByWithRelationInput[];
+  limit?: Prisma.MembershipFindManyArgs["take"];
+  skip?: Prisma.MembershipFindManyArgs["skip"];
+};
+
+export type GetUsersProps = {
+  select?: Prisma.UserSelect;
+  whereClause?: Prisma.UserWhereInput;
+  orderBy?: Prisma.UserOrderByWithRelationInput[];
+  limit?: Prisma.UserFindManyArgs["take"];
+  skip?: Prisma.UserFindManyArgs["skip"];
+};
+
+export interface PaginationInfo {
+  totalCount: number;
+  pageSize: number;
+  currentPage: number;
+  totalPages: number;
+}
+
+export interface PaginatedData<T> {
+  items: T[];
+  pagination: PaginationInfo;
+}
+
+type ApiResponseData<T> = T | PaginatedData<T>;
+
+export interface Response<T = void> {
+  result: "SUCCESS" | "ERROR" | "IDLE";
+  description?: string;
+  data?: ApiResponseData<T>;
+  fieldErrors?: Record<string, string[] | undefined>;
+  issues?: string[];
+  timestamp?: number;
+}
