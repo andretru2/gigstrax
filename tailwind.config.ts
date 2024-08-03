@@ -86,10 +86,48 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: 0 },
         },
+        fadeInUp: {
+          "0%": {
+            opacity: 0,
+            transform: "translate3d(0, 100%, 0)",
+          },
+          "100%": {
+            opacity: 1,
+            transform: "translate3d(0, 0, 0)",
+          },
+        },
+        slideIn: {
+          "0%": {
+            opacity: 0,
+            transform: "translateY(-100%)",
+          },
+          "100%": {
+            opacity: 1,
+            transform: "translateY(0)",
+          },
+        },
+        slideOut: {
+          "0%": {
+            opacity: 1,
+            transform: "translateY(0)",
+          },
+          "100%": {
+            opacity: 0,
+            translate: "translateY(100%)",
+          },
+        },
+        fadeIn: {
+          from: { opacity: 0, transform: "translateY(-10px)" },
+          to: { opacity: 1, transform: "none" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        fadeInUp: "fadeInUp 1s ease-in-out 0.25s 1",
+        slideIn: "slideIn 0.75s  var(--linearAnimation) ",
+        slideOut: "slideOut 0.75s  var(--linearAnimation)",
+        fadeIn: "fadeIn 1000ms var(--animation-delay, 0ms) ease forwards",
       },
     },
   },
