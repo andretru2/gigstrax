@@ -54,7 +54,7 @@ export function SignInForm() {
       <Button
         type="button"
         className={cn(buttonVariants({ variant: "outline" }))}
-        onClick={void signin("google")}
+        onClick={() => void signin("google")}
       >
         <Icons.gmail className="mr-2 size-4" />
         Gmail
