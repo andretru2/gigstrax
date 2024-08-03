@@ -39,8 +39,8 @@ export async function signin(
 
   if (provider === "resend") {
     await signIn(provider, formData, {
-      // redirectTo: "https://gigstrax.vercel.app/dashboard/gigs",
-      redirectTo: "http://localhost:3000/dashboard/gigs",
+      redirectTo: "https://gigstrax.vercel.app/dashboard/gigs",
+      // redirectTo: "http://localhost:3000/dashboard/gigs",
       // redirectTo: redirect,
     });
 
