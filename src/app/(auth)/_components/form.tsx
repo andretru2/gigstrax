@@ -11,10 +11,8 @@ import { SubmitButton } from "../../_components/form/submit-button";
 import { signin } from "@/app/_actions/auth/signin";
 
 export function SignInForm() {
-  // const [state, action] = useFormState(signInWithEmail, undefined);
   const signInWithProvider = signin.bind(null, "resend");
   const [state, action] = useFormState(signInWithProvider, undefined);
-  // const [state, action] = useFormState(signin, undefined);
 
   // console.log(state);
   return (
@@ -56,13 +54,7 @@ export function SignInForm() {
       <Button
         type="button"
         className={cn(buttonVariants({ variant: "outline" }))}
-        // className="bg-[#EA4335]/60  hover:bg-[#EA4335]/80"
-
-        onClick={() =>
-          // console.log("x");
-          void handleSignIn()
-        }
-        // disabled={isLoading || isGitHubLoading}
+        onClick={void signin("google")}
       >
         <Icons.gmail className="mr-2 size-4" />
         Gmail

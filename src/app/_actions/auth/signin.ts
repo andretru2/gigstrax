@@ -51,10 +51,10 @@ export async function signin(
   }
 
   await signIn(provider, {
-    // callbackUrl: "https://gigstrax.vercel.app/dashboard/gigs",
+    callbackUrl: "https://gigstrax.vercel.app/dashboard/gigs",
     // redirectTo: `${hostname}/dashboard/gigs`,
     // redirectTo: redirect,
-    redirectTo: "http://localhost:3000/dashboard/gigs",
+    // redirectTo: "http://localhost:3000/dashboard/gigs",
   });
 
   return {
