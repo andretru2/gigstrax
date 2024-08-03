@@ -3,7 +3,7 @@
 import { prisma } from "@/server/db";
 import { revalidatePath } from "next/cache";
 
-import type { Prisma, Source } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import {
   toFormState,
   type FormState,

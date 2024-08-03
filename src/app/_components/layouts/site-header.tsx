@@ -132,7 +132,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <form action={signout}>
+                    <form action={void signout}>
                       <Button type="submit">
                         <Icons.logout
                           className="mr-2 h-4 w-4"

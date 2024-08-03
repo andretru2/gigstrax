@@ -9,12 +9,6 @@ import { Icons } from "@/components/icons";
 import { useFormState } from "react-dom";
 import { SubmitButton } from "../../_components/form/submit-button";
 import { signin } from "@/app/_actions/auth/signin";
-// import { signIn } from "auth";
-
-const handleSignIn = async () => {
-  console.log("xx");
-  await signin("google");
-};
 
 export function SignInForm() {
   // const [state, action] = useFormState(signInWithEmail, undefined);
@@ -26,12 +20,6 @@ export function SignInForm() {
   return (
     <div className={cn("grid gap-6")}>
       <form action={action}>
-        {/* <form
-        action={async (formData) => {
-          "use server";
-          await signIn("resend", formData);
-        }} */}
-
         <div className="grid gap-2">
           <div className="grid gap-1">
             <Label className="sr-only" htmlFor="email">
@@ -46,9 +34,9 @@ export function SignInForm() {
               autoComplete="email"
               autoCorrect="off"
             />
-            {/* {state?.errors?.email && (
-              <p className="text-sm text-red-600">{state.errors.email}</p>
-            )} */}
+            {state?.fieldErrors && (
+              <p className="text-sm text-red-600">{state.fieldErrors.email}</p>
+            )}
           </div>
           <SubmitButton label="Sign In with Email" />
         </div>

@@ -5,7 +5,8 @@ interface FilterParams<T> {
   whereClause?: T;
 }
 
-export async function orgFilter<T extends Record<string, any>>({
+//
+export async function orgFilter<T extends Record<string, unknown>>({
   whereClause = {} as T,
 }: FilterParams<T>): Promise<T> {
   const session = await auth();
@@ -25,7 +26,7 @@ interface CreateParams<T> {
   data: T;
 }
 
-export async function orgCreate<T extends Record<string, any>>({
+export async function orgCreate<T extends Record<string, unknown>>({
   data = {} as T,
 }: CreateParams<T>): Promise<T> {
   const session = await auth();
