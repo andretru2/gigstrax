@@ -11,6 +11,8 @@ export async function orgFilter<T extends Record<string, unknown>>({
 }: FilterParams<T>): Promise<T> {
   const session = await auth();
 
+  console.log(session);
+
   if (!session?.user) throw new Error("Unauthorized");
 
   // Super Admin can see all records, so return the original whereClause without modification
@@ -18,7 +20,7 @@ export async function orgFilter<T extends Record<string, unknown>>({
 
   return {
     ...whereClause,
-    orgId: session.user.orgId,
+    orgId: session?.user.orgId,
   };
 }
 

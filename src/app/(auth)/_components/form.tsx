@@ -10,6 +10,10 @@ import { useFormState } from "react-dom";
 import { SubmitButton } from "../../_components/form/submit-button";
 import { signin } from "@/app/_actions/auth/signin";
 
+async function handleSignIn() {
+  await signin("google");
+}
+
 export function SignInForm() {
   const signInWithProvider = signin.bind(null, "resend");
   const [state, action] = useFormState(signInWithProvider, undefined);
@@ -51,10 +55,12 @@ export function SignInForm() {
         </div>
       </div>
 
+      {/* <SignInGoogle /> */}
       <Button
         type="button"
         className={cn(buttonVariants({ variant: "outline" }))}
-        onClick={() => void signin("google")}
+        // onClick={() => signIn("google", { redirectTo: "/dashboard/gigs" })}
+        onClick={handleSignIn}
       >
         <Icons.gmail className="mr-2 size-4" />
         Gmail

@@ -36,13 +36,14 @@ export default async function DashboardLayout({
   children,
 }: DashboardLayoutProps) {
   const session = await auth();
-  if (!session || !session.user) {
-    redirect("/api/auth/signin");
-  }
+  // if (!session || !session.user) {
+  //   console.log("x");
+  //   redirect("/signin");
+  // }
 
   return (
     <div className="mx-auto flex min-h-svh max-w-screen-2xl  flex-col gap-8 ">
-      <SiteHeader user={session.user} />
+      <SiteHeader user={session?.user} />
       {/* <SidebarNav items={dashboardConfig.sidebarNav} /> */}
       <ScrollArea className="">
         <main className="flex w-full  flex-col gap-2 overflow-hidden text-foreground">

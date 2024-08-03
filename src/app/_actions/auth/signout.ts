@@ -13,7 +13,11 @@ export async function signout(): Promise<Response> {
   // await signOut({ redirectTo: redirect });
   // await signOut({ redirectTo: `${hostname}/signin` });
   // await signOut({ redirectTo: "http://localhost:3000/signin" });
-  await signOut({ redirectTo: "https://gigstrax.vercel.app/signin" });
+  await signOut({
+    // redirectTo: "https://gigstrax.vercel.app/signin",
+    redirectTo: "/signin",
+    redirect: true,
+  });
 
   return {
     result: "SUCCESS",
