@@ -4,13 +4,18 @@ import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import { SignInForm } from "../_components/form";
+import { auth } from "auth";
+import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "Create an account",
   description: "Create an account to get started.",
 };
 
-export default function Page() {
+export default async function Page() {
+  const session = await auth();
+  console.log(session);
+  if (session) redirect("/dashboard/gigs");
   return (
     <div className="container grid h-screen w-screen flex-col items-center justify-center lg:max-w-none lg:grid-cols-2 lg:px-0">
       <Link
