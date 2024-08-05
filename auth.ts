@@ -74,10 +74,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         },
       };
     },
-    authorized: ({ auth, request }) => {
-      console.log(auth, request);
-      return true;
-    },
+    // authorized: ({ auth, request }) => {
+    //   console.log(auth, request);
+    //   return true;
+    // },
 
     signIn: async ({ user, account, profile, email, credentials }) => {
       console.log(user, account, profile, email, credentials);
