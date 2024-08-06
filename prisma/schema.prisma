@@ -219,7 +219,7 @@ enum VenueType {
 
 model Organization {
   id             String       @id @default(cuid())
-  name           String
+  name           String       @unique
   trialStartDate DateTime?    @default(now()) @db.Timestamptz()
   trialEndDate   DateTime?    @db.Timestamptz()
   isActive       Boolean?     @default(true)
